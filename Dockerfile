@@ -113,6 +113,11 @@ RUN NVMVERSION=v0.35.3 && export NVM_DIR="/usr/local/nvm" && \
     nvm install lts/dubnium && nvm use lts/dubnium && npm install yarn -g && \
     rm -rf $HOME/.npm
 
+COPY worker.sh /usr/local/bin/worker.sh
+COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
+RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.sh && \
+    ls -l /usr/local/bin
+
 
 #RUN SAML2AWL_VERSION=2.26.1 && \
 #    curl -L https://github.com/Versent/saml2aws/releases/download/v${SAML2AWL_VERSION}/saml2aws_${SAML2AWL_VERSION}_linux_amd64.tar.gz | \
