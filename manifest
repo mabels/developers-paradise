@@ -1,0 +1,28 @@
+# docker manifest create fastandfearless/developers-paradise:version \
+# 	fastandfearless/developers-paradise-amd64:version \
+# 	fastandfearless/developers-paradise-arm:version
+# 
+# docker manifest annotate fastandfearless/developers-paradise:version \
+# 	fastandfearless/developers-paradise-amd64:version --arch amd64 --os linux
+# docker manifest annotate fastandfearless/developers-paradise:version \
+# 	fastandfearless/developers-paradise-arm:version --arch arm --os linux
+# 
+# docker manifest create \
+# fastandfearless/developers-paradise:latest \
+# fastandfearless/developers-paradise:x64-latest \
+# fastandfearless/developers-paradise:arm32-latest \
+# fastandfearless/developers-paradise:aarch64-latest
+# 
+# docker manifest create new-list-ref-name image-ref [image-ref...]
+# docker manifest annotate new-list-ref-name image-ref --os linux --arch arm
+# docker manifest push new-list-ref-name
+docker manifest create --amend \
+    fastandfearless/developers-paradise:latest \
+    fastandfearless/developers-paradise:linux-arm64 \
+    fastandfearless/developers-paradise:linux-amd64 
+#    fastandfearless/developers-paradise:linux-arm32
+
+docker manifest push fastandfearless/developers-paradise:latest
+
+#docker manifest create $IMAGE_ID:$BRANCH_OR_TAG $IMAGE_ID:$BRANCH_OR_TAG-amd64 $IMAGE_ID:$BRANCH_OR_TAG-arm32v7 $IMAGE_ID:$BRANCH_OR_TAG-arm64v8
+
