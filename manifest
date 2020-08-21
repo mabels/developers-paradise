@@ -43,7 +43,7 @@ fi
 docker build -t fastandfearless/developers-paradise:$tag .
 docker push fastandfearless/developers-paradise:$tag
 
-docker manifest create --amend fastandfearless/developers-paradise:$toptag \
+docker manifest create fastandfearless/developers-paradise:$toptag \
     fastandfearless/developers-paradise:$tag 
 docker manifest annotate fastandfearless/developers-paradise:$toptag \
      fastandfearless/developers-paradise:$tag --os $os --arch $arch $variant
