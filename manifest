@@ -16,7 +16,7 @@
 # docker manifest create new-list-ref-name image-ref [image-ref...]
 # docker manifest annotate new-list-ref-name image-ref --os linux --arch arm
 # docker manifest push new-list-ref-name
-unamep="aarch64"
+unamep=$(uname -p)
 
 toptag="latest"
 if [ $unamep = "x86_64" ]
@@ -24,26 +24,29 @@ then
   tag="linux-amd64-$toptag"
   os="linux"
   arch="amd64"
+  variant=""
 fi
 if [ $unamep = "aarch64" ]
 then
   tag="linux-arm64-$toptag"
-  arch="arm64/v8"
+  arch="arm64"
+  variant="--variant v8"
   os="linux"
 fi
 if [ $unamep = "armv7l" ]
 then
   tag="linux-armv7-$toptag"
   os="linux"
-  arch="arm/v7"
+  variant="--variant v7"
+  arch="arm"
 fi
 docker build -t fastandfearless/developers-paradise:$tag .
 docker push fastandfearless/developers-paradise:$tag
 
 docker manifest create --amend fastandfearless/developers-paradise:$toptag \
-    fastandfearless/developers-paradise:$tag
+    fastandfearless/developers-paradise:$tag 
 docker manifest annotate fastandfearless/developers-paradise:$toptag \
-     fastandfearless/developers-paradise:$tag --os $os --arch $arch
+     fastandfearless/developers-paradise:$tag --os $os --arch $arch $variant
 docker manifest push fastandfearless/developers-paradise:$toptag
 
 #docker manifest create $IMAGE_ID:$BRANCH_OR_TAG $IMAGE_ID:$BRANCH_OR_TAG-amd64 $IMAGE_ID:$BRANCH_OR_TAG-arm32v7 $IMAGE_ID:$BRANCH_OR_TAG-arm64v8
