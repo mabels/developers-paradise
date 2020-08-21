@@ -1,20 +1,22 @@
 FROM ubuntu:focal
 
-#COPY libseccomp2_2.4.3-1+b1_armhf.deb .
-#RUN if [ $(uname -p) = "armv7l" ]; then dpkg -i libseccomp2_2.4.3-1+b1_armhf.deb; fi
-
 RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc && \
+    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   yes | unminimize
+
+RUN mv /usr/bin/uname /usr/bin/uname.orig && \
+    (echo "#!/bin/sh" ; echo '/usr/bin/uname.orig $@ | sed "s/armv8l/armv7l/g"') > /usr/bin/uname && \
+    chmod 755 /usr/bin/uname
 
 RUN useradd -s /usr/bin/bash -r -m -u 666 -G adm,sudo runner && \
     echo "runner    ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
     su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v2.272.0/actions-runner-linux-x64-2.272.0.tar.gz && tar xzf ./actions-runner-linux-x64-2.272.0.tar.gz && rm actions-runner-linux-x64-2.272.0.tar.gz"
 
+RUN find /usr/bin/uname* -ls; uname -a; uname -p
 
 RUN mkdir -p /usr/share/dotnet && cd /usr/share/dotnet && \
     if [ $(uname -p) = "x86_64" ]; then \
@@ -51,19 +53,20 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 
 
 RUN mkdir -p /usr/local/bin && \ 
-    if [ $(uname -p) = "x86_64" ]; then \
-      curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
-    elif [ $(uname -p) = "aarch64" ]; then \
-      curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; \
-    elif [ $(uname -p) = "armv7l" ]; then \
-      DEBIAN_FRONTEND=noninteractive apt install -y python3-pip3 && \
-      python3 -m pip install awscli; \
-    fi; \
-    if [ -f awscliv2.zip ]; then  \
-      unzip awscliv2.zip && \
-     ./aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
-     rm -f awscliv2.zip; \
-    fi
+    python3 -m pip install awscli
+    #if [ $(uname -p) = "x86_64" ]; then \
+    #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
+    #elif [ $(uname -p) = "aarch64" ]; then \
+    #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; \
+    #elif [ $(uname -p) = "armv7l" ]; then \
+    # DEBIAN_FRONTEND=noninteractive apt install -y python3-pip && \
+    # python3 -m pip install awscli
+    #fi; \
+    #if [ -f awscliv2.zip ]; then  \
+    #  unzip awscliv2.zip && \
+    # ./aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
+    # rm -f awscliv2.zip; \
+    #fi
 
 RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
@@ -129,6 +132,7 @@ COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
 RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.sh && \
     ls -l /usr/local/bin
 
+RUN mv /usr/bin/uname.orig /usr/bin/uname
 
 #RUN SAML2AWL_VERSION=2.26.1 && \
 #    curl -L https://github.com/Versent/saml2aws/releases/download/v${SAML2AWL_VERSION}/saml2aws_${SAML2AWL_VERSION}_linux_amd64.tar.gz | \
