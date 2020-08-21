@@ -1,5 +1,8 @@
 FROM ubuntu:focal
 
+#COPY libseccomp2_2.4.3-1+b1_armhf.deb .
+#RUN if [ $(uname -p) = "armv7l" ]; then dpkg -i libseccomp2_2.4.3-1+b1_armhf.deb; fi
+
 RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
@@ -48,14 +51,19 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 
 
 RUN mkdir -p /usr/local/bin && \ 
-    [ $(uname -p) = "x86_64" ] && \
-    curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
-    [ $(uname -p) = "aarch64" ] && \
-    curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; \
-    [ -f awscliv2.zip ] && \
-    unzip awscliv2.zip && \
+    if [ $(uname -p) = "x86_64" ]; then \
+      curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
+    elif [ $(uname -p) = "aarch64" ]; then \
+      curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; \
+    elif [ $(uname -p) = "armv7l" ]; then \
+      DEBIAN_FRONTEND=noninteractive apt install -y python3-pip3 && \
+      python3 -m pip install awscli; \
+    fi; \
+    if [ -f awscliv2.zip ]; then  \
+      unzip awscliv2.zip && \
      ./aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
-    rm -f awscliv2.zip
+     rm -f awscliv2.zip; \
+    fi
 
 RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
@@ -66,10 +74,13 @@ RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 #    curl https://get.helm.sh/helm-v$HELMVERSION-linux-amd64.tar.gz | tar xzCf /tmp - && \
 #    mv /tmp/linux-amd64/helm /usr/local/bin
 
-RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
-    echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list && \
-    apt-get update && \
-    apt-get install helm
+#RUN curl https://baltocdn.com/helm/signing.asc | apt-key add - && \
+#    echo "deb https://baltocdn.com/helm/stable/debian/ all main" | tee /etc/apt/sources.list.d/helm-stable-debian.list && \
+#    apt-get update && \
+#    apt-get install helm
+RUN git clone -b v3.3.0 https://github.com/helm/helm.git && \
+    cd helm && make && install bin/helm /usr/local/bin && \
+    cd .. && rm -rf helm
 
 #RUN 
 #    HELMDIFFVERSION=3.1.1 && \
