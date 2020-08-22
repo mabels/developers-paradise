@@ -12,6 +12,8 @@ jobs:
     name: Update-Manifest
     needs: docker-build
     steps:
+      - uses: actions/checkout@v2
+
       - name: Write Manifest
         env:
           DOCKERHUB: ${{ secrets.DOCKERHUB }}
