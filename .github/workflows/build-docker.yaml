@@ -21,7 +21,7 @@ jobs:
           export DOCKER_CONFIG=$HOME/.docker
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           jq '.experimental = "enabled"' < $DOCKER_CONFIG/config.json > $DOCKER_CONFIG/config.json.new
-          cat $DOCKER_CONFIG/config.json.new
+          #cat $DOCKER_CONFIG/config.json.new
           mv $DOCKER_CONFIG/config.json.new $DOCKER_CONFIG/config.json
           GITCOMMIT=$(git rev-parse --short HEAD)
           docker manifest create fastandfearless/developers-paradise:$GITCOMMIT \
@@ -35,10 +35,19 @@ jobs:
           docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
              fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
           docker manifest push fastandfearless/developers-paradise:$GITCOMMIT
-          docker pull fastandfearless/developers-paradise:$GITCOMMIT
-          docker tag fastandfearless/developers-paradise:$GITCOMMIT \
-                     fastandfearless/developers-paradise:latest
-          docker push fastandfearless/developers-paradise:latest
+
+          docker tag fastandfearless/developers-paradise:$GITCOMMIT-amd64 fastandfearless/developers-paradise:latest-amd64
+          docker tag fastandfearless/developers-paradise:$GITCOMMIT-arm64 fastandfearless/developers-paradise:latest-arm64
+          docker tag fastandfearless/developers-paradise:$GITCOMMIT-arm fastandfearless/developers-paradise:latest-arm
+          docker push fastandfearless/developers-paradise:latest-amd64
+          docker push fastandfearless/developers-paradise:latest-arm64
+          docker push fastandfearless/developers-paradise:latest-arm
+
+          docker manifest create fastandfearless/developers-paradise:latest \
+            fastandfearless/developers-paradise:latest-amd64 \
+            fastandfearless/developers-paradise:latest-arm \
+            fastandfearless/developers-paradise:latest-arm64
+          docker manifest push fastandfearless/developers-paradise:latest
 
   docker-build:
     runs-on: ${{ matrix.platform }}
