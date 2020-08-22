@@ -43,11 +43,11 @@ fi
 docker build -t fastandfearless/developers-paradise:$tag .
 docker push fastandfearless/developers-paradise:$tag
 
-docker manifest create fastandfearless/developers-paradise:$toptag \
+docker manifest create fastandfearless/developers-paradise \
     fastandfearless/developers-paradise:$tag 
-docker manifest annotate fastandfearless/developers-paradise:$toptag \
+docker manifest annotate fastandfearless/developers-paradise \
      fastandfearless/developers-paradise:$tag --os $os --arch $arch $variant
-docker manifest push fastandfearless/developers-paradise:$toptag
+docker manifest push fastandfearless/developers-paradise
 
 #docker manifest create $IMAGE_ID:$BRANCH_OR_TAG $IMAGE_ID:$BRANCH_OR_TAG-amd64 $IMAGE_ID:$BRANCH_OR_TAG-arm32v7 $IMAGE_ID:$BRANCH_OR_TAG-arm64v8
 

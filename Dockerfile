@@ -12,9 +12,16 @@ RUN mv /usr/bin/uname /usr/bin/uname.orig && \
     (echo "#!/bin/sh" ; echo '/usr/bin/uname.orig $@ | sed "s/armv8l/armv7l/g"') > /usr/bin/uname && \
     chmod 755 /usr/bin/uname
 
-RUN useradd -s /usr/bin/bash -r -m -u 666 -G adm,sudo runner && \
+RUN useradd -s /usr/bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
+    V=2.272.0 && \
     echo "runner    ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
-    su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v2.272.0/actions-runner-linux-x64-2.272.0.tar.gz && tar xzf ./actions-runner-linux-x64-2.272.0.tar.gz && rm actions-runner-linux-x64-2.272.0.tar.gz"
+    if [ $(uname -p) = "x86_64" ]; then \
+      su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-x64-$V.tar.gz && tar xzf ./actions-runner-linux-x64-$V.tar.gz && rm actions-runner-linux-x64-$V.tar.gz"; \
+    elif [ $(uname -p) = "armv7l" ]; then \
+      su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-arm-$V.tar.gz && tar xzf ./actions-runner-linux-arm-$V.tar.gz && rm actions-runner-linux-arm-$V.tar.gz"; \
+    elif [ $(uname -p) = "aarch64" ]; then \
+      su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-arm64-$V.tar.gz && tar xzf ./actions-runner-linux-arm64-$V.tar.gz && rm actions-runner-linux-arm64-$V.tar.gz"; \
+    fi
 
 RUN find /usr/bin/uname* -ls; uname -a; uname -p
 
