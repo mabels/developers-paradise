@@ -35,6 +35,7 @@ jobs:
           docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
              fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
           docker manifest push fastandfearless/developers-paradise:$GITCOMMIT
+          docker pull fastandfearless/developers-paradise:$GITCOMMIT
           docker tag fastandfearless/developers-paradise:$GITCOMMIT \
                      fastandfearless/developers-paradise:latest
           docker push fastandfearless/developers-paradise:latest
