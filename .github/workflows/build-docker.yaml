@@ -27,6 +27,7 @@ jobs:
         env:
           DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
+          id
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           GITCOMMIT=$(git rev-parse --short HEAD)
           docker build . --tag fastandfearless/developers-paradise:${{ matrix.arch }}-$GITCOMMIT
