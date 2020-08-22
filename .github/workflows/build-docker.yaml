@@ -8,6 +8,7 @@ on:
 
 jobs:
   update-manifest:
+    runs-on: ['self-hosted', 'Linux', 'X64']
     name: Update-Manifest
     needs: docker-build
     steps:
