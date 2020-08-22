@@ -10,7 +10,7 @@ apt install -y wget curl jq openssh-server mysql-client \
     rsync make dnsutils procps \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip 
 
-snap install docker --classic
+snap install docker --devmode
 
 ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 
