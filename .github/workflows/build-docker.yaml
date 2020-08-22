@@ -7,7 +7,36 @@ on:
     branches: [ '**' ]
 
 jobs:
-  build:
+  update-manifest:
+    name: Update-Manifest
+    needs: docker-build
+    steps:
+      - name: Write Manifest
+        env:
+          DOCKERHUB: ${{ secrets.DOCKERHUB }}
+        run: |
+          export DOCKER_CONFIG=$HOME/.docker
+          echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          jq '.experimental = "enabled"' < $DOCKER_CONFIG/config.json > $DOCKER_CONFIG/config.json.new
+          cat $DOCKER_CONFIG/config.json.new
+          mv $DOCKER_CONFIG/config.json.new $DOCKER_CONFIG/config.json
+          GITCOMMIT=$(git rev-parse --short HEAD)
+          docker manifest create fastandfearless/developers-paradise:$GITCOMMIT \
+            fastandfearless/developers-paradise:$GITCOMMIT-amd64 \
+            fastandfearless/developers-paradise:$GITCOMMIT-arm \
+            fastandfearless/developers-paradise:$GITCOMMIT-arm64
+          docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
+             fastandfearless/developers-paradise:$GITCOMMIT-amd64 --os linux --arch amd64
+          docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
+             fastandfearless/developers-paradise:$GITCOMMIT-arm --os linux --arch arm --variant v7
+          docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
+             fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
+          docker manifest push fastandfearless/developers-paradise:$GITCOMMIT
+          docker tag fastandfearless/developers-paradise:$GITCOMMIT \
+                     fastandfearless/developers-paradise:latest
+          docker push fastandfearless/developers-paradise:latest
+
+  docker-build:
     runs-on: ${{ matrix.platform }}
     strategy:
       matrix:
@@ -27,9 +56,9 @@ jobs:
         env:
           DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
-          id
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           GITCOMMIT=$(git rev-parse --short HEAD)
-          docker build . --tag fastandfearless/developers-paradise:${{ matrix.arch }}-$GITCOMMIT
-          docker push fastandfearless/developers-paradise:${{ matrix.arch }}-$GITCOMMIT
+          docker build . --tag fastandfearless/developers-paradise:${GITCOMMIT}-${{ matrix.arch }}
+          docker push fastandfearless/developers-paradise:${GITCOMMIT}-${{ matrix.arch }}
+
 
