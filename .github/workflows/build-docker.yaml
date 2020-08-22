@@ -19,7 +19,7 @@ jobs:
           - platform: ['self-hosted', 'Linux', 'X64']
             arch: amd64
 
-    name: Build Docker ${{ matrix.platform }}
+    name: Build Docker ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v2
 
