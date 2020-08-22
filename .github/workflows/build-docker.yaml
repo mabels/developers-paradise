@@ -1,4 +1,4 @@
-name: go-build-and-test
+name: Build Docker
 
 on:
   push:
@@ -16,7 +16,7 @@ jobs:
             arch: arm64
           - platform: ['self-hosted', 'Linux', 'ARM']
             arch: arm
-          - platform: ['self-hosted', 'Linux', 'X86']
+          - platform: ['self-hosted', 'Linux', 'X64']
             arch: amd64
 
     name: Build Docker ${{ matrix.platform }}
