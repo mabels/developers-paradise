@@ -1,0 +1,34 @@
+name: go-build-and-test
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.platform }}
+    strategy:
+      matrix:
+        include:
+          - platform: ['self-hosted', 'Linux', 'ARM64']
+            arch: arm64
+          - platform: ['self-hosted', 'Linux', 'ARM']
+            arch: arm
+          - platform: ['self-hosted', 'Linux', 'X86']
+            arch: amd64
+
+    name: Build Docker ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build Docker
+        env:
+          DOCKERHUB: ${{ secrets.DOCKERHUB }}
+        run: |
+          echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          GITCOMMIT=$(git rev-parse --short HEAD)
+          docker build . --tag fastandfearless/developers-paradise:${{ matrix.arch }}-$GITCOMMIT
+          docker push fastandfearless/developers-paradise:${{ matrix.arch }}-$GITCOMMIT
+

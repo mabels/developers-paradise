@@ -1,3 +1,6 @@
+#  lxc launch ubuntu:b2fb9411c424  -c security.nesting=true -c security.privileged=true worker-armv7l
+#  lxc launch ubuntu:3b5347da6270  -c security.nesting=true -c security.privileged=true worker-aarch64
+#  lxc launch ubuntu:20.04  -c security.nesting=true -c security.privileged=true worker-amd64
 
 DEBIAN_FRONTEND=noninteractive \
 apt update && \
