@@ -24,34 +24,43 @@ jobs:
           #cat $DOCKER_CONFIG/config.json.new
           mv $DOCKER_CONFIG/config.json.new $DOCKER_CONFIG/config.json
           GITCOMMIT=$(git rev-parse --short HEAD)
-          docker manifest create fastandfearless/developers-paradise:$GITCOMMIT \
-            fastandfearless/developers-paradise:$GITCOMMIT-amd64 \
-            fastandfearless/developers-paradise:$GITCOMMIT-arm \
-            fastandfearless/developers-paradise:$GITCOMMIT-arm64
-          docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
-             fastandfearless/developers-paradise:$GITCOMMIT-amd64 --os linux --arch amd64
-          docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
-             fastandfearless/developers-paradise:$GITCOMMIT-arm --os linux --arch arm --variant v7
-          docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
-             fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
-          docker manifest push fastandfearless/developers-paradise:$GITCOMMIT
+          #docker manifest create fastandfearless/developers-paradise:$GITCOMMIT \
+          #  fastandfearless/developers-paradise:$GITCOMMIT-amd64 \
+          #  fastandfearless/developers-paradise:$GITCOMMIT-arm \
+          #  fastandfearless/developers-paradise:$GITCOMMIT-arm64
+          #docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
+          #   fastandfearless/developers-paradise:$GITCOMMIT-amd64 --os linux --arch amd64
+          #docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
+          #   fastandfearless/developers-paradise:$GITCOMMIT-arm --os linux --arch arm --variant v7
+          #docker manifest annotate fastandfearless/developers-paradise:$GITCOMMIT \
+          #   fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
+          #docker manifest push fastandfearless/developers-paradise:$GITCOMMIT
 
-          docker pull fastandfearless/developers-paradise:$GITCOMMIT-amd64
-          docker tag fastandfearless/developers-paradise:$GITCOMMIT-amd64 fastandfearless/developers-paradise:latest-amd64
-          docker pull fastandfearless/developers-paradise:$GITCOMMIT-arm64
-          docker tag fastandfearless/developers-paradise:$GITCOMMIT-arm64 fastandfearless/developers-paradise:latest-arm64
-          docker pull fastandfearless/developers-paradise:$GITCOMMIT-arm
-          docker tag fastandfearless/developers-paradise:$GITCOMMIT-arm fastandfearless/developers-paradise:latest-arm
+          #docker pull fastandfearless/developers-paradise:$GITCOMMIT-amd64
+          #docker tag fastandfearless/developers-paradise:$GITCOMMIT-amd64 fastandfearless/developers-paradise:latest-amd64
+          #docker pull fastandfearless/developers-paradise:$GITCOMMIT-arm64
+          #docker tag fastandfearless/developers-paradise:$GITCOMMIT-arm64 fastandfearless/developers-paradise:latest-arm64
+          #docker pull fastandfearless/developers-paradise:$GITCOMMIT-arm
+          #docker tag fastandfearless/developers-paradise:$GITCOMMIT-arm fastandfearless/developers-paradise:latest-arm
+          #
+          #docker push fastandfearless/developers-paradise:latest-amd64
+          #docker push fastandfearless/developers-paradise:latest-arm64
+          #docker push fastandfearless/developers-paradise:latest-arm
 
-          docker push fastandfearless/developers-paradise:latest-amd64
-          docker push fastandfearless/developers-paradise:latest-arm64
-          docker push fastandfearless/developers-paradise:latest-arm
-
-          docker manifest create fastandfearless/developers-paradise:latest \
-            fastandfearless/developers-paradise:latest-amd64 \
-            fastandfearless/developers-paradise:latest-arm \
-            fastandfearless/developers-paradise:latest-arm64
-          docker manifest push fastandfearless/developers-paradise:latest
+          for tag in $GITCOMMIT latest
+          do
+            docker manifest create fastandfearless/developers-paradise:$tag \
+              fastandfearless/developers-paradise:$GITCOMMIT-amd64 \
+              fastandfearless/developers-paradise:$GITCOMMIT-arm \
+              fastandfearless/developers-paradise:$GITCOMMIT-arm64
+            docker manifest annotate fastandfearless/developers-paradise:$tag \
+               fastandfearless/developers-paradise:$GITCOMMIT-amd64 --os linux --arch amd64
+            docker manifest annotate fastandfearless/developers-paradise:$tag \
+               fastandfearless/developers-paradise:$GITCOMMIT-arm --os linux --arch arm --variant v7
+            docker manifest annotate fastandfearless/developers-paradise:$tag \
+               fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
+            docker manifest push fastandfearless/developers-paradise:$tag
+          done
 
   docker-build:
     runs-on: ${{ matrix.platform }}
