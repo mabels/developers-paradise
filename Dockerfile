@@ -60,7 +60,7 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 
 
 RUN mkdir -p /usr/local/bin && \ 
-    python3 -m pip install awscli \
+    python3 -m pip install awscli && \
     python3 -m pip install awssso
     #if [ $(uname -p) = "x86_64" ]; then \
     #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
