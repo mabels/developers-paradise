@@ -5,13 +5,15 @@ RUN apt update && \
     git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping \
-    libffi-dev libssl-dev zlib1g-dev && \
+    libffi-dev libssl-dev zlib1g-dev supervisor && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-  yes | unminimize
+  yes | unminimize && \
+  apt clean
 
 RUN mv /usr/bin/uname /usr/bin/uname.orig && \
     (echo "#!/bin/sh" ; echo '/usr/bin/uname.orig $@ | sed "s/armv8l/armv7l/g"') > /usr/bin/uname && \
-    chmod 755 /usr/bin/uname
+    chmod 755 /usr/bin/uname && \
+    uname -a
 
 RUN useradd -s /usr/bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
     V=2.272.0 && \
@@ -22,9 +24,11 @@ RUN useradd -s /usr/bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
       su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-arm-$V.tar.gz && tar xzf ./actions-runner-linux-arm-$V.tar.gz && rm actions-runner-linux-arm-$V.tar.gz"; \
     elif [ $(uname -p) = "aarch64" ]; then \
       su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-arm64-$V.tar.gz && tar xzf ./actions-runner-linux-arm64-$V.tar.gz && rm actions-runner-linux-arm64-$V.tar.gz"; \
-    fi
+    fi; \
+    cd /home/runner/actions-runner && ./bin/installdependencies.sh && \
+    apt clean
 
-RUN find /usr/bin/uname* -ls; uname -a; uname -p
+#RUN find /usr/bin/uname* -ls; uname -a; uname -p
 
 RUN mkdir -p /usr/share/dotnet && cd /usr/share/dotnet && \
     if [ $(uname -p) = "x86_64" ]; then \
@@ -80,7 +84,8 @@ RUN mkdir -p /usr/local/bin && \
 RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update && \
-    apt-get install -y kubectl
+    apt-get install -y kubectl && \
+    apt clean
 
 #RUN HELMVERSION=3.2.3 && rm -rf /tmp/linux-amd64 && \
 #    curl https://get.helm.sh/helm-v$HELMVERSION-linux-amd64.tar.gz | tar xzCf /tmp - && \
@@ -140,6 +145,10 @@ COPY worker.sh /usr/local/bin/worker.sh
 COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
 RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.sh && \
     ls -l /usr/local/bin
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
+
 
 RUN mv /usr/bin/uname.orig /usr/bin/uname
 
