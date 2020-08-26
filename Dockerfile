@@ -4,7 +4,7 @@ RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip && \
+    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   yes | unminimize
 
@@ -60,7 +60,8 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 
 
 RUN mkdir -p /usr/local/bin && \ 
-    python3 -m pip install awscli
+    python3 -m pip install awscli \
+    python3 -m pip install awssso
     #if [ $(uname -p) = "x86_64" ]; then \
     #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
     #elif [ $(uname -p) = "aarch64" ]; then \
