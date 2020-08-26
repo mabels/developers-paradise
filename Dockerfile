@@ -4,7 +4,7 @@ RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping && \
+    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping libffi-dev && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   yes | unminimize
 
