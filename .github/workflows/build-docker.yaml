@@ -49,16 +49,21 @@ jobs:
 
           for tag in $GITCOMMIT latest
           do
+            echo "1=TAG=$tag"
             docker manifest create fastandfearless/developers-paradise:$tag \
               fastandfearless/developers-paradise:$GITCOMMIT-amd64 \
               fastandfearless/developers-paradise:$GITCOMMIT-arm \
               fastandfearless/developers-paradise:$GITCOMMIT-arm64
+            echo "2=TAG=$tag"
             docker manifest annotate fastandfearless/developers-paradise:$tag \
                fastandfearless/developers-paradise:$GITCOMMIT-amd64 --os linux --arch amd64
+            echo "3=TAG=$tag"
             docker manifest annotate fastandfearless/developers-paradise:$tag \
                fastandfearless/developers-paradise:$GITCOMMIT-arm --os linux --arch arm --variant v7
+            echo "4=TAG=$tag"
             docker manifest annotate fastandfearless/developers-paradise:$tag \
                fastandfearless/developers-paradise:$GITCOMMIT-arm64 --os linux --arch arm64 --variant v8
+            echo "5=TAG=$tag"
             docker manifest push fastandfearless/developers-paradise:$tag
           done
 
