@@ -61,12 +61,14 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 	curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-armv6l.tar.gz ; \
     fi; \
     tar xzf golang.tar.gz && rm golang.tar.gz && \
-    cd bin && ln -s ../go/bin/* .
+    cd bin && ln -s ../go/bin/* . && \
+    rm -rf /root/.cache
 
 
 RUN mkdir -p /usr/local/bin && \ 
     python3 -m pip install awscli && \
-    python3 -m pip install awssso
+    python3 -m pip install awssso && \
+    rm -rf /root/.cache
     #if [ $(uname -p) = "x86_64" ]; then \
     #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
     #elif [ $(uname -p) = "aarch64" ]; then \
@@ -97,7 +99,7 @@ RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 #    apt-get install helm
 RUN git clone -b v3.3.0 https://github.com/helm/helm.git && \
     cd helm && make && install bin/helm /usr/local/bin && \
-    cd .. && rm -rf helm
+    cd .. && rm -rf helm && rm -rf /root.cache
 
 #RUN 
 #    HELMDIFFVERSION=3.1.1 && \
@@ -120,13 +122,15 @@ RUN export HELM_HOME=/usr/local/helm && \
     git clone https://github.com/databus23/helm-diff.git && \
     cd helm-diff && \
     make install && cd .. && \
-    rm -rf helm-diff && rm -rf /usr/local/pkg $GOPATH
+    rm -rf helm-diff && rm -rf /usr/local/pkg $GOPATH && \
+    rm -rf /root/.cache
 
 RUN HELMFILEVERSION=v0.125.7 && \
     export GOPATH=/usr/local && \
     git clone -b $HELMFILEVERSION https://github.com/roboll/helmfile.git && \
     cd helmfile && make install && cd .. && \
-    rm -rf helmfile && rm -rf /usr/local/pkg
+    rm -rf helmfile && rm -rf /usr/local/pkg && \
+    rm -rf /root/.cache
 
 RUN NECKLESSVERSION=v0.0.4 && \
     curl -sS -L https://github.com/mabels/neckless/releases/download/$NECKLESSVERSION/neckless-linux -o /usr/local/bin/neckless && \
@@ -148,7 +152,6 @@ RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.s
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
-
 
 RUN mv /usr/bin/uname.orig /usr/bin/uname
 

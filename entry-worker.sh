@@ -1,5 +1,7 @@
 #!/bin/bash
 
+id
+
 if [[ "$@" == "bash" ]]; then
     exec $@
 fi
