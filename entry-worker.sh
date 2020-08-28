@@ -1,6 +1,8 @@
 #!/bin/bash
 
 id
+env
+export HOME=/home/runner
 export NVM_DIR="/usr/local/nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 nvm use lts/erbium
