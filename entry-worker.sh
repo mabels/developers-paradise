@@ -1,6 +1,11 @@
 #!/bin/bash
 
 id
+export NVM_DIR="/usr/local/nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+nvm use lts/erbium
+mkdir -p $HOME/bin
+PATH=$HOME/bin:/usr/local/bin:$PATH
 
 if [[ "$@" == "bash" ]]; then
     exec $@

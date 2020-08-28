@@ -16,7 +16,7 @@ RUN mv /usr/bin/uname /usr/bin/uname.orig && \
     uname -a
 
 RUN useradd -s /usr/bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
-    V=2.272.0 && \
+    V=2.273.0 && \
     echo "runner    ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
     if [ $(uname -p) = "x86_64" ]; then \
       su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-x64-$V.tar.gz && tar xzf ./actions-runner-linux-x64-$V.tar.gz && rm actions-runner-linux-x64-$V.tar.gz"; \
