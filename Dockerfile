@@ -68,6 +68,7 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 RUN mkdir -p /usr/local/bin && \ 
     git clone -b v2 https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
+    (echo "cryptography==2.8"; echo "PyInstaller==4.0") > requirements-build.txt && \
     python3 -m pip install -r requirements.txt --prefix /usr/local && \
     python3 -m pip install -e . --prefix /usr/local && \
     cd .. && rm -rf aws-cli && \
