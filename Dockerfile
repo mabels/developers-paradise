@@ -131,15 +131,27 @@ RUN export HELM_HOME=/usr/local/helm && \
     rm -rf /root/.cache
 
 RUN HELMFILEVERSION=v0.125.7 && \
-    export GOPATH=/usr/local && \
+    export GOPATH=$HOME/go && \
     git clone -b $HELMFILEVERSION https://github.com/roboll/helmfile.git && \
     cd helmfile && make install && cd .. && \
     rm -rf helmfile && rm -rf /usr/local/pkg && \
-    rm -rf /root/.cache
+    rm -rf /root/.cache $HOME/go
 
-RUN NECKLESSVERSION=v0.0.4 && \
-    curl -sS -L https://github.com/mabels/neckless/releases/download/$NECKLESSVERSION/neckless-linux -o /usr/local/bin/neckless && \
-    chmod +x /usr/local/bin/neckless
+RUN VERSION=v1.0.2 && \
+    export GOPATH=$HOME/go && \
+    git clone -b $VERSION https://github.com/estesp/manifest-tool.git && \
+    cd manifest-tool && go get && make binary && \
+    make install PREFIX=/usr/local && cd .. && \
+    rm -rf manifest-tool && \
+    rm -rf /root/.cache $HOME/go
+
+RUN VERSION=v0.0.4 && \
+    export GOPATH=$HOME/go && \
+    git clone -b $VERSION https://github.com/mabels/neckless.git && \
+    cd neckless && make build && \
+    cp neckless /usr/local/bin && cd .. && \
+    rm -rf neckless && \
+    rm -rf /root/.cache $HOME/go
 
 RUN NVMVERSION=v0.35.3 && export NVM_DIR="/usr/local/nvm" && \
     mkdir -p $NVM_DIR && \
