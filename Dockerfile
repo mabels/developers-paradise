@@ -66,7 +66,7 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 
 
 RUN mkdir -p /usr/local/bin && \ 
-    git clone -v2 https://github.com/aws/aws-cli.git && \
+    git clone -b v2 https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
     python3 -m pip install -r requirements.txt --prefix /usr/local && \
     python3 -m pip install -e . --prefix /usr/local && \
