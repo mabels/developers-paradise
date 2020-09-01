@@ -66,7 +66,11 @@ RUN mkdir -p /usr/local && cd /usr/local && \
 
 
 RUN mkdir -p /usr/local/bin && \ 
-    python3 -m pip install awscli && \
+    git clone -v2 https://github.com/aws/aws-cli.git && \
+    cd aws-cli && \
+    python3 -m pip install -r requirements.txt --prefix /usr/local && \
+    python3 -m pip install -e . --prefix /usr/local && \
+    cd .. && rm -rf aws-cli && \
     python3 -m pip install awssso && \
     rm -rf /root/.cache
     #if [ $(uname -p) = "x86_64" ]; then \
