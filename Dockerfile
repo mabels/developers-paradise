@@ -137,13 +137,13 @@ RUN HELMFILEVERSION=v0.125.7 && \
     rm -rf helmfile && rm -rf /usr/local/pkg && \
     rm -rf /root/.cache $HOME/go
 
-RUN VERSION=v1.0.2 && \
-    export GOPATH=$HOME/go && \
-    git clone -b $VERSION https://github.com/estesp/manifest-tool.git && \
-    cd manifest-tool && go get && make binary && \
-    make install PREFIX=/usr/local && cd .. && \
-    rm -rf manifest-tool && \
-    rm -rf /root/.cache $HOME/go
+#RUN VERSION=v1.0.2 && \
+#    export GOPATH=$HOME/go && \
+#    git clone -b $VERSION https://github.com/estesp/manifest-tool.git && \
+#    cd manifest-tool && go get && make binary && \
+#    make install PREFIX=/usr/local && cd .. && \
+#    rm -rf manifest-tool && \
+#    rm -rf /root/.cache $HOME/go
 
 RUN VERSION=v0.0.4 && \
     export GOPATH=$HOME/go && \
