@@ -1,0 +1,101 @@
+FROM ubuntu:focal
+
+RUN apt update && \
+  DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
+    git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
+    language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
+    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping \
+    libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools && \
+  ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
+  yes | unminimize && \
+  apt clean 
+
+RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
+    apt-get update && \
+    apt-get install -y kubectl && \
+    apt clean
+
+RUN mkdir -p /usr/local && cd /usr/local && \
+    if [ $(uname -p) = "x86_64" ]; then \
+  curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-amd64.tar.gz ; \
+    elif [ $(uname -p) = "aarch64" ]; then \
+  curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-arm64.tar.gz ; \
+    elif [ $(uname -p) = "armv7l" ]; then \
+  curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-armv6l.tar.gz ; \
+    fi; \
+    tar xzf golang.tar.gz && rm golang.tar.gz 
+
+RUN export PATH=/usr/local/go/bin:$PATH && \
+    git clone -b v3.3.0 https://github.com/helm/helm.git && \
+    cd helm && make && install bin/helm /usr/local/bin && \
+    cd .. && rm -rf helm && rm -rf /root.cache
+
+ENV HELM_PLUGIN_DIR /usr/local/helm/plugins
+ENV HELM_PLUGINS /usr/local/helm/plugins
+
+RUN export HELM_HOME=/usr/local/helm && \
+    export GOPATH=$HOME/go && \
+    export PATH=/usr/local/go/bin:$GOPATH/bin:$PATH && \
+    echo "export HELM_PLUGIN_DIR=/usr/local/helm/plugins" >> /usr/local/env.sh && \
+    echo "::set-env name=HELM_PLUGIN_DIR::/usr/local/helm/plugins" >> /usr/local/env.sh && \
+    echo "::set-env name=HELM_PLUGINS::/usr/local/helm/plugins" >> /usr/local/env.sh && \
+    echo "export HELM_PLUGINS=/usr/local/helm/plugins" >> /usr/local/env.sh && \
+    go get -u golang.org/x/lint/golint && \
+    mkdir -p $GOPATH/src/github.com/databus23/ && \
+    cd $GOPATH/src/github.com/databus23/ && \
+    git clone https://github.com/databus23/helm-diff.git && \
+    cd helm-diff && \
+    make install && cd .. && \
+    rm -rf helm-diff && rm -rf /usr/local/pkg $GOPATH && \
+    rm -rf /root/.cache
+
+RUN HELMFILEVERSION=v0.125.7 && \
+    export GOPATH=$HOME/go && \
+    export PATH=/usr/local/go/bin:$PATH && \
+    git clone -b $HELMFILEVERSION https://github.com/roboll/helmfile.git && \
+    cd helmfile && make install && cd .. && \
+    rm -rf helmfile && rm -rf /usr/local/pkg && \
+    rm -rf /root/.cache $HOME/go
+
+RUN VERSION=v0.0.4 && \
+    export GOPATH=$HOME/go && \
+    export PATH=/usr/local/go/bin:$PATH && \
+    git clone -b $VERSION https://github.com/mabels/neckless.git && \
+    cd neckless && make build && \
+    cp neckless /usr/local/bin && cd .. && \
+    rm -rf neckless && \
+    rm -rf /root/.cache $HOME/go
+
+RUN mkdir -p /usr/local/bin && \ 
+    git clone -b v2 https://github.com/aws/aws-cli.git && \
+    cd aws-cli && \
+    (echo "cryptography==2.8"; echo "PyInstaller==4.0") > requirements-build.txt && \
+    python3 -m pip install -r requirements.txt --prefix /usr/local && \
+    python3 -m pip install -e . --prefix /usr/local && \
+    cd .. && rm -rf aws-cli && \
+    python3 -m pip install awssso && \
+    rm -rf /root/.cache
+    #if [ $(uname -p) = "x86_64" ]; then \
+    #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
+    #elif [ $(uname -p) = "aarch64" ]; then \
+    #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-aarch64.zip" -o "awscliv2.zip"; \
+    #elif [ $(uname -p) = "armv7l" ]; then \
+    # DEBIAN_FRONTEND=noninteractive apt install -y python3-pip && \
+    # python3 -m pip install awscli
+    #fi; \
+    #if [ -f awscliv2.zip ]; then  \
+    #  unzip awscliv2.zip && \
+    # ./aws/install -i /usr/local/aws-cli -b /usr/local/bin && \
+    # rm -f awscliv2.zip; \
+    #fi
+
+
+#RUN mv /usr/bin/uname.orig /usr/bin/uname
+RUN rm -rf /usr/local/go
+
+#RUN SAML2AWL_VERSION=2.26.1 && \
+#    curl -L https://github.com/Versent/saml2aws/releases/download/v${SAML2AWL_VERSION}/saml2aws_${SAML2AWL_VERSION}_linux_amd64.tar.gz | \
+#    tar xzvCf /usr/local/bin -
+
+CMD ["/usr/bin/bash" ]

@@ -1,0 +1,13 @@
+
+RUN mkdir -p /usr/local && cd /usr/local && \
+    if [ $(uname -p) = "x86_64" ]; then \
+	curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-amd64.tar.gz ; \
+    elif [ $(uname -p) = "aarch64" ]; then \
+	curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-arm64.tar.gz ; \
+    elif [ $(uname -p) = "armv7l" ]; then \
+	curl -sS -L -o golang.tar.gz https://golang.org/dl/go1.15.linux-armv6l.tar.gz ; \
+    fi; \
+    tar xzf golang.tar.gz && rm golang.tar.gz && \
+    cd bin && ln -s ../go/bin/* . && \
+    rm -rf /root/.cache
+
