@@ -1,5 +1,5 @@
 ARCH ?= $(shell uname -m)
-REV ?= $(shell git rev-parse --short HEAD)
+REV ?= -$(shell git rev-parse --short HEAD)
 
 all: base extend ghrunner codeserver tag 
 
