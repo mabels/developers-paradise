@@ -10,6 +10,10 @@ RUN apt update && \
   yes | unminimize && \
   apt clean 
 
+RUN mv /usr/bin/uname /usr/bin/uname.orig && \
+   (echo "#!/bin/sh" ; echo '/usr/bin/uname.orig $@ | sed "s/armv8l/armv7l/g"') > /usr/bin/uname && \
+    chmod 755 /usr/bin/uname
+
 RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
     echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
     apt-get update && \
