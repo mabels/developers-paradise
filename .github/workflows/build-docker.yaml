@@ -37,7 +37,7 @@ jobs:
               docker manifest annotate fastandfearless/developers-paradise:$style-$tag \
                  fastandfearless/developers-paradise:$style-arm-$tag --os linux --arch arm --variant v7
               docker manifest annotate fastandfearless/developers-paradise:$style-$tag \
-                 fastandfearless/developers-paradise:$style-arm64-tag --os linux --arch arm64 --variant v8
+                 fastandfearless/developers-paradise:$style-arm64-$tag --os linux --arch arm64 --variant v8
               docker manifest push fastandfearless/developers-paradise:$style-$tag
             done
           done
