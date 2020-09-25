@@ -22,7 +22,7 @@ base:
 
 extend:
 	echo "FROM developers-paradise-base-$(ARCH) AS base" > Dockerfile.extend
-	cat Dockertempl.dotnet Dockertempl.golang Dockertempl.node Dockertempl.swift >> Dockerfile.extend
+	cat Dockertempl.dotnet Dockertempl.node Dockertempl.swift >> Dockerfile.extend
 	docker build -t developers-paradise-extend-$(ARCH) -f Dockerfile.extend .
 
 ghrunner:
