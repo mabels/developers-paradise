@@ -4,7 +4,7 @@ RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping \
+    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   yes | unminimize && \
@@ -73,14 +73,19 @@ RUN VERSION=v0.0.4 && \
     rm -rf /root/.cache $HOME/go
 
 RUN mkdir -p /usr/local/bin && \ 
+    git clone -b v2 https://github.com/boto/botocore.git && \
+    cd botocore && \
+    python3 setup.py install --prefix /usr/local && \
+    cd .. && \
+    rm -rf botocore && \
     git clone -b v2 https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
-    (echo "cryptography==2.8"; echo "PyInstaller==4.0") > requirements-build.txt && \
-    python3 -m pip install -r requirements.txt --prefix /usr/local && \
-    python3 -m pip install -e . --prefix /usr/local && \
+    python3 setup.py install --prefix /usr/local && \
     cd .. && rm -rf aws-cli && \
-    python3 -m pip install awssso && \
+    /usr/local/bin/aws --version && \
     rm -rf /root/.cache
+    #python3 -m pip install awssso && \
+    # (echo "cryptography==2.8"; echo "PyInstaller==4.0") > requirements-build.txt && \
     #if [ $(uname -p) = "x86_64" ]; then \
     #  curl -sS "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"; \
     #elif [ $(uname -p) = "aarch64" ]; then \

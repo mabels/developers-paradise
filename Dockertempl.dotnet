@@ -9,4 +9,3 @@ RUN mkdir -p /usr/share/dotnet && cd /usr/share/dotnet && \
     fi; \
     tar xzf dotnet.tar.gz && \
     rm dotnet.tar.gz && cd /usr/bin && ln -nfs /usr/share/dotnet/dotnet dotnet
-
