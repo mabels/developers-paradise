@@ -72,6 +72,14 @@ RUN VERSION=v0.0.4 && \
     rm -rf neckless && \
     rm -rf /root/.cache $HOME/go
 
+RUN VERSION=v0.23.9 && \
+    export GOPATH=$HOME/go && \
+    git clone -b $VERSION https://github.com/derailed/k9s.git && \
+    cd k9s && make build && \
+    cp execs/k9s /usr/local/bin && cd .. && \
+    rm -rf k9s && \
+    rm -rf /root/.cache $HOME/go
+
 RUN mkdir -p /usr/local/bin && \ 
     git clone -b v2 https://github.com/boto/botocore.git && \
     cd botocore && \
