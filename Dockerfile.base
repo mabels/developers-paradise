@@ -83,7 +83,7 @@ RUN VERSION=v0.23.9 && \
 RUN VERSION=v6.2.0 && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION https://github.com/99designs/aws-vault.git && \
-    cd aws-vault && make build && \
+    cd aws-vault && make aws-vault && \
     cp aws-vault /usr/local/bin && cd .. && \
     rm -rf aws-vault && \
     rm -rf /root/.cache $HOME/go
