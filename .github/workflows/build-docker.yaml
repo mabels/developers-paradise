@@ -24,7 +24,7 @@ jobs:
           mv $DOCKER_CONFIG/config.json.new $DOCKER_CONFIG/config.json
           GITCOMMIT=$(git rev-parse --short HEAD)
 
-          for style in base extend ghrunner codeserver
+          for style in base extend ghrunner codeserver ghrunner-swift codeserver-swift
           do
             for tag in $GITCOMMIT 
             do

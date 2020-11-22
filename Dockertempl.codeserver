@@ -1,11 +1,12 @@
 
-RUN if [ $(uname -p) = "x86_64" ]; then  \
-      wget https://github.com/cdr/code-server/releases/download/v3.6.0/code-server_3.6.0_amd64.deb && \
-      dpkg -i code-server_3.6.0_amd64.deb && \
-      rm -f code-server_3.6.0_amd64.deb; \
+RUN VERSION=3.7.2 && \
+    if [ $(uname -p) = "x86_64" ]; then  \
+      wget https://github.com/cdr/code-server/releases/download/v$VERSION/code-server_${VERSION}_amd64.deb && \
+      dpkg -i code-server_${VERSION}_amd64.deb && \
+      rm -f code-server_${VERSION}_amd64.deb; \
     elif [ $(uname -p) = "aarch64" ]; then \
-      wget https://github.com/cdr/code-server/releases/download/v3.6.0/code-server_3.6.0_arm64.deb && \
-      dpkg -i code-server_3.6.0_arm64.deb && \
-      rm -f code-server_3.6.0_arm64.deb; \
+      wget https://github.com/cdr/code-server/releases/download/v$VERSION/code-server_${VERSION}_arm64.deb && \
+      dpkg -i code-server_${VERSION}_arm64.deb && \
+      rm -f code-server_${VERSION}_arm64.deb; \
     fi
 

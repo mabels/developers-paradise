@@ -1,7 +1,7 @@
 ARCH ?= $(shell uname -m)
 REV ?= -$(shell git rev-parse --short HEAD)
 
-all: base extend ghrunner codeserver tag 
+all: base extend ghrunner codeserver ghrunner-swift codeserver-swift tag 
 
 publish: all push
 
@@ -22,8 +22,19 @@ base:
 
 extend:
 	echo "FROM developers-paradise-base-$(ARCH) AS base" > Dockerfile.extend
-	cat Dockertempl.dotnet Dockertempl.node Dockertempl.swift Dockertempl.pulumi >> Dockerfile.extend
+	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> Dockerfile.extend
+	cat Dockertempl.manifest-tool >> Dockerfile.extend
 	docker build -t developers-paradise-extend-$(ARCH) -f Dockerfile.extend .
+
+ghrunner-swift:
+	echo "FROM developers-paradise-ghrunner-$(ARCH) AS base" > Dockerfile.ghrunner-swift
+	cat Dockertempl.swift >> Dockerfile.ghrunner-swift
+	docker build -t developers-paradise-ghrunner-swift-$(ARCH) -f Dockerfile.ghrunner-swift .
+
+codeserver-swift:
+	echo "FROM developers-paradise-codeserver-$(ARCH) AS base" > Dockerfile.codeserver-swift
+	cat Dockertempl.swift >> Dockerfile.codeserver-swift
+	docker build -t developers-paradise-codeserver-swift-$(ARCH) -f Dockerfile.codeserver-swift .
 
 ghrunner:
 	echo "FROM developers-paradise-extend-$(ARCH) AS base" > Dockerfile.ghrunner
