@@ -26,9 +26,7 @@ RUN VERSION=v1.19.4 && \
     cd kubernetes && \
     make kubectl && \
     cp ./_output/local/go/bin/kubectl /usr/local/bin && \
-    rm -rf /root/.cache $HOME/go /root/.local $HOME/kubernetes && \
-    /usr/local/bin/kubectl version
-
+    rm -rf /root/.cache $HOME/go /root/.local $HOME/kubernetes
 
 RUN git clone -b v3.3.0 https://github.com/helm/helm.git && \
     cd helm && make && install bin/helm /usr/local/bin && \
