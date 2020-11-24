@@ -1,14 +1,3 @@
-FROM ubuntu:focal
-
-RUN apt update && \
-  DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
-    git sudo zsh vim neovim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
-    language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping pipenv \
-    libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tig tmux && \
-  ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-  yes | unminimize && \
-  apt clean 
 
 #RUN mv /usr/bin/uname /usr/bin/uname.orig && \
 #   (echo "#!/bin/sh" ; echo '/usr/bin/uname.orig $@ | sed "s/armv8l/armv7l/g"') > /usr/bin/uname && \
@@ -53,7 +42,7 @@ RUN export HELM_HOME=/usr/local/helm && \
     cd helm-diff && \
     make install && cd .. && \
     rm -rf helm-diff && rm -rf /usr/local/pkg $GOPATH && \
-    rm -rf /root/.cache
+    rm -rf /root/.cache /root/.local
 
 RUN HELMFILEVERSION=v0.130.0 && \
     export GOPATH=$HOME/go && \
@@ -62,7 +51,7 @@ RUN HELMFILEVERSION=v0.130.0 && \
     cp $GOPATH/bin/helmfile /usr/local/bin && \
     cd .. && \
     rm -rf helmfile && rm -rf /usr/local/pkg && \
-    rm -rf /root/.cache $HOME/go
+    rm -rf /root/.cache $HOME/go /root/.local
 
 RUN VERSION=v0.0.4 && \
     export GOPATH=$HOME/go && \
@@ -70,7 +59,7 @@ RUN VERSION=v0.0.4 && \
     cd neckless && make build && \
     cp neckless /usr/local/bin && cd .. && \
     rm -rf neckless && \
-    rm -rf /root/.cache $HOME/go
+    rm -rf /root/.cache $HOME/go /root/.local
 
 RUN VERSION=v0.23.9 && \
     export GOPATH=$HOME/go && \
@@ -78,7 +67,7 @@ RUN VERSION=v0.23.9 && \
     cd k9s && make build && \
     cp execs/k9s /usr/local/bin && cd .. && \
     rm -rf k9s && \
-    rm -rf /root/.cache $HOME/go
+    rm -rf /root/.cache $HOME/go /root/.local
 
 RUN VERSION=v6.2.0 && \
     export GOPATH=$HOME/go && \
@@ -86,7 +75,7 @@ RUN VERSION=v6.2.0 && \
     cd aws-vault && make aws-vault && \
     cp aws-vault /usr/local/bin && cd .. && \
     rm -rf aws-vault && \
-    rm -rf /root/.cache $HOME/go
+    rm -rf /root/.cache $HOME/go /root/.local
 
 RUN mkdir -p /usr/local/bin && \ 
     git clone -b v2 https://github.com/boto/botocore.git && \
@@ -104,7 +93,7 @@ RUN mkdir -p /usr/local/bin && \
 
 #RUN mv /usr/bin/uname.orig /usr/bin/uname
 #RUN rm -rf /usr/local/go
-RUN  rm -rf $HOME/.cache /root/.cache $HOME/go
+RUN  rm -rf $HOME/.cache /root/.local $HOME/go
 
 #RUN SAML2AWL_VERSION=2.26.1 && \
 #    curl -L https://github.com/Versent/saml2aws/releases/download/v${SAML2AWL_VERSION}/saml2aws_${SAML2AWL_VERSION}_linux_amd64.tar.gz | \

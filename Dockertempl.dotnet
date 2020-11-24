@@ -1,10 +1,10 @@
 
 RUN mkdir -p /usr/share/dotnet && cd /usr/share/dotnet && \
-    if [ $(uname -p) = "x86_64" ]; then \
+    if [ $(uname -m) = "x86_64" ]; then \
       curl -sS -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/4f9b8a64-5e09-456c-a087-527cfc8b4cd2/15e14ec06eab947432de139f172f7a98/dotnet-sdk-3.1.401-linux-x64.tar.gz; \
-    elif [ $(uname -p) = "armv7l" ]; then \
+    elif [ $(uname -m) = "armv7l" ]; then \
       curl -sS -o dotnet.tar.gz https://download.visualstudio.microsoft.com/download/pr/a92a6358-52c3-472b-ad6d-d2d80abdcef4/37a7551a4e2c9e455caed5ef777a8983/dotnet-sdk-3.1.401-linux-arm.tar.gz; \
-    elif [ $(uname -p) = "aarch64" ]; then \
+    elif [ $(uname -m) = "aarch64" ]; then \
       curl -sS -o dotnet.tar.gz	https://download.visualstudio.microsoft.com/download/pr/8c39349a-23d0-46b0-8206-8b573a404709/b42fd441c1911acc90aaddaa58d7103f/dotnet-sdk-3.1.401-linux-arm64.tar.gz; \
     fi; \
     tar xzf dotnet.tar.gz && \

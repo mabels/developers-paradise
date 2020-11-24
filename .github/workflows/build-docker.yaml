@@ -20,27 +20,7 @@ jobs:
         run: |
           export DOCKER_CONFIG=$HOME/.docker
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
-          jq '.experimental = "enabled"' < $DOCKER_CONFIG/config.json > $DOCKER_CONFIG/config.json.new
-          mv $DOCKER_CONFIG/config.json.new $DOCKER_CONFIG/config.json
-          GITCOMMIT=$(git rev-parse --short HEAD)
-
-          for style in base extend ghrunner codeserver ghrunner-swift codeserver-swift
-          do
-            for tag in $GITCOMMIT 
-            do
-              docker manifest create fastandfearless/developers-paradise:$style-$tag \
-                fastandfearless/developers-paradise:$style-amd64-$tag \
-                fastandfearless/developers-paradise:$style-arm-$tag \
-                fastandfearless/developers-paradise:$style-arm64-$tag
-              docker manifest annotate fastandfearless/developers-paradise:$style-$tag \
-                 fastandfearless/developers-paradise:$style-amd64-$tag --os linux --arch amd64
-              docker manifest annotate fastandfearless/developers-paradise:$style-$tag \
-                 fastandfearless/developers-paradise:$style-arm-$tag --os linux --arch arm --variant v7
-              docker manifest annotate fastandfearless/developers-paradise:$style-$tag \
-                 fastandfearless/developers-paradise:$style-arm64-$tag --os linux --arch arm64 --variant v8
-              docker manifest push fastandfearless/developers-paradise:$style-$tag
-            done
-          done
+          make manifest
 
   docker-build:
     runs-on: ${{ matrix.platform }}
