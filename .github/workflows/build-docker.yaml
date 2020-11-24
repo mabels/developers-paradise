@@ -44,7 +44,7 @@ jobs:
         run: |
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           GITCOMMIT=$(git rev-parse --short HEAD)
-          make ARCH=${{ matrix.arch }} all
-          make ARCH=${{ matrix.arch }} push
+          make all
+          make push
 
 
