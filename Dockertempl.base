@@ -3,11 +3,19 @@
 #   (echo "#!/bin/sh" ; echo '/usr/bin/uname.orig $@ | sed "s/armv8l/armv7l/g"') > /usr/bin/uname && \
 #    chmod 755 /usr/bin/uname
 
-RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
-    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
-    DEBIAN_FRONTEND=noninteractive apt update && \
-    DEBIAN_FRONTEND=noninteractive apt install -y kubectl && \
-    DEBIAN_FRONTEND=noninteractive apt clean
+#RUN curl -sS https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add - && \
+#    echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee -a /etc/apt/sources.list.d/kubernetes.list && \
+#    DEBIAN_FRONTEND=noninteractive apt update && \
+#    DEBIAN_FRONTEND=noninteractive apt install -y kubectl && \
+#    DEBIAN_FRONTEND=noninteractive apt clean
+
+RUN VERSION=v1.19.4 && \
+    git clone -b $VERSION --depth 1 https://github.com/kubernetes/kubernetes.git && \
+    cd kubernetes && \
+    make kubectl && \
+    cp ./_output/local/go/bin/kubectl /usr/local/bin && \
+    rm -rf /root/.cache $HOME/go /root/.local $HOME/kubernetes && \
+    /usr/local/bin/kubectl version
 
 RUN VERSION=1.15.2 && \
     mkdir -p /usr/local && cd /usr/local && \
@@ -23,7 +31,7 @@ RUN VERSION=1.15.2 && \
 
 RUN git clone -b v3.3.0 https://github.com/helm/helm.git && \
     cd helm && make && install bin/helm /usr/local/bin && \
-    cd .. && rm -rf helm && rm -rf /root.cache
+    cd .. && rm -rf helm /root.cache
 
 ENV HELM_PLUGIN_DIR /usr/local/helm/plugins
 ENV HELM_PLUGINS /usr/local/helm/plugins
