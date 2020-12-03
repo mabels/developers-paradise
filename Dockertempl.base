@@ -28,7 +28,7 @@ RUN VERSION=v1.19.4 && \
     cp ./_output/local/go/bin/kubectl /usr/local/bin && \
     rm -rf /root/.cache $HOME/go /root/.local $HOME/kubernetes
 
-RUN git clone -b v3.3.0 https://github.com/helm/helm.git && \
+RUN git clone -b v3.3.0 --depth 1 https://github.com/helm/helm.git && \
     cd helm && make && install bin/helm /usr/local/bin && \
     cd .. && rm -rf helm /root.cache
 
@@ -45,7 +45,7 @@ RUN export HELM_HOME=/usr/local/helm && \
     go get -u golang.org/x/lint/golint && \
     mkdir -p $GOPATH/src/github.com/databus23/ && \
     cd $GOPATH/src/github.com/databus23/ && \
-    git clone https://github.com/databus23/helm-diff.git && \
+    git clone --depth 1 https://github.com/databus23/helm-diff.git && \
     cd helm-diff && \
     make install && cd .. && \
     rm -rf helm-diff && rm -rf /usr/local/pkg $GOPATH && \
@@ -53,7 +53,7 @@ RUN export HELM_HOME=/usr/local/helm && \
 
 RUN HELMFILEVERSION=v0.130.0 && \
     export GOPATH=$HOME/go && \
-    git clone -b $HELMFILEVERSION https://github.com/roboll/helmfile.git && \
+    git clone -b $HELMFILEVERSION --depth 1 https://github.com/roboll/helmfile.git && \
     cd helmfile && make install && \
     cp $GOPATH/bin/helmfile /usr/local/bin && \
     cd .. && \
@@ -62,7 +62,7 @@ RUN HELMFILEVERSION=v0.130.0 && \
 
 RUN VERSION=v0.0.4 && \
     export GOPATH=$HOME/go && \
-    git clone -b $VERSION https://github.com/mabels/neckless.git && \
+    git clone -b $VERSION --depth 1 https://github.com/mabels/neckless.git && \
     cd neckless && make build && \
     cp neckless /usr/local/bin && cd .. && \
     rm -rf neckless && \
@@ -70,7 +70,7 @@ RUN VERSION=v0.0.4 && \
 
 RUN VERSION=v0.23.9 && \
     export GOPATH=$HOME/go && \
-    git clone -b $VERSION https://github.com/derailed/k9s.git && \
+    git clone -b $VERSION --depth 1 https://github.com/derailed/k9s.git && \
     cd k9s && make build && \
     cp execs/k9s /usr/local/bin && cd .. && \
     rm -rf k9s && \
@@ -78,19 +78,19 @@ RUN VERSION=v0.23.9 && \
 
 RUN VERSION=v6.2.0 && \
     export GOPATH=$HOME/go && \
-    git clone -b $VERSION https://github.com/99designs/aws-vault.git && \
+    git clone -b $VERSION --depth 1 https://github.com/99designs/aws-vault.git && \
     cd aws-vault && make aws-vault && \
     cp aws-vault /usr/local/bin && cd .. && \
     rm -rf aws-vault && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=v2.1.6 mkdir -p /usr/local/bin && \ 
-    git clone -b v2 https://github.com/boto/botocore.git && \
+RUN VERSION=2.1.6 mkdir -p /usr/local/bin && \ 
+    git clone -b v2 --depth 1 https://github.com/boto/botocore.git && \
     cd botocore && \
     python3 setup.py install --prefix /usr/local && \
     cd .. && \
     rm -rf botocore && \
-    git clone -b $VERSION https://github.com/aws/aws-cli.git && \
+    git clone -b $VERSION --depth 1 https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
     python3 setup.py install --prefix /usr/local && \
     cd .. && rm -rf aws-cli && \

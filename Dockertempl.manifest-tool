@@ -4,7 +4,7 @@ RUN VERSION=v1.0.3 && \
     mkdir -p $GOPATH/src/github.com/estesp && \
     rm -rf $GOPATH/src/github.com/estesp/manifest-tool && \
     cd $GOPATH/src/github.com/estesp && \
-    git clone https://github.com/estesp/manifest-tool.git -b $VERSION && \
+    git clone https://github.com/estesp/manifest-tool.git -b $VERSION --depth 1 && \
     cd  manifest-tool && \
     make binary && \
     cp manifest-tool /usr/local/bin && \
