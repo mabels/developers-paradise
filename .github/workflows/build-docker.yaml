@@ -17,9 +17,12 @@ jobs:
       - name: Write Manifest
         env:
           DOCKERHUB: ${{ secrets.DOCKERHUB }}
+          NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           export DOCKER_CONFIG=$HOME/.docker
-          echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          #echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest
 
   docker-build:
@@ -41,8 +44,12 @@ jobs:
       - name: Build Docker
         env:
           DOCKERHUB: ${{ secrets.DOCKERHUB }}
+          NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          export DOCKER_CONFIG=$HOME/.docker
+          #echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           GITCOMMIT=$(git rev-parse --short HEAD)
           make all
           make push
