@@ -84,13 +84,13 @@ RUN VERSION=v6.2.0 && \
     rm -rf aws-vault && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN mkdir -p /usr/local/bin && \ 
+RUN VERSION=v2.1.6 mkdir -p /usr/local/bin && \ 
     git clone -b v2 https://github.com/boto/botocore.git && \
     cd botocore && \
     python3 setup.py install --prefix /usr/local && \
     cd .. && \
     rm -rf botocore && \
-    git clone -b v2 https://github.com/aws/aws-cli.git && \
+    git clone -b $VERSION https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
     python3 setup.py install --prefix /usr/local && \
     cd .. && rm -rf aws-cli && \
