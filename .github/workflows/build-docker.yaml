@@ -23,7 +23,7 @@ jobs:
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          make manifest REPO=fastandfearless/
+          make manifest REPO=fastandfearless
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -51,7 +51,7 @@ jobs:
           #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           GITCOMMIT=$(git rev-parse --short HEAD)
-          make all REPO=fastandfearless/
-          make push REPO=fastandfearless/
+          make all REPO=fastandfearless
+          make push REPO=fastandfearless
 
 
