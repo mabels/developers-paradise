@@ -20,10 +20,10 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           export DOCKER_CONFIG=$HOME/.docker
-          #echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
-          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          make manifest
+          echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          make manifest REPO=fastandfearless/
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -47,11 +47,11 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           export DOCKER_CONFIG=$HOME/.docker
-          #echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
-          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
+          #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          #aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           GITCOMMIT=$(git rev-parse --short HEAD)
-          make all
-          make push
+          make all REPO=fastandfearless/
+          make push REPO=fastandfearless/
 
 
