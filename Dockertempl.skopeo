@@ -1,0 +1,11 @@
+RUN VERSION=v1.2.0 && \
+    export GOPATH=$HOME/go && \
+    export PATH=$HOME/go/bin:$PATH && \
+    mkdir -p $GOPATH/src/github.com/containers && \
+    rm -rf $GOPATH/src/github.com/containers/skopeo && \
+    cd $GOPATH/src/github.com/containers && \
+    git clone https://github.com/containers/skopeo.git -b $VERSION --depth 1 && \
+    cd skopeo && \
+    make bin/skopeo && \
+    cp bin/skopeo /usr/local/bin && \
+    rm -rf $HOME/go
