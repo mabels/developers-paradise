@@ -84,7 +84,7 @@ RUN VERSION=v6.2.0 && \
     rm -rf aws-vault && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=2.1.7; mkdir -p /usr/local/bin && \ 
+RUN VERSION=2.1.10; mkdir -p /usr/local/bin && \ 
     git clone -b v2 --depth 1 https://github.com/boto/botocore.git && \
     cd botocore && \
     python3 setup.py install --prefix /usr/local && \
