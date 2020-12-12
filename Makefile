@@ -164,6 +164,7 @@ extend:
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.skopeo >> .build.$(ARCH).Dockerfile.extend
+	cat Dockertempl.kryptco >> .build.$(ARCH).Dockerfile.extend
 	$(DOCKER) build -t developers-paradise-extend-$(ARCH) -f .build.$(ARCH).Dockerfile.extend .
 
 ghrunner-swift.aarch64 ghrunner-swift.armv7l:
