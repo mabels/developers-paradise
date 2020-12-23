@@ -1,4 +1,4 @@
-RUN VERSION=v2.15.6 && \
+RUN VERSION=v2.16.0 && \
     export NVM_DIR="/usr/local/nvm" && \
     . "$NVM_DIR/nvm.sh" && \
     nvm use stable && \
