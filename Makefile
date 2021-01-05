@@ -35,7 +35,7 @@ all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) cod
 	@echo GO_VERSION=1.15.6 >> .build_versions
 	cat .build_versions
 
-manifest: manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
+manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 	echo "image: $(REPO)/developers-paradise:latest" >> .build.manifest-latest.yaml
 	echo "manifests:" >> .build.manifest-latest.yaml
 	echo "  -" >> .build.manifest-latest.yaml
@@ -55,7 +55,7 @@ manifest: manifest-base manifest-extend manifest-ghrunner manifest-codeserver ma
 	echo "      os: linux" >> .build.manifest-latest.yaml
 	manifest-tool push from-spec .build.manifest-latest.yaml
 
-manifest-base:
+manifest-base: .rev
 	echo "image: $(REPO)/developers-paradise:base-latest" >> .build.manifest-base.yaml
 	echo "manifests:" >> .build.manifest-base.yaml
 	echo "  -" >> .build.manifest-base.yaml
@@ -75,7 +75,7 @@ manifest-base:
 	echo "      os: linux" >> .build.manifest-base.yaml
 	manifest-tool push from-spec .build.manifest-base.yaml
 
-manifest-extend:
+manifest-extend: .rev
 	echo "image: $(REPO)/developers-paradise:extend-latest" >> .build.manifest-extend.yaml
 	echo "manifests:" >> .build.manifest-extend.yaml
 	echo "  -" >> .build.manifest-extend.yaml
@@ -95,7 +95,7 @@ manifest-extend:
 	echo "      os: linux" >> .build.manifest-extend.yaml
 	manifest-tool push from-spec .build.manifest-extend.yaml
 
-manifest-ghrunner:
+manifest-ghrunner: .rev
 	echo "image: $(REPO)/developers-paradise:ghrunner-latest" >> .build.manifest-ghrunner.yaml
 	echo "manifests:" >> .build.manifest-ghrunner.yaml
 	echo "  -" >> .build.manifest-ghrunner.yaml
@@ -115,7 +115,7 @@ manifest-ghrunner:
 	echo "      os: linux" >> .build.manifest-ghrunner.yaml
 	manifest-tool push from-spec .build.manifest-ghrunner.yaml
 
-manifest-codeserver:
+manifest-codeserver: .rev
 	echo "image: $(REPO)/developers-paradise:codeserver-latest" >> .build.manifest-codeserver.yaml
 	echo "manifests:" >> .build.manifest-codeserver.yaml
 	echo "  -" >> .build.manifest-codeserver.yaml
@@ -130,7 +130,7 @@ manifest-codeserver:
 	echo "      os: linux" >> .build.manifest-codeserver.yaml
 	manifest-tool push from-spec .build.manifest-codeserver.yaml
 
-manifest-codeserver-swift:
+manifest-codeserver-swift: .rev
 	echo "image: $(REPO)/developers-paradise:base-latest" >> .build.manifest-base.yaml
 	echo "manifests:" >> .build.manifest-base.yaml
 	echo "  -" >> .build.manifest-base.yaml
@@ -140,7 +140,7 @@ manifest-codeserver-swift:
 	echo "      os: linux" >> .build.manifest-base.yaml
 	manifest-tool push from-spec .build.manifest-base.yaml
 
-manifest-ghrunner-swift:
+manifest-ghrunner-swift: .rev
 	echo "image: $(REPO)/developers-paradise:base-latest" >> .build.manifest-base.yaml
 	echo "manifests:" >> .build.manifest-base.yaml
 	echo "  -" >> .build.manifest-base.yaml
