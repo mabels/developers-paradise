@@ -1,5 +1,5 @@
 
-RUN VERSION=3.7.4 && \
+RUN VERSION=3.8.0 && \
     if [ $(uname -m) = "x86_64" ]; then  \
       wget https://github.com/cdr/code-server/releases/download/v$VERSION/code-server_${VERSION}_amd64.deb && \
       dpkg -i code-server_${VERSION}_amd64.deb && \
