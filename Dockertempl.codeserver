@@ -1,12 +1,13 @@
 
-RUN VERSION=3.8.0 && \
+RUN VERSION=@@CODESERVER_VERSION@@ && \
+    V=$(echo $VERSION | sed 's/^v//') && \
     if [ $(uname -m) = "x86_64" ]; then  \
-      wget https://github.com/cdr/code-server/releases/download/v$VERSION/code-server_${VERSION}_amd64.deb && \
-      dpkg -i code-server_${VERSION}_amd64.deb && \
-      rm -f code-server_${VERSION}_amd64.deb; \
+      wget https://github.com/cdr/code-server/releases/download/$VERSION/code-server_${V}_amd64.deb && \
+      dpkg -i code-server_${V}_amd64.deb && \
+      rm -f code-server_${V}_amd64.deb; \
     elif [ $(uname -m) = "aarch64" ]; then \
-      wget https://github.com/cdr/code-server/releases/download/v$VERSION/code-server_${VERSION}_arm64.deb && \
-      dpkg -i code-server_${VERSION}_arm64.deb && \
-      rm -f code-server_${VERSION}_arm64.deb; \
+      wget https://github.com/cdr/code-server/releases/download/$VERSION/code-server_${V}_arm64.deb && \
+      dpkg -i code-server_${V}_arm64.deb && \
+      rm -f code-server_${V}_arm64.deb; \
     fi
 

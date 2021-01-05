@@ -3,8 +3,8 @@ RUN if [ $(uname -p) = "x86_64" ]; then \
       export DEBIAN_FRONTEND=noninteractive DEBCONF_NONINTERACTIVE_SEEN=true && \
       apt-get -q update && \
       apt-get -q install -y \
-    binutils \ 
-    git \ 
+    binutils \
+    git \
     gnupg2 \
     libc6-dev \
     libcurl4 \

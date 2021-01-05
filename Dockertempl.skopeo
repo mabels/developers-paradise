@@ -1,4 +1,5 @@
-RUN VERSION=v1.2.0 && \
+
+RUN VERSION=@@SKOPEO_VERSION@@ && \
     export GOPATH=$HOME/go && \
     export PATH=$HOME/go/bin:$PATH && \
     mkdir -p $GOPATH/src/github.com/containers && \

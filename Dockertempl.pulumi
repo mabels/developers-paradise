@@ -1,4 +1,5 @@
-RUN VERSION=v2.16.2 && \
+
+RUN VERSION=@@PULUMI_VERSION@@ && \
     export NVM_DIR="/usr/local/nvm" && \
     . "$NVM_DIR/nvm.sh" && \
     nvm use stable && \
