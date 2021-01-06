@@ -2,7 +2,7 @@ ARCH ?= $(shell uname -m)
 DOCKER ?= docker
 REPO ?= public.ecr.aws/d3g6c8d4
 
-REV=$(shell cat .rev)
+REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
 
 GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server actions/runner estesp/manifest-tool pulumi/pulumi containers/skopeo nvm-sh/nvm dotnet/runtime
@@ -12,7 +12,7 @@ all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) cod
 	@echo REV=$(shell cat .rev)
 
 
-prepare.tar: .rev
+prepare.tar: .rev .versioner
 	(for arch in $(ARCHS); \
 	do \
 	   for image in "$(REPO)/developers-paradise:base-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}$(shell cat .rev)"; \
@@ -28,7 +28,7 @@ prepare.tar: .rev
 	done)
 	tar cf prepare.tar .rev .versioner .pushed.* .built.*
 
-.rev: .versioner
+.rev: 
 	echo -$(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
 
 .versioner: .build_versions 
