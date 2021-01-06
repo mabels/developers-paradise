@@ -12,7 +12,7 @@ all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) cod
 	@echo REV=$(shell cat .rev)
 
 
-prepare.tar: .versioner
+prepare.tar: .versioner .rev
 	(for arch in $(ARCHS); \
 	do \
 	   for image in "$(REPO)/developers-paradise:base-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}$(shell cat .rev)"; \
