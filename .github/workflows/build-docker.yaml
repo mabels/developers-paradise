@@ -11,12 +11,13 @@ jobs:
     name: Prepare Versions
     runs-on: ['self-hosted', 'Linux']
     steps:
+      - uses: actions/checkout@v2
+
       - shell: bash
-        env:
-          GITHUB_ACCESS_TOKEN: ${{ env.GITHUB_ACCESS_TOKEN }}
+        #env:
+        #  GITHUB_ACCESS_TOKEN: ${{ env.GITHUB_ACCESS_TOKEN }}
         run: |
-          env
-          make prepare.tar APIUSER=${GITHUB_ACCESS_TOKEN}@
+          make prepare.tar # APIUSER=${GITHUB_ACCESS_TOKEN}@
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1
