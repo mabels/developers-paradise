@@ -1,4 +1,4 @@
-RUN VERSION=@@DOTNET_VERSION@@ &&\
+RUN VERSION=@@DOTNET_RUNTIME_VERSION@@ &&\
     curl -sS -L -o dotnet-install.sh https://dot.net/v1/dotnet-install.sh && \
     bash ./dotnet-install.sh --channel Current -i /usr/local/bin
 

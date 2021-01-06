@@ -2,37 +2,50 @@ ARCH ?= $(shell uname -m)
 DOCKER ?= docker
 REPO ?= public.ecr.aws/d3g6c8d4
 
+REV=$(shell cat .rev)
+ARCHS = aarch64 armv7l x86_64
+
+GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server actions/runner estesp/manifest-tool pulumi/pulumi containers/skopeo nvm-sh/nvm dotnet/runtime
+
 all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
 	@echo REV=$(shell cat .rev)
 
+
+prepare.tar: .rev
+	(for arch in $(ARCHS); \
+	do \
+	   for image in "$(REPO)/developers-paradise:base-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}$(shell cat .rev)"; \
+	   do \
+		if manifest-tool inspect $$image > /dev/null; \
+		then \
+			touch .pushed.`basename $$image | sed 's/:/-/g'`; \
+			touch .built.$$arch.Dockerfile.`echo $$image | sed 's/^.*:\([^-]*\)-.*$$/\1/'`; \
+		else \
+			echo "Needs Build: $$image"; \
+		fi \
+	   done \
+	done)
+	tar cf prepare.tar .rev .versioner .pushed.* .built.*
+
 .rev: .versioner
 	echo -$(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
 
-.versioner: .build_versions Makefile
+.versioner: .build_versions 
 	(echo "#!/bin/sh"; echo -n "sed "; for i in $(shell cat .build_versions); \
 	do \
 		echo -n "-e s/@@`echo $${i} | cut -d= -f1`@@/`echo $${i} | cut -d= -f2`/g ";\
 	done; echo "") > .versioner
 	chmod 755 .versioner
-	cat .versioner
+	#cat .versioner
 
 
-.build_versions: Makefile
-	@echo HELM_VERSION=$(shell curl --silent "https://api.github.com/repos/helm/helm/releases/latest" | jq -r .tag_name)  >> .build_versions
-	@echo HELMFILE_VERSION=$(shell curl --silent "https://api.github.com/repos/roboll/helmfile/releases/latest" | jq -r .tag_name) >> .build_versions
-	@echo NECKLESS_VERSION=$(shell curl --silent "https://api.github.com/repos/mabels/neckless/releases/latest" | jq -r .tag_name)  >> .build_versions
-	@echo K9S_VERSION=$(shell curl --silent "https://api.github.com/repos/derailed/k9s/releases/latest" | jq -r .tag_name)  >> .build_versions
-	@echo AWSVAULT_VERSION=$(shell curl --silent "https://api.github.com/repos/99designs/aws-vault/releases/latest" | jq -r .tag_name)  >> .build_versions
+.build_versions: 
+	rm -f .build_versions
+	APIUSER=$(APIUSER) bash query_versions.sh $(GITHUB_VERSIONS) > .build_versions
 	@echo KUBERNETES_VERSION=v1.20.1  >> .build_versions
-	@echo CODESERVER_VERSION=$(shell curl --silent "https://api.github.com/repos/cdr/code-server/releases/latest" | jq -r .tag_name)  >> .build_versions
-	@echo ACTIONRUNNER_VERSION=$(shell curl --silent "https://api.github.com/repos/actions/runner/releases/latest" | jq -r .tag_name)  >> .build_versions
-	@echo MANIFESTTOOL_VERSION=$(shell curl --silent "https://api.github.com/repos/estesp/manifest-tool/releases/latest" | jq -r .tag_name)  >> .build_versions
-	@echo PULUMI_VERSION=$(shell curl --silent "https://api.github.com/repos/pulumi/pulumi/releases/latest" | jq -r .tag_name) >> .build_versions
-	@echo SKOPEO_VERSION=$(shell curl --silent "https://api.github.com/repos/containers/skopeo/releases/latest" | jq -r .tag_name) >> .build_versions
-	@echo NVMSH_VERSION=$(shell curl --silent "https://api.github.com/repos/nvm-sh/nvm/releases/latest" | jq -r .tag_name) >> .build_versions
-	@echo DOTNET_VERSION=$(shell curl --silent "https://api.github.com/repos/dotnet/runtime/releases/latest" | jq -r .tag_name) >> .build_versions
 	@echo GO_VERSION=1.15.6 >> .build_versions
+	@echo AWSCLI_VERSION=2.1.16 >> .build_versions
 	cat .build_versions
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
@@ -164,21 +177,39 @@ tag.codeserver.x86_64 tag.codeserver.aarch64:
 
 push: push.base push.codeserver.$(ARCH)
 
-push.base:
-	$(DOCKER) push "$(REPO)/developers-paradise:base-$(ARCH)$(shell cat .rev)"
-	$(DOCKER) push "$(REPO)/developers-paradise:extend-$(ARCH)$(shell cat .rev)"
-	$(DOCKER) push "$(REPO)/developers-paradise:ghrunner-$(ARCH)$(shell cat .rev)"
+
+push.base: .pushed.developers-paradise-base-$(ARCH)$(REV) \
+	.pushed.developers-paradise-extend-$(ARCH)$(REV) \
+	.pushed.developers-paradise-ghrunner-$(ARCH)$(REV)
+
+.pushed.developers-paradise-base-$(ARCH)$(REV):
+	$(DOCKER) push "$(REPO)/developers-paradise:base-$(ARCH)$(REV)"
+	touch .pushed.developers-paradise-base-$(ARCH)$(REV)
+
+.pushed.developers-paradise-extend-$(ARCH)$(REV):
+	$(DOCKER) push "$(REPO)/developers-paradise:extend-$(ARCH)$(REV)"
+	touch .pushed.developers-paradise-extend-$(ARCH)$(REV)
+
+.pushed.developers-paradise-ghrunner-$(ARCH)$(REV):
+	$(DOCKER) push "$(REPO)/developers-paradise:ghrunner-$(ARCH)$(REV)"
+	touch .pushed.developers-paradise-ghrunner-$(ARCH)$(REV)
 
 push.codeserver.armv7l:
 	echo "Push Skip-CodeServer"
 
-push.codeserver.x86_64 push.codeserver.aarch64:
-	$(DOCKER) push "$(REPO)/developers-paradise:codeserver-$(ARCH)$(shell cat .rev)"
+push.codeserver.x86_64 push.codeserver.aarch64: .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
 
-base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base Dockertempl.base .versioner
+.pushed.developers-paradise-codeserver-$(ARCH)$(REV):
+	$(DOCKER) push "$(REPO)/developers-paradise:codeserver-$(ARCH)$(REV)"
+	touch .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
+
+base: .built.$(ARCH).Dockerfile.base
+
+.built.$(ARCH).Dockerfile.base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base Dockertempl.base .versioner
 	cat .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base > .build.$(ARCH).Dockerfile.base
 	./.versioner < .build.$(ARCH).Dockerfile.base > .build.$(ARCH).Dockerfile.base.versioned
 	$(DOCKER) build -t developers-paradise-base-$(ARCH) -f .build.$(ARCH).Dockerfile.base.versioned .
+	touch .built.$(ARCH).Dockerfile.base
 
 .build.x86_64.Dockerfile.base.x86_64: Dockerfile.base.ubuntu
 	cp Dockerfile.base.ubuntu .build.$(ARCH).Dockerfile.base.x86_64
@@ -189,7 +220,9 @@ base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base Dockertempl.base .
 .build.armv7l.Dockerfile.base.armv7l: Dockerfile.base.debian
 	cp Dockerfile.base.debian .build.$(ARCH).Dockerfile.base.armv7l
 
-extend: .versioner
+extend: .versioner .built.$(ARCH).Dockerfile.extend
+
+.built.$(ARCH).Dockerfile.extend: 
 	echo "FROM developers-paradise-base-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
@@ -197,41 +230,54 @@ extend: .versioner
 	cat Dockertempl.kryptco >> .build.$(ARCH).Dockerfile.extend
 	./.versioner < .build.$(ARCH).Dockerfile.extend > .build.$(ARCH).Dockerfile.extend.versioned
 	$(DOCKER) build -t developers-paradise-extend-$(ARCH) -f .build.$(ARCH).Dockerfile.extend.versioned .
+	touch .built.$(ARCH).Dockerfile.extend
 
 #	cat Dockertempl.rustup >> .build.$(ARCH).Dockerfile.extend
 
 ghrunner-swift.aarch64 ghrunner-swift.armv7l:
 	echo "Skip GHRunner Swift"
 
-ghrunner-swift.x86_64:
+ghrunner-swift.x86_64: .built.$(ARCH).Dockerfile.ghrunner-swift
+
+.built.$(ARCH).Dockerfile.ghrunner-swift:
 	echo "FROM developers-paradise-ghrunner-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.ghrunner-swift
 	cat Dockertempl.swift >> .build.$(ARCH).Dockerfile.ghrunner-swift
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner-swift > .build.$(ARCH).Dockerfile.ghrunner-swift.versioned
 	$(DOCKER) build -t developers-paradise-ghrunner-swift-$(ARCH) -f .build.$(ARCH).Dockerfile.ghrunner-swift.versioned .
+	touch .built.$(ARCH).Dockerfile.ghrunner-swift
 	$(DOCKER) tag developers-paradise-ghrunner-swift-$(ARCH) "$(REPO)/developers-paradise:ghrunner-swift-$(ARCH)$(shell cat .rev)"
 
 codeserver-swift.aarch64 codeserver-swift.armv7l:
 	echo "Skip GHRunner Swift"
 
-codeserver-swift.x86_64:
+codeserver-swift.x86_64: .built.$(ARCH).Dockerfile.codeserver-swift
+
+.built.$(ARCH).Dockerfile.codeserver-swift:
 	echo "FROM developers-paradise-codeserver-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.codeserver-swift
 	cat Dockertempl.swift >> .build.$(ARCH).Dockerfile.codeserver-swift
 	./.versioner < .build.$(ARCH).Dockerfile.codeserver-swift > .build.$(ARCH).Dockerfile.codeserver-swift.versioned
 	$(DOCKER) build -t developers-paradise-codeserver-swift-$(ARCH) -f .build.$(ARCH).Dockerfile.codeserver-swift.versioned .
+	touch .built.$(ARCH).Dockerfile.codeserver-swift
 	$(DOCKER) tag developers-paradise-codeserver-swift-$(ARCH) "$(REPO)/developers-paradise:codeserver-swift-$(ARCH)$(shell cat .rev)"
 
-ghrunner:
+ghrunner: .built.$(ARCH).Dockerfile.ghrunner
+
+.built.$(ARCH).Dockerfile.ghrunner:
 	echo "FROM developers-paradise-extend-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.ghrunner
 	cat Dockertempl.ghrunner >> .build.$(ARCH).Dockerfile.ghrunner
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner > .build.$(ARCH).Dockerfile.ghrunner.versioned
 	$(DOCKER) build -t developers-paradise-ghrunner-$(ARCH) -f .build.$(ARCH).Dockerfile.ghrunner.versioned .
+	touch .built.$(ARCH).Dockerfile.ghrunner
 
 codeserver.armv7l:
 	echo "Skip-CodeServer"
 
-codeserver.x86_64 codeserver.aarch64:
+codeserver.x86_64 codeserver.aarch64: .built.$(ARCH).Dockerfile.codeserver
+
+.built.$(ARCH).Dockerfile.codeserver:
 	echo "FROM developers-paradise-extend-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.codeserver
 	cat Dockertempl.codeserver >> .build.$(ARCH).Dockerfile.codeserver
 	./.versioner < .build.$(ARCH).Dockerfile.codeserver > .build.$(ARCH).Dockerfile.codeserver.versioned
 	$(DOCKER) build -t developers-paradise-codeserver-$(ARCH) -f .build.$(ARCH).Dockerfile.codeserver.versioned .
+	touch .built.$(ARCH).Dockerfile.codeserver
 

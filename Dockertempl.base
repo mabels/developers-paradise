@@ -31,7 +31,7 @@ RUN VERSION=@@KUBERNETES_VERSION@@ && \
     cp ./_output/local/go/bin/kubectl /usr/local/bin && \
     rm -rf /root/.cache $HOME/go /root/.local $HOME/kubernetes
 
-RUN VERSION=@@HELM_VERSION@@ && \
+RUN VERSION=@@HELM_HELM_VERSION@@ && \
     git clone -b $VERSION --depth 1 https://github.com/helm/helm.git && \
     cd helm && make && install bin/helm /usr/local/bin && \
     cd .. && rm -rf helm /root.cache
@@ -55,7 +55,7 @@ RUN export HELM_HOME=/usr/local/helm && \
     rm -rf helm-diff && rm -rf /usr/local/pkg $GOPATH && \
     rm -rf /root/.cache /root/.local
 
-RUN VERSION=@@HELMFILE_VERSION@@ && \
+RUN VERSION=@@ROBOLL_HELMFILE_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/roboll/helmfile.git && \
     cd helmfile && make install && \
@@ -64,7 +64,7 @@ RUN VERSION=@@HELMFILE_VERSION@@ && \
     rm -rf helmfile && rm -rf /usr/local/pkg && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=@@NECKLESS_VERSION@@ && \
+RUN VERSION=@@MABELS_NECKLESS_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/mabels/neckless.git && \
     cd neckless && make build && \
@@ -72,7 +72,7 @@ RUN VERSION=@@NECKLESS_VERSION@@ && \
     rm -rf neckless && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=@@K9S_VERSION@@ && \
+RUN VERSION=@@DERAILED_K9S_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/derailed/k9s.git && \
     cd k9s && make build && \
@@ -80,7 +80,7 @@ RUN VERSION=@@K9S_VERSION@@ && \
     rm -rf k9s && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=@@AWSVAULT_VERSION@@ && \
+RUN VERSION=@@99DESIGNS_AWSVAULT_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/99designs/aws-vault.git && \
     cd aws-vault && make aws-vault && \
@@ -88,7 +88,7 @@ RUN VERSION=@@AWSVAULT_VERSION@@ && \
     rm -rf aws-vault && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=2.1.15; mkdir -p /usr/local/bin && \
+RUN VERSION=@@AWSCLI_VERSION@@; mkdir -p /usr/local/bin && \
     git clone -b v2 --depth 1 https://github.com/boto/botocore.git && \
     cd botocore && \
     python3 setup.py install --prefix /usr/local && \

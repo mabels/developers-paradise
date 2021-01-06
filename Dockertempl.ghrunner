@@ -1,6 +1,6 @@
 
 RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
-    VERSION=@@ACTIONRUNNER_VERSION@@ && \
+    VERSION=@@ACTIONS_RUNNER_VERSION@@ && \
     V=$(echo $VERSION | sed 's/^v//') && \
     echo "runner    ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
     if [ $(uname -m) = "x86_64" ]; then \

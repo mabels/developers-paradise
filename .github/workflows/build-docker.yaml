@@ -5,16 +5,36 @@ on:
     branches: [ main ]
   schedule:
     - cron: "3 3 * * *"
-#  pull_request:
-#    branches: [ '**' ]
 
 jobs:
+  prepare:
+    name: Prepare Versions
+    runs-on: ['self-hosted', 'Linux']
+    steps:
+      - shell: bash
+        env:
+          GITHUB_ACCESS_TOKEN: ${{ env.GITHUB_ACCESS_TOKEN }}
+        run: |
+          env
+          make prepare.tar APIUSER=${GITHUB_ACCESS_TOKEN}@
+
+      - name: Upload prepare.tar
+        uses: actions/upload-artifact@v1
+        with:
+          name: prepare-tar
+          path: prepare.tar
+
   update-manifest:
     runs-on: ['self-hosted', 'Linux']
     name: Update-Manifest
     needs: docker-build
     steps:
       - uses: actions/checkout@v2
+
+      - name: extract prepare-tar
+        uses: actions/download-artifact@v1
+        with:
+          name: prepare-tar
 
       - name: Write Manifest
         env:
@@ -29,6 +49,7 @@ jobs:
 
   docker-build:
     runs-on: ${{ matrix.platform }}
+    needs: prepare
     strategy:
       matrix:
         include:
@@ -42,6 +63,11 @@ jobs:
     name: Build Docker ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v2
+
+      - name: extract prepare-tar
+        uses: actions/download-artifact@v1
+        with:
+          name: prepare-tar
 
       - name: Build Docker
         env:

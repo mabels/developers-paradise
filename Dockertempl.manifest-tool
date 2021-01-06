@@ -1,4 +1,4 @@
-RUN VERSION=@@MANIFESTTOOL_VERSION@@ && \
+RUN VERSION=@@ESTESP_MANIFESTTOOL_VERSION@@ && \
     export GOPATH=$HOME/go && \
     export PATH=$HOME/go/bin:$PATH && \
     mkdir -p $GOPATH/src/github.com/estesp && \

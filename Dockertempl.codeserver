@@ -1,5 +1,5 @@
 
-RUN VERSION=@@CODESERVER_VERSION@@ && \
+RUN VERSION=@@CDR_CODESERVER_VERSION@@ && \
     V=$(echo $VERSION | sed 's/^v//') && \
     if [ $(uname -m) = "x86_64" ]; then  \
       wget https://github.com/cdr/code-server/releases/download/$VERSION/code-server_${V}_amd64.deb && \
