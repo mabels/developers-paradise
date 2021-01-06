@@ -78,6 +78,7 @@ jobs:
           DOCKERHUB: ${{ secrets.DOCKERHUB }}
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
+          find . -ls
           tar xf prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
