@@ -26,6 +26,7 @@ prepare.tar: .rev .versioner
 		fi \
 	   done \
 	done)
+	touch .pushed.DUMMY .built.DUMMY
 	tar cf prepare.tar .rev .versioner .pushed.* .built.*
 
 .rev: 

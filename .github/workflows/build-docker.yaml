@@ -14,10 +14,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - shell: bash
-        #env:
-        #  GITHUB_ACCESS_TOKEN: ${{ env.GITHUB_ACCESS_TOKEN }}
+        env:
+          NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          make prepare.tar # APIUSER=${GITHUB_ACCESS_TOKEN}@
+          eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER)
+          make prepare.tar APIUSER=${APIUSER}@
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1
