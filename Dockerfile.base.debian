@@ -6,6 +6,6 @@ RUN apt update && \
     docker.io rsync ripgrep make dnsutils procps \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux \
-    libgpgme-dev pkg-config libdevmapper-dev && \
+    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   apt clean 

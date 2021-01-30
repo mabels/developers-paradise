@@ -5,7 +5,7 @@ REPO ?= public.ecr.aws/d3g6c8d4
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
 
-GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server actions/runner estesp/manifest-tool pulumi/pulumi containers/skopeo nvm-sh/nvm dotnet/runtime
+GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server actions/runner estesp/manifest-tool pulumi/pulumi containers/skopeo nvm-sh/nvm dotnet/runtime cli/cli
 
 all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
@@ -41,12 +41,12 @@ prepare.tar: .versioner .rev
 	#cat .versioner
 
 
-.build_versions: 
+.build_versions: Makefile
 	rm -f .build_versions
 	APIUSER=$(APIUSER) bash query_versions.sh $(GITHUB_VERSIONS) > .build_versions
-	@echo KUBERNETES_VERSION=v1.20.1  >> .build_versions
-	@echo GO_VERSION=1.15.6 >> .build_versions
-	@echo AWSCLI_VERSION=2.1.16 >> .build_versions
+	@echo KUBERNETES_VERSION=v1.20.2  >> .build_versions
+	@echo GO_VERSION=1.15.7 >> .build_versions
+	@echo AWSCLI_VERSION=2.1.22 >> .build_versions
 	cat .build_versions
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
@@ -223,11 +223,12 @@ base: .built.$(ARCH).Dockerfile.base
 
 extend: .versioner .built.$(ARCH).Dockerfile.extend
 
-.built.$(ARCH).Dockerfile.extend: 
+.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco .versioner
 	echo "FROM developers-paradise-base-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.skopeo >> .build.$(ARCH).Dockerfile.extend
+	cat Dockertempl.githubcli >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.kryptco >> .build.$(ARCH).Dockerfile.extend
 	./.versioner < .build.$(ARCH).Dockerfile.extend > .build.$(ARCH).Dockerfile.extend.versioned
 	$(DOCKER) build -t developers-paradise-extend-$(ARCH) -f .build.$(ARCH).Dockerfile.extend.versioned .

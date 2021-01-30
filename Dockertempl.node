@@ -4,7 +4,8 @@ RUN NVMVERSION=@@NVMSH_NVM_VERSION@@ && export NVM_DIR="/usr/local/nvm" && \
     curl -sS -o- https://raw.githubusercontent.com/nvm-sh/nvm/$NVMVERSION/install.sh | bash && \
     . "$NVM_DIR/nvm.sh" && \
     nvm install stable && nvm use stable && npm install yarn typescript -g && \
-    nvm install lts/erbium && nvm use lts/erbium && npm install yarn typescript -g && \
-    nvm install lts/dubnium && nvm use lts/dubnium && npm install yarn typescript -g && \
     rm -rf $HOME/.npm
+
+#    nvm install lts/erbium && nvm use lts/erbium && npm install yarn typescript -g && \
+#    nvm install lts/dubnium && nvm use lts/dubnium && npm install yarn typescript -g && \
 
