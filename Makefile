@@ -223,19 +223,23 @@ base: .built.$(ARCH).Dockerfile.base
 
 extend: .versioner .built.$(ARCH).Dockerfile.extend
 
-.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco .versioner Dockertempl.usql
+.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco .versioner Dockertempl.usql.$(ARCH)
 	echo "FROM developers-paradise-base-$(ARCH) AS base" > .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.skopeo >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.githubcli >> .build.$(ARCH).Dockerfile.extend
-	cat Dockertempl.usql >> .build.$(ARCH).Dockerfile.extend
+	cat Dockertempl.usql.$(ARCH) >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.kryptco >> .build.$(ARCH).Dockerfile.extend
 	./.versioner < .build.$(ARCH).Dockerfile.extend > .build.$(ARCH).Dockerfile.extend.versioned
 	$(DOCKER) build -t developers-paradise-extend-$(ARCH) -f .build.$(ARCH).Dockerfile.extend.versioned .
 	touch .built.$(ARCH).Dockerfile.extend
 
 #	cat Dockertempl.rustup >> .build.$(ARCH).Dockerfile.extend
+Dockertempl.usql.$(ARCH):
+	touch Dockertempl.usql.$(ARCH)
+
+Dockertempl.usql.x86_64:
 
 ghrunner-swift.aarch64 ghrunner-swift.armv7l:
 	echo "Skip GHRunner Swift"

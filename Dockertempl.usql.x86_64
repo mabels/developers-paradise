@@ -1,0 +1,12 @@
+RUN VERSION=@@XO_USQL_VERSION@@ && \
+    export GOPATH=$HOME/go && \
+    apt install -y unixodbc-dev libicu-dev && \
+    git clone -b $VERSION --depth 1 https://github.com/xo/usql && \
+    cd usql && sh all.sh && cp ./usql /usr/local/bin && cd .. && \
+    rm -rf /root/.cache $HOME/go /root/.local
+
+    #export ORACLE_HOME=$HOME/instantclient_19_6 && \
+    #apt install libaio1 && \
+    #curl -sS -o oci.zip \
+    #	https://download.oracle.com/otn_software/linux/instantclient/19600/instantclient-basic-linux.x64-19.6.0.0.0dbru.zip && \
+    #unzip oci.zip && \
