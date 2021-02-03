@@ -1,0 +1,6 @@
+RUN VERSION=@@XO_USQL_VERSION@@ && \
+    export GOPATH=$HOME/go && \
+    git clone -b $VERSION --depth 1 https://github.com/xo/usql && \
+    cd usql && go build -tags "oracle,mysql,postgresql,sqlite3" && cp ./usql /usr/local/bin && cd .. && \
+    rm -rf /root/.cache $HOME/go /root/.local
+
