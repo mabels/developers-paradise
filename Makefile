@@ -46,7 +46,7 @@ prepare.tar: .versioner .rev
 	APIUSER=$(APIUSER) bash query_versions.sh $(GITHUB_VERSIONS) > .build_versions
 	@echo KUBERNETES_VERSION=v1.20.2  >> .build_versions
 	@echo GO_VERSION=1.15.7 >> .build_versions
-	@echo AWSCLI_VERSION=2.1.23 >> .build_versions
+	@echo AWSCLI_VERSION=2.1.26 >> .build_versions
 	cat .build_versions
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
