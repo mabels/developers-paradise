@@ -1,0 +1,17 @@
+
+RUN rm -rf /opt/oracle && mkdir -p /opt/oracle && cd /opt/oracle && \
+    curl -o ora.zip -L https://download.oracle.com/otn_software/linux/instantclient/19600/instantclient-basic-linux.x64-19.6.0.0.0dbru.zip && \
+    unzip ora.zip && rm ora.zip && \
+    mkdir -p  /opt/oracle && cd /opt/oracle && \
+    curl -o ora.zip -L https://download.oracle.com/otn_software/linux/instantclient/19600/instantclient-sdk-linux.x64-19.6.0.0.0dbru.zip && \
+    unzip ora.zip && rm ora.zip && \
+    mkdir -p  /opt/oracle && cd /opt/oracle && \
+    curl -o ora.zip -L https://download.oracle.com/otn_software/linux/instantclient/19600/instantclient-sqlplus-linux.x64-19.6.0.0.0dbru.zip && \
+    unzip ora.zip && rm ora.zip && \
+    mkdir -p  /opt/oracle && cd /opt/oracle && \
+    curl -o ora.zip -L https://download.oracle.com/otn_software/linux/instantclient/19600/instantclient-tools-linux.x64-19.6.0.0.0dbru.zip && \
+    unzip ora.zip && rm ora.zip && \
+    find /opt/oracle -ls
+
+ENV ORACLE_HOME=/opt/oracle/instantclient_19_6
+

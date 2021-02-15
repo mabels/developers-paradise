@@ -24,7 +24,7 @@ RUN VERSION=@@GO_VERSION@@ && \
     tar xzf golang.tar.gz && rm golang.tar.gz && \
     cd bin && ln -s ../go/bin/* .
 
-RUN VERSION=@@KUBERNETES_VERSION@@ && \
+RUN VERSION=@@KUBERNETES_KUBERNETES_VERSION@@ && \
     git clone -b $VERSION --depth 1 https://github.com/kubernetes/kubernetes.git && \
     cd kubernetes && \
     make kubectl && \
@@ -80,7 +80,7 @@ RUN VERSION=@@DERAILED_K9S_VERSION@@ && \
     rm -rf k9s && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=@@99DESIGNS_AWSVAULT_VERSION@@ && \
+RUN VERSION=@@99DESIGNS_AWS_VAULT_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/99designs/aws-vault.git && \
     cd aws-vault && make aws-vault && \
@@ -88,7 +88,7 @@ RUN VERSION=@@99DESIGNS_AWSVAULT_VERSION@@ && \
     rm -rf aws-vault && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=@@AWSCLI_VERSION@@; mkdir -p /usr/local/bin && \
+RUN VERSION=@@AWS_AWS_CLI_VERSION@@; mkdir -p /usr/local/bin && \
     git clone -b v2 --depth 1 https://github.com/boto/botocore.git && \
     cd botocore && \
     python3 setup.py install --prefix /usr/local && \

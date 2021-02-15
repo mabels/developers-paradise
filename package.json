@@ -1,0 +1,21 @@
+{
+  "name": "developer-paradise",
+  "version": "1.0.0",
+  "description": "A docker-container which should fullfill all needs of a modern developer",
+  "main": "aws_versions.js",
+  "dependencies": {
+    "semver": "^7.3.4"
+  },
+  "devDependencies": {
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/mabels/developers-paradise.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/mabels/developers-paradise/issues"
+  },
+  "homepage": "https://github.com/mabels/developers-paradise#readme"
+}
