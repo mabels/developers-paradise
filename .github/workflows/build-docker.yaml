@@ -44,7 +44,6 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           tar xf ./prepare.tar/prepare.tar
-          find . -ls
           export DOCKER_CONFIG=$HOME/.docker
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
