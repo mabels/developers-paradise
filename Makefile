@@ -41,12 +41,16 @@ prepare.tar: .versioner .rev
 	#cat .versioner
 
 
-.build_versions: Makefile query_versions.js latest_versions.js
+.build_versions: Makefile query_versions.js latest_versions.js npmi
 	rm -f .build_versions
-	APIUSER=$(APIUSER) npx node query_versions.js $(GITHUB_VERSIONS) >> .build_versions
-	APIUSER=$(APIUSER) npx node latest_versions.js aws/aws-cli kubernetes/kubernetes >> .build_versions
+	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
+	APIUSER=$(APIUSER) npm run --silent latest aws/aws-cli kubernetes/kubernetes >> .build_versions
 	@echo GO_VERSION=1.15.7 >> .build_versions
 	cat .build_versions
+
+npmi: package.json
+	npm install
+	touch npmi
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 	echo "image: $(REPO)/developers-paradise:latest" >> .build.manifest-latest.yaml

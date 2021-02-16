@@ -18,7 +18,7 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER)
-          make prepare.tar APIUSER=${APIUSER}@
+          make prepare.tar APIUSER=${APIUSER}
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1
