@@ -184,15 +184,15 @@ push.base: .pushed.developers-paradise-base-$(ARCH)$(REV) \
 	.pushed.developers-paradise-ghrunner-$(ARCH)$(REV)
 
 .pushed.developers-paradise-base-$(ARCH)$(REV):
-	$(DOCKER) push "$(REPO)/developers-paradise:base-$(ARCH)$(REV)"
+	$(DOCKER) push "$(REPO)/developers-paradise:base-$(ARCH)-$(REV)"
 	touch .pushed.developers-paradise-base-$(ARCH)$(REV)
 
 .pushed.developers-paradise-extend-$(ARCH)$(REV):
-	$(DOCKER) push "$(REPO)/developers-paradise:extend-$(ARCH)$(REV)"
+	$(DOCKER) push "$(REPO)/developers-paradise:extend-$(ARCH)-$(REV)"
 	touch .pushed.developers-paradise-extend-$(ARCH)$(REV)
 
 .pushed.developers-paradise-ghrunner-$(ARCH)$(REV):
-	$(DOCKER) push "$(REPO)/developers-paradise:ghrunner-$(ARCH)$(REV)"
+	$(DOCKER) push "$(REPO)/developers-paradise:ghrunner-$(ARCH)-$(REV)"
 	touch .pushed.developers-paradise-ghrunner-$(ARCH)$(REV)
 
 push.codeserver.armv7l:
@@ -201,7 +201,7 @@ push.codeserver.armv7l:
 push.codeserver.x86_64 push.codeserver.aarch64: .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
 
 .pushed.developers-paradise-codeserver-$(ARCH)$(REV):
-	$(DOCKER) push "$(REPO)/developers-paradise:codeserver-$(ARCH)$(REV)"
+	$(DOCKER) push "$(REPO)/developers-paradise:codeserver-$(ARCH)-$(REV)"
 	touch .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
 
 base: .built.$(ARCH).Dockerfile.base
