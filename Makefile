@@ -5,7 +5,7 @@ REPO ?= public.ecr.aws/d3g6c8d4
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
 
-GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server actions/runner estesp/manifest-tool pulumi/pulumi containers/skopeo nvm-sh/nvm dotnet/runtime cli/cli xo/usql
+GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server actions/runner estesp/manifest-tool pulumi/pulumi containers/skopeo nvm-sh/nvm cli/cli xo/usql
 
 all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
@@ -45,7 +45,7 @@ prepare.tar: .versioner .rev
 	rm -f .build_versions
 	npm install
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
-	APIUSER=$(APIUSER) npm run --silent latest aws/aws-cli kubernetes/kubernetes >> .build_versions
+	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes >> .build_versions
 	@echo GO_VERSION=1.15.7 >> .build_versions
 	cat .build_versions
 
