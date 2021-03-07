@@ -4,7 +4,7 @@ RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mariadb-client \
     git sudo zsh vim neovim unzip zip man-db powerline fonts-powerline zsh-theme-powerlevel9k \
     docker.io rsync ripgrep make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip iputils-ping pipenv \
+    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip python3-mypy iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux tig \
     libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
