@@ -3,11 +3,11 @@ RUN VERSION=@@PULUMI_PULUMI_VERSION@@ && \
     export NVM_DIR="/usr/local/nvm" && \
     . "$NVM_DIR/nvm.sh" && \
     nvm use $NODE_VERSION && \
-    git clone --depth 1 https://github.com/mabels/pulumi.git && \
+    git clone https://github.com/pulumi/pulumi.git -b $VERSION --depth 1 && \
     cd pulumi && \
+    sed -i.orig -e  's/mypy = "0.78"/mypy = ">=0.78"/' sdk/python/Pipfile && \
     PATH=$HOME/go/bin:$PATH GOPATH=$HOME/go PULUMI_ROOT=$GOPATH make ensure && \
     PATH=$HOME/go/bin:$PATH GOPATH=$HOME/go PULUMI_ROOT=$GOPATH make dist && \
     cp $HOME/go/bin/* /usr/local/bin && \
     rm -rf ../pulumi $HOME/go
-#
-# git clone https://github.com/pulumi/pulumi.git -b $VERSION --depth 1 && \
+
