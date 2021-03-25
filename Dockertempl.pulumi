@@ -1,3 +1,14 @@
+RUN VERSION=@@PULUMI_PULUMICTL_VERSION@@ && \
+    export GOPATH=$HOME/go && \
+    export PATH=$HOME/go/bin:$PATH && \
+    mkdir -p $GOPATH/src/github.com/pulumi && \
+    rm -rf $GOPATH/src/github.com/pulumi/pulumictl && \
+    cd $GOPATH/src/github.com/pulumi && \
+    git clone https://github.com/pulumi/pulumictl.git -b $VERSION --depth 1 && \
+    cd pulumictl && \
+    go build github.com/pulumi/pulumictl/cmd/pulumictl && \
+    cp ./pulumictl /usr/local/bin && \
+    rm -rf $HOME/go
 
 RUN VERSION=@@PULUMI_PULUMI_VERSION@@ && \
     export NVM_DIR="/usr/local/nvm" && \
