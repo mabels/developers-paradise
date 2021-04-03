@@ -72,9 +72,11 @@ RUN VERSION=@@MABELS_NECKLESS_VERSION@@ && \
     rm -rf neckless && \
     rm -rf /root/.cache $HOME/go /root/.local
 
-RUN VERSION=@@DERAILED_K9S_VERSION@@ && \
+RUN K9SVERSION=@@DERAILED_K9S_VERSION@@ && \
+    TVIEWVERSION=@@DERAILED_TVIEW_VERSION@@ && \
     export GOPATH=$HOME/go && \
-    git clone -b $VERSION --depth 1 https://github.com/derailed/k9s.git && \
+    git clone -b $K9SVERSION --depth 1 https://github.com/derailed/k9s.git && \
+    git clone -b $TVIEWVERSION --depth 1 https://github.com/derailed/tview.git && \
     cd k9s && make build && \
     cp execs/k9s /usr/local/bin && cd .. && \
     rm -rf k9s && \
