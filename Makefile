@@ -47,7 +47,7 @@ prepare.tar: .versioner .rev
 	npm install
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
-	@echo GO_VERSION=1.15.11 >> .build_versions
+	@echo GO_VERSION=1.16.3 >> .build_versions
 	cat .build_versions
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
