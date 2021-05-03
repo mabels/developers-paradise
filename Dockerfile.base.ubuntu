@@ -6,7 +6,7 @@ RUN apt update && \
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip python3-mypy iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux tig \
-    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven && \
+    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   yes | unminimize && \
   apt clean 
