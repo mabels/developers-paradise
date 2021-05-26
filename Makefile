@@ -34,7 +34,7 @@ prepare.tar: .versioner .rev
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
 
 .versioner: .build_versions 
-	(echo "#!/bin/sh"; echo -n "sed "; for i in $(shell cat .build_versions); \
+	(echo "#!/bin/sh"; echo -n "sed "; for i in $(shell node merge_env.js .build_versions); \
 	do \
 		echo -n "-e s/@@`echo $${i} | cut -d= -f1`@@/`echo $${i} | cut -d= -f2`/g ";\
 	done; echo "") > .versioner
@@ -47,7 +47,8 @@ prepare.tar: .versioner .rev
 	npm install
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
-	@echo GO_VERSION=1.16.3 >> .build_versions
+	@echo GO_VERSION=1.16.4 >> .build_versions
+	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
@@ -224,7 +225,7 @@ base: .built.$(ARCH).Dockerfile.base
 
 extend: .versioner .built.$(ARCH).Dockerfile.extend
 
-.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco .versioner Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH) .rev
+.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco .versioner Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH) .rev .versioner
 	echo "FROM developers-paradise:base-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
