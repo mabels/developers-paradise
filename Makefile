@@ -6,7 +6,8 @@ REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
 
 GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server \
-		actions/runner estesp/manifest-tool pulumi/pulumictl pulumi/pulumi containers/skopeo nvm-sh/nvm cli/cli xo/usql
+		actions/runner estesp/manifest-tool pulumi/pulumictl pulumi/pulumi containers/skopeo \
+		nvm-sh/nvm cli/cli xo/usql
 
 all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
@@ -16,9 +17,9 @@ all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) cod
 prepare.tar: .versioner .rev
 	(for arch in $(ARCHS); \
 	do \
-	   for image in "$(REPO)/developers-paradise:base-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}$(shell cat .rev)"; \
+	   for image in "$(REPO)/developers-paradise:base-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}-$(shell cat .rev)"; \
 	   do \
-		if manifest-tool inspect $$image > /dev/null; \
+		if DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect $$image > /dev/null; \
 		then \
 			touch .pushed.`basename $$image | sed 's/:/-/g'`; \
 			touch .built.$$arch.Dockerfile.`echo $$image | sed 's/^.*:\([^-]*\)-.*$$/\1/'`; \
