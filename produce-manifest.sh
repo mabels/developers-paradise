@@ -12,8 +12,10 @@ do
    then
 	REPOARCH=arm64
    elif [ $i = armv7l ]
+   then
 	REPOARCH=arm
    elif [ $i = x86_64 ]
+   then
 	REPOARCH=amd64
    fi
 cat <<EOF
