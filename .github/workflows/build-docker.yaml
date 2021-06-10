@@ -9,7 +9,8 @@ on:
 jobs:
   prepare:
     name: Prepare Versions
-    runs-on: ['self-hosted', 'Linux']
+    # X64 we need for nodegit
+    runs-on: ['self-hosted', 'Linux', 'X64']
     steps:
       - uses: actions/checkout@v2
 

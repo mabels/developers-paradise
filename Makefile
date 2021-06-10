@@ -55,6 +55,7 @@ clean_repo: .npm_install.done
 	npm run clean_repo
 
 .npm_install.done:
+	apt install libkrb5-dev -y
 	npm install
 	touch .npm_install.done
 
