@@ -29,7 +29,7 @@ prepare.tar: .versioner .rev
 	   done \
 	done)
 	touch .pushed.DUMMY .built.DUMMY
-	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.*
+	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done
 
 .rev: .versioner
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
@@ -43,7 +43,7 @@ prepare.tar: .versioner .rev
 	#cat .versioner
 
 
-.build_versions: Makefile npm_install query_versions.js latest_versions.js
+.build_versions: Makefile .npm_install.done query_versions.js latest_versions.js
 	rm -f .build_versions
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
@@ -54,8 +54,9 @@ prepare.tar: .versioner .rev
 clean_repo: npm_install
 	npm run clean_repo
 
-npm_install:
+.npm_install.done:
 	npm install
+	touch .npm_install.done
 
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 	sh produce-manifest.sh $(REPO) $(shell cat .rev) latest "aarch64 armv7l x86_64" > .build.manifest-latest.yaml
