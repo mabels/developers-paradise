@@ -6,10 +6,12 @@
   "scripts": {
     "latest": "node latest_versions.js",
     "query": "node query_versions.js",
-    "clean_repo": "node clean-public-repo.js"
+    "clean_repo": "node clean-public-repo.js",
+    "git_version": "node git_latest_versions.js"
   },
   "dependencies": {
     "@aws-sdk/client-ecr-public": "^3.18.0",
+    "nodegit": "^0.27.0",
     "semver": "^7.3.4"
   },
   "devDependencies": {},

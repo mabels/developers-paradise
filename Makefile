@@ -47,7 +47,7 @@ prepare.tar: .versioner .rev
 	rm -f .build_versions
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
-	@echo GO_VERSION=1.16.4 >> .build_versions
+	npm run --silent git_version https://go.googlesource.com/go >> .build_versions
 	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions
 
