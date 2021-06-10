@@ -5,9 +5,11 @@
   "main": "aws_versions.js",
   "scripts": {
     "latest": "node latest_versions.js",
-    "query": "node query_versions.js"
+    "query": "node query_versions.js",
+    "clean_repo": "node clean-public-repo.js"
   },
   "dependencies": {
+    "@aws-sdk/client-ecr-public": "^3.18.0",
     "semver": "^7.3.4"
   },
   "devDependencies": {},

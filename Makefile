@@ -29,12 +29,12 @@ prepare.tar: .versioner .rev
 	   done \
 	done)
 	touch .pushed.DUMMY .built.DUMMY
-	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* 
+	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.*
 
 .rev: .versioner
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
 
-.versioner: .build_versions 
+.versioner: .build_versions
 	(echo "#!/bin/sh"; echo -n "sed "; for i in $(shell node merge_env.js .build_versions); \
 	do \
 		echo -n "-e s/@@`echo $${i} | cut -d= -f1`@@/`echo $${i} | cut -d= -f2`/g ";\
@@ -43,129 +43,61 @@ prepare.tar: .versioner .rev
 	#cat .versioner
 
 
-.build_versions: Makefile query_versions.js latest_versions.js 
+.build_versions: Makefile npm_install query_versions.js latest_versions.js
 	rm -f .build_versions
-	npm install
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
 	@echo GO_VERSION=1.16.4 >> .build_versions
 	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions
 
+clean_aws: npm_install
+	npm run clean_repo
+
+npm_install:
+	npm install
+
 manifest: .rev manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
-	echo "image: $(REPO)/developers-paradise:latest" >> .build.manifest-latest.yaml
-	echo "manifests:" >> .build.manifest-latest.yaml
-	echo "  -" >> .build.manifest-latest.yaml
-	echo "    image: $(REPO)/developers-paradise:codeserver-aarch64-$(shell cat .rev)" >> .build.manifest-latest.yaml
-	echo "    platform:" >> .build.manifest-latest.yaml
-	echo "      architecture: arm64" >> .build.manifest-latest.yaml
-	echo "      os: linux" >> .build.manifest-latest.yaml
-	echo "  -" >> .build.manifest-latest.yaml
-	echo "    image: $(REPO)/developers-paradise:ghrunner-armv7l-$(shell cat .rev)" >> .build.manifest-latest.yaml
-	echo "    platform:" >> .build.manifest-latest.yaml
-	echo "      architecture: arm" >> .build.manifest-latest.yaml
-	echo "      os: linux" >> .build.manifest-latest.yaml
-	echo "  -" >> .build.manifest-latest.yaml
-	echo "    image: $(REPO)/developers-paradise:codeserver-x86_64-$(shell cat .rev)" >> .build.manifest-latest.yaml
-	echo "    platform:" >> .build.manifest-latest.yaml
-	echo "      architecture: amd64" >> .build.manifest-latest.yaml
-	echo "      os: linux" >> .build.manifest-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) latest "aarch64 armv7l x86_64" > .build.manifest-latest.yaml
 	manifest-tool push from-spec .build.manifest-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) $(shell cat .rev) "aarch64 armv7l x86_64" > .build.manifest-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-$(shell cat .rev).yaml
 
 manifest-base: .rev
-	echo "image: $(REPO)/developers-paradise:base-latest" >> .build.manifest-base.yaml
-	echo "manifests:" >> .build.manifest-base.yaml
-	echo "  -" >> .build.manifest-base.yaml
-	echo "    image: $(REPO)/developers-paradise:base-aarch64-$(shell cat .rev)" >> .build.manifest-base.yaml
-	echo "    platform:" >> .build.manifest-base.yaml
-	echo "      architecture: arm64" >> .build.manifest-base.yaml
-	echo "      os: linux" >> .build.manifest-base.yaml
-	echo "  -" >> .build.manifest-base.yaml
-	echo "    image: $(REPO)/developers-paradise:base-armv7l-$(shell cat .rev)" >> .build.manifest-base.yaml
-	echo "    platform:" >> .build.manifest-base.yaml
-	echo "      architecture: arm" >> .build.manifest-base.yaml
-	echo "      os: linux" >> .build.manifest-base.yaml
-	echo "  -" >> .build.manifest-base.yaml
-	echo "    image: $(REPO)/developers-paradise:base-x86_64-$(shell cat .rev)" >> .build.manifest-base.yaml
-	echo "    platform:" >> .build.manifest-base.yaml
-	echo "      architecture: amd64" >> .build.manifest-base.yaml
-	echo "      os: linux" >> .build.manifest-base.yaml
-	manifest-tool push from-spec .build.manifest-base.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) base-latest "aarch64 armv7l x86_64" > .build.manifest-base-latest.yaml
+	manifest-tool push from-spec .build.manifest-base-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) base-$(shell cat .rev) "aarch64 armv7l x86_64" > .build.manifest-base-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-base-$(shell cat .rev).yaml
 
 manifest-extend: .rev
-	echo "image: $(REPO)/developers-paradise:extend-latest" >> .build.manifest-extend.yaml
-	echo "manifests:" >> .build.manifest-extend.yaml
-	echo "  -" >> .build.manifest-extend.yaml
-	echo "    image: $(REPO)/developers-paradise:extend-aarch64-$(shell cat .rev)" >> .build.manifest-extend.yaml
-	echo "    platform:" >> .build.manifest-extend.yaml
-	echo "      architecture: arm64" >> .build.manifest-extend.yaml
-	echo "      os: linux" >> .build.manifest-extend.yaml
-	echo "  -" >> .build.manifest-extend.yaml
-	echo "    image: $(REPO)/developers-paradise:extend-armv7l-$(shell cat .rev)" >> .build.manifest-extend.yaml
-	echo "    platform:" >> .build.manifest-extend.yaml
-	echo "      architecture: arm" >> .build.manifest-extend.yaml
-	echo "      os: linux" >> .build.manifest-extend.yaml
-	echo "  -" >> .build.manifest-extend.yaml
-	echo "    image: $(REPO)/developers-paradise:extend-x86_64-$(shell cat .rev)" >> .build.manifest-extend.yaml
-	echo "    platform:" >> .build.manifest-extend.yaml
-	echo "      architecture: amd64" >> .build.manifest-extend.yaml
-	echo "      os: linux" >> .build.manifest-extend.yaml
-	manifest-tool push from-spec .build.manifest-extend.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) extend-latest "aarch64 armv7l x86_64" > .build.manifest-extend-latest.yaml
+	manifest-tool push from-spec .build.manifest-extend-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) extend-$(shell cat .rev) "aarch64 armv7l x86_64" > .build.manifest-extend-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-extend-$(shell cat .rev).yaml
 
 manifest-ghrunner: .rev
-	echo "image: $(REPO)/developers-paradise:ghrunner-latest" >> .build.manifest-ghrunner.yaml
-	echo "manifests:" >> .build.manifest-ghrunner.yaml
-	echo "  -" >> .build.manifest-ghrunner.yaml
-	echo "    image: $(REPO)/developers-paradise:ghrunner-aarch64-$(shell cat .rev)" >> .build.manifest-ghrunner.yaml
-	echo "    platform:" >> .build.manifest-ghrunner.yaml
-	echo "      architecture: arm64" >> .build.manifest-ghrunner.yaml
-	echo "      os: linux" >> .build.manifest-ghrunner.yaml
-	echo "  -" >> .build.manifest-ghrunner.yaml
-	echo "    image: $(REPO)/developers-paradise:ghrunner-armv7l-$(shell cat .rev)" >> .build.manifest-ghrunner.yaml
-	echo "    platform:" >> .build.manifest-ghrunner.yaml
-	echo "      architecture: arm" >> .build.manifest-ghrunner.yaml
-	echo "      os: linux" >> .build.manifest-ghrunner.yaml
-	echo "  -" >> .build.manifest-ghrunner.yaml
-	echo "    image: $(REPO)/developers-paradise:ghrunner-x86_64-$(shell cat .rev)" >> .build.manifest-ghrunner.yaml
-	echo "    platform:" >> .build.manifest-ghrunner.yaml
-	echo "      architecture: amd64" >> .build.manifest-ghrunner.yaml
-	echo "      os: linux" >> .build.manifest-ghrunner.yaml
-	manifest-tool push from-spec .build.manifest-ghrunner.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) ghrunner-latest "aarch64 armv7l x86_64" > .build.manifest-ghrunner-latest.yaml
+	manifest-tool push from-spec .build.manifest-ghrunner-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) ghrunner-$(shell cat .rev) "aarch64 armv7l x86_64" > .build.manifest-ghrunner-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-ghrunner-$(shell cat .rev).yaml
 
 manifest-codeserver: .rev
-	echo "image: $(REPO)/developers-paradise:codeserver-latest" >> .build.manifest-codeserver.yaml
-	echo "manifests:" >> .build.manifest-codeserver.yaml
-	echo "  -" >> .build.manifest-codeserver.yaml
-	echo "    image: $(REPO)/developers-paradise:codeserver-aarch64-$(shell cat .rev)" >> .build.manifest-codeserver.yaml
-	echo "    platform:" >> .build.manifest-codeserver.yaml
-	echo "      architecture: arm64" >> .build.manifest-codeserver.yaml
-	echo "      os: linux" >> .build.manifest-codeserver.yaml
-	echo "  -" >> .build.manifest-codeserver.yaml
-	echo "    image: $(REPO)/developers-paradise:codeserver-x86_64-$(shell cat .rev)" >> .build.manifest-codeserver.yaml
-	echo "    platform:" >> .build.manifest-codeserver.yaml
-	echo "      architecture: amd64" >> .build.manifest-codeserver.yaml
-	echo "      os: linux" >> .build.manifest-codeserver.yaml
-	manifest-tool push from-spec .build.manifest-codeserver.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) codeserver-latest "aarch64 x86_64" > .build.manifest-codeserver-latest.yaml
+	manifest-tool push from-spec .build.manifest-codeserver-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) codeserver-$(shell cat .rev) "aarch64 x86_64" > .build.manifest-codeserver-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-codeserver-$(shell cat .rev).yaml
 
 manifest-codeserver-swift: .rev
-	echo "image: $(REPO)/developers-paradise:base-latest" >> .build.manifest-base.yaml
-	echo "manifests:" >> .build.manifest-base.yaml
-	echo "  -" >> .build.manifest-base.yaml
-	echo "    image: $(REPO)/developers-paradise:base-x86_64-$(shell cat .rev)" >> .build.manifest-base.yaml
-	echo "    platform:" >> .build.manifest-base.yaml
-	echo "      architecture: amd64" >> .build.manifest-base.yaml
-	echo "      os: linux" >> .build.manifest-base.yaml
-	manifest-tool push from-spec .build.manifest-base.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) codeserver-swift-latest "x86_64" > .build.manifest-codeserver-swift-latest.yaml
+	manifest-tool push from-spec .build.manifest-codeserver-swift-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) codeserver-swift-$(shell cat .rev) "x86_64" > .build.manifest-codeserver-swift-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-codeserver-swift-$(shell cat .rev).yaml
 
 manifest-ghrunner-swift: .rev
-	echo "image: $(REPO)/developers-paradise:base-latest" >> .build.manifest-base.yaml
-	echo "manifests:" >> .build.manifest-base.yaml
-	echo "  -" >> .build.manifest-base.yaml
-	echo "    image: $(REPO)/developers-paradise:base-x86_64-$(shell cat .rev)" >> .build.manifest-base.yaml
-	echo "    platform:" >> .build.manifest-base.yaml
-	echo "      architecture: amd64" >> .build.manifest-base.yaml
-	echo "      os: linux" >> .build.manifest-base.yaml
-	manifest-tool push from-spec .build.manifest-base.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) ghrunner-swift-latest "x86_64" > .build.manifest-ghrunner-swift-latest.yaml
+	manifest-tool push from-spec .build.manifest-codeserver-swift-latest.yaml
+	sh produce-manifest.sh $(REPO) $(shell cat .rev) ghrunner-swift-$(shell cat .rev) "x86_64" > .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
 
 tag: tag.codeserver.$(ARCH) .rev
 	$(DOCKER) tag developers-paradise:base-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:base-$(ARCH)-$(shell cat .rev)"
