@@ -51,7 +51,7 @@ prepare.tar: .versioner .rev
 	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions
 
-clean_aws: npm_install
+clean_repo: npm_install
 	npm run clean_repo
 
 npm_install:
