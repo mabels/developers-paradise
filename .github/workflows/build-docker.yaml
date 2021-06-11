@@ -29,7 +29,8 @@ jobs:
           path: prepare.tar
 
   update-manifest:
-    runs-on: ['self-hosted', 'Linux']
+    # X64 we need for nodegit
+    runs-on: ['self-hosted', 'Linux', 'X64']
     name: Update-Manifest
     needs: docker-build
     steps:

@@ -29,7 +29,7 @@ prepare.tar: .versioner .rev
 	   done \
 	done)
 	touch .pushed.DUMMY .built.DUMMY
-	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done
+	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules
 
 .rev: .versioner
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
@@ -58,12 +58,9 @@ clean_repo: .npm_install.done
 	npm install
 	touch .npm_install.done
 
---repo repo --rev rev --arch meno --arch x86_64:bla --tag latest
-
-
 manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 
-manifest-latest:
+manifest-latest: .rev .npm_install.done
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag latest --tag codeserver \
 	       	--arch aarch64 \
 		--arch armv7l:ghrunner \
