@@ -47,7 +47,7 @@ RUN if [ $(uname -p) = "x86_64" ]; then \
     # - Download the GPG keys, Swift toolchain, and toolchain signature, and verify.
     && export GNUPGHOME="$(mktemp -d)" \
     && curl -fsSL "$SWIFT_BIN_URL" -o swift.tar.gz "$SWIFT_SIG_URL" -o swift.tar.gz.sig \
-    && gpg --batch --quiet --keyserver keys.openpgp.org --recv-keys "$SWIFT_SIGNING_KEY" \
+    && curl -f https://swift.org/keys/all-keys.asc | gpg --import - \
     && gpg --batch --verify swift.tar.gz.sig swift.tar.gz \
     # - Unpack the toolchain, set libs permissions, and clean up.
     && tar -xzf swift.tar.gz --directory / --strip-components=1 \
