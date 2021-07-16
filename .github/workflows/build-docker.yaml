@@ -51,7 +51,7 @@ jobs:
           echo $DOCKERHUB | docker login -u fastandfearless --password-stdin
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          make manifest REPO=public.ecr.aws/d3g6c8d4
+          make manifest REPO=public.ecr.aws/d3g6c8d4 ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -59,8 +59,8 @@ jobs:
     strategy:
       matrix:
         include:
-#          - platform: ['self-hosted', 'Linux', 'ARM64']
-#            arch: arm64
+          - platform: ['self-hosted', 'Linux', 'ARM64']
+            arch: arm64
 #          - platform: ['self-hosted', 'Linux', 'ARM']
 #            arch: arm
           - platform: ['self-hosted', 'Linux', 'X64']

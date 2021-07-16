@@ -87,6 +87,11 @@ const config = yargs(hideBin(process.argv))
     type: 'array',
     description: "arch array"
   })
+  .option('archSelect', {
+    type: 'array',
+    default: [],
+    description: "select arch array"
+  })
 .argv;
 
 const arch2docker = {
@@ -95,23 +100,26 @@ const arch2docker = {
 	x86_64: "amd64"
 };
 // console.log(config)
-const manifest = config.arch.map(inArch => {
+const manifests = config.arch.map(inArch => {
 	const splitArch = inArch.split(":");	
 	tag = config.tag;
 	if (splitArch.length != 1) {
 		tag = splitArch.slice(1).join(":");
 	}
 	arch = splitArch[0];
+	return { tag, arch };
+}).filter(i => !config.archSelect.length || config.archSelect.includes(i.arch))
+	.map(arch => {
 	return {
-		image: `${config.repo}/${config.app}:${tag}-${arch}-${config.rev}`,
+		image: `${config.repo}/${config.app}:${arch.tag}-${arch.arch}-${config.rev}`,
 		platform: {
-		  architecture: `${arch2docker[arch] || arch}`
+		  architecture: `${arch2docker[arch.arch] || arch.arch}`
 		}
 	};
 }); 
 const out = { 
 	image: `${config.repo}/developers-paradise:${config.imageTag}`,
-	manifest
+	manifests
 };
 
 fs.writeFileSync(config.out, YAML.stringify(out));
