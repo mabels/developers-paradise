@@ -107,13 +107,15 @@ const manifests = config.arch.map(inArch => {
 		tag = splitArch.slice(1).join(":");
 	}
 	arch = splitArch[0];
-	return { tag, arch };
+	os = "linux";
+	return { tag, arch, os };
 }).filter(i => !config.archSelect.length || config.archSelect.includes(i.arch))
 	.map(arch => {
 	return {
 		image: `${config.repo}/${config.app}:${arch.tag}-${arch.arch}-${config.rev}`,
 		platform: {
-		  architecture: `${arch2docker[arch.arch] || arch.arch}`
+		  architecture: `${arch2docker[arch.arch] || arch.arch}`,
+	          os: arch.os
 		}
 	};
 }); 
