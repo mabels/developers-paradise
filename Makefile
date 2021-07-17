@@ -67,7 +67,7 @@ manifest-latest: .rev .npm_install.done
 		--arch armv7l:ghrunner \
 		--arch x86_64 --out .build.manifest-latest.yaml
 	manifest-tool push from-spec .build.manifest-latest.yaml
-	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag $(shell cat .rev) \
+	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag $(shell cat .rev) --tag codeserver \
 		$(ARCHSELECT) \
 	       	--arch aarch64 \
 		--arch armv7l:ghrunner \
