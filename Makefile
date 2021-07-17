@@ -9,7 +9,7 @@ GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs
 		actions/runner estesp/manifest-tool pulumi/pulumictl pulumi/pulumi containers/skopeo \
 		nvm-sh/nvm cli/cli xo/usql
 
-all: .rev base extend ghrunner codeserver.$(ARCH) tag ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
+all: .rev base extend ghrunner codeserver.$(ARCH) tag # ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
 	@echo REV=$(shell cat .rev)
 
@@ -58,7 +58,8 @@ clean_repo: .npm_install.done
 	npm install
 	touch .npm_install.done
 
-manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
+manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner 
+# manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 
 manifest-latest: .rev .npm_install.done
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag latest --tag codeserver \
@@ -93,8 +94,7 @@ manifest-extend: .rev .npm_install.done
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch armv7l \
-		--arch x86_64 --out .build.manifest-base-$(shell cat .rev).yaml
-		"aarch64 armv7l x86_64" > .build.manifest-extend-latest.yaml
+		--arch x86_64 --out .build.manifest-extend-latest.yaml
 	manifest-tool push from-spec .build.manifest-extend-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag extend-$(shell cat .rev) --tag extend \
 		$(ARCHSELECT) \
@@ -143,7 +143,7 @@ manifest-ghrunner-swift: .rev .npm_install.done
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-swift-latest --tag ghrunner-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-ghrunner-swift-latest.yaml
-	manifest-tool push from-spec .build.manifest-codeserver-swift-latest.yaml
+	manifest-tool push from-spec .build.manifest-ghrunner-swift-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-swift-$(shell cat .rev) --tag ghrunner-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-ghrunner-swift-$(shell cat .rev).yaml

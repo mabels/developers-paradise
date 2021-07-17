@@ -95,9 +95,9 @@ const config = yargs(hideBin(process.argv))
 .argv;
 
 const arch2docker = {
-	aarch64: "arm64",
-	armv7l: "armv7l",
-	x86_64: "amd64"
+	aarch64: { architecture: "arm64", variant: "v8" },
+	armv7l: { architecture: "arm", variant: "v7" },
+	x86_64: { architecture: "amd64" }
 };
 // console.log(config)
 const manifests = config.arch.map(inArch => {
@@ -108,18 +108,22 @@ const manifests = config.arch.map(inArch => {
 	}
 	arch = splitArch[0];
 	os = "linux";
-	return { tag, arch, os };
-}).filter(i => !config.archSelect.length || config.archSelect.includes(i.arch))
-	.map(arch => {
-	return {
-		image: `${config.repo}/${config.app}:${arch.tag}-${arch.arch}-${config.rev}`,
-		platform: {
-		  architecture: `${arch2docker[arch.arch] || arch.arch}`,
-	          os: arch.os
-		}
+	const platform = {
+                  architecture: `${arch2docker[arch] ? arch2docker[arch].architecture : arch}`,
+                  os
 	};
-}); 
-const out = { 
+	if (arch2docker[arch] && arch2docker[arch].variant) {
+                  platform.variant = arch2docker[arch] && arch2docker[arch].variant;
+	}
+	return { tag, arch, platform };
+})
+.filter(i => !config.archSelect.length || config.archSelect.includes(i.arch))
+.map(arch => ({
+		image: `${config.repo}/${config.app}:${arch.tag}-${arch.arch}-${config.rev}`,
+	        platform: arch.platform
+	     })
+);
+const out = {
 	image: `${config.repo}/developers-paradise:${config.imageTag}`,
 	manifests
 };
