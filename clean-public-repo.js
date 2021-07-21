@@ -38,7 +38,7 @@ const CLEAN_OLDER_DAYS = 14;
 	const start = (new Date()).getTime() - (CLEAN_OLDER_DAYS * 24 * 60 * 60 * 1000);
 	let older = all.filter(i => {
 		// keep latest
-		const keep = i.imageTags.some(tag => tag.includes("latest"));
+		const keep = i.imageTags.find(tag => tag.includes("latest"));
 		return (new Date(i.imagePushedAt)).getTime() < start && !keep;
 	});
 	// console.log(older.length, older.map(i => i.imageDigest));

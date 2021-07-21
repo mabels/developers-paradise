@@ -33,6 +33,7 @@ prepare.tar: .versioner .rev
 	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules
 
 .rev: .versioner
+	$(TOUCHSLEEP) /dev/null
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
 
 .versioner: .build_versions
@@ -41,6 +42,7 @@ prepare.tar: .versioner .rev
 		echo -n "-e s/@@`echo $${i} | cut -d= -f1`@@/`echo $${i} | cut -d= -f2`/g ";\
 	done; echo "") > .versioner
 	chmod 755 .versioner
+	$(TOUCHSLEEP) /dev/null
 	#cat .versioner
 
 
@@ -51,6 +53,7 @@ prepare.tar: .versioner .rev
 	npm run --silent git_version https://go.googlesource.com/go >> .build_versions
 	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions
+	$(TOUCHSLEEP) /dev/null
 
 clean_repo: .npm_install.done
 	npm run clean_repo
