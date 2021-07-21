@@ -29,7 +29,7 @@ prepare.tar: .versioner .rev
 	   done \
 	done)
 	touch .pushed.DUMMY .built.DUMMY
-	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules
+	tar cfH prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules
 
 .rev: .versioner
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
