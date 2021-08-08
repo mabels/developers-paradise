@@ -13,12 +13,14 @@ RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
     cd /home/runner/actions-runner && ./bin/installdependencies.sh && \
     apt clean
 
-COPY worker.sh /usr/local/bin/worker.sh
 COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
-RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.sh && \
-    ls -l /usr/local/bin
+
+#COPY worker.sh /usr/local/bin/worker.sh
+#RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.sh && \
+#    ls -l /usr/local/bin
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
 
-CMD /usr/local/bin/worker.sh
+#CMD /usr/local/bin/worker.sh
+CMD /usr/bin/supervisord
