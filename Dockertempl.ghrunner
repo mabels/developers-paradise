@@ -16,11 +16,10 @@ RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
 COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
 
 #COPY worker.sh /usr/local/bin/worker.sh
-#RUN chmod +x /usr/local/bin/worker.sh /home/runner/actions-runner/entry-worker.sh && \
-#    ls -l /usr/local/bin
+RUN chmod +x /home/runner/actions-runner/entry-worker.sh
 
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
 
 #CMD /usr/local/bin/worker.sh
-CMD /usr/bin/supervisord
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
