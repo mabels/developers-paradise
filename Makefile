@@ -15,7 +15,7 @@ all: .rev base extend ghrunner codeserver.$(ARCH) tag # ghrunner-swift.$(ARCH) c
 	@echo REV=$(shell cat .rev)
 
 
-prepare.tar: .versioner .rev
+prepare.tar: .rev
 	(for arch in $(ARCHS); \
 	do \
 	   for image in "$(REPO)/developers-paradise:base-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}-$(shell cat .rev)"; \
@@ -62,10 +62,10 @@ clean_repo: .npm_install.done
 	npm install
 	$(TOUCHSLEEP) .npm_install.done
 
-manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner 
+manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner
 # manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 
-manifest-latest: .rev .npm_install.done
+manifest-latest:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag latest --tag codeserver \
 		$(ARCHSELECT) \
 	       	--arch aarch64 \
@@ -79,7 +79,7 @@ manifest-latest: .rev .npm_install.done
 		--arch x86_64  --out .build.manifest-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-$(shell cat .rev).yaml
 
-manifest-base: .rev .npm_install.done
+manifest-base:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag base-latest --tag base \
 		$(ARCHSELECT) \
 		--arch aarch64 \
@@ -93,7 +93,7 @@ manifest-base: .rev .npm_install.done
 		--arch x86_64 --out .build.manifest-base-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-base-$(shell cat .rev).yaml
 
-manifest-extend: .rev .npm_install.done
+manifest-extend:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag extend-latest --tag extend \
 		$(ARCHSELECT) \
 		--arch aarch64 \
@@ -107,7 +107,7 @@ manifest-extend: .rev .npm_install.done
 		--arch x86_64 --out .build.manifest-extend-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-extend-$(shell cat .rev).yaml
 
-manifest-ghrunner: .rev .npm_install.done
+manifest-ghrunner:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-latest --tag ghrunner \
 		$(ARCHSELECT) \
 		--arch aarch64 \
@@ -121,7 +121,7 @@ manifest-ghrunner: .rev .npm_install.done
 		--arch x86_64 --out .build.manifest-ghrunner-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-ghrunner-$(shell cat .rev).yaml
 
-manifest-codeserver: .rev .npm_install.done
+manifest-codeserver:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-latest --tag codeserver \
 		$(ARCHSELECT) \
 		--arch aarch64 \
@@ -133,7 +133,7 @@ manifest-codeserver: .rev .npm_install.done
 		--arch x86_64 --out .build.manifest-codeserver-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-codeserver-$(shell cat .rev).yaml
 
-manifest-codeserver-swift: .rev .npm_install.done
+manifest-codeserver-swift:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-swift-latest --tag codeserver-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-codeserver-swift-latest.yaml
@@ -143,7 +143,7 @@ manifest-codeserver-swift: .rev .npm_install.done
 		--arch "x86_64" --out .build.manifest-codeserver-swift-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-codeserver-swift-$(shell cat .rev).yaml
 
-manifest-ghrunner-swift: .rev .npm_install.done
+manifest-ghrunner-swift:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-swift-latest --tag ghrunner-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-ghrunner-swift-latest.yaml
@@ -153,7 +153,7 @@ manifest-ghrunner-swift: .rev .npm_install.done
 		--arch "x86_64" --out .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
 
-tag: tag.codeserver.$(ARCH) .rev
+tag: .rev tag.codeserver.$(ARCH)
 	$(DOCKER) tag developers-paradise:base-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:base-$(ARCH)-$(shell cat .rev)"
 	$(DOCKER) tag developers-paradise:extend-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:extend-$(ARCH)-$(shell cat .rev)"
 	$(DOCKER) tag developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev)"
@@ -193,9 +193,9 @@ push.codeserver.x86_64 push.codeserver.aarch64: .pushed.developers-paradise-code
 	$(DOCKER) push "$(REPO)/developers-paradise:codeserver-$(ARCH)-$(REV)"
 	$(TOUCHSLEEP) .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
 
-base: .built.$(ARCH).Dockerfile.base
+base: .rev .built.$(ARCH).Dockerfile.base
 
-.built.$(ARCH).Dockerfile.base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base Dockertempl.base .versioner .rev
+.built.$(ARCH).Dockerfile.base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base Dockertempl.base
 	cat .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base > .build.$(ARCH).Dockerfile.base
 	./.versioner < .build.$(ARCH).Dockerfile.base > .build.$(ARCH).Dockerfile.base.versioned
 	$(DOCKER) build -t developers-paradise:base-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.base.versioned .
@@ -212,7 +212,7 @@ base: .built.$(ARCH).Dockerfile.base
 
 extend: .versioner .built.$(ARCH).Dockerfile.extend
 
-.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco .versioner Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH) .rev .versioner
+.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH)
 	echo "FROM developers-paradise:base-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
@@ -240,7 +240,7 @@ ghrunner-swift.aarch64 ghrunner-swift.armv7l:
 
 ghrunner-swift.x86_64: .built.$(ARCH).Dockerfile.ghrunner-swift
 
-.built.$(ARCH).Dockerfile.ghrunner-swift: .rev
+.built.$(ARCH).Dockerfile.ghrunner-swift:
 	echo "FROM developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ghrunner-swift
 	cat Dockertempl.swift >> .build.$(ARCH).Dockerfile.ghrunner-swift
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner-swift > .build.$(ARCH).Dockerfile.ghrunner-swift.versioned
@@ -253,7 +253,7 @@ codeserver-swift.aarch64 codeserver-swift.armv7l:
 
 codeserver-swift.x86_64: .built.$(ARCH).Dockerfile.codeserver-swift
 
-.built.$(ARCH).Dockerfile.codeserver-swift: .rev
+.built.$(ARCH).Dockerfile.codeserver-swift:
 	echo "FROM developers-paradise:codeserver-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.codeserver-swift
 	cat Dockertempl.swift >> .build.$(ARCH).Dockerfile.codeserver-swift
 	./.versioner < .build.$(ARCH).Dockerfile.codeserver-swift > .build.$(ARCH).Dockerfile.codeserver-swift.versioned
@@ -263,7 +263,7 @@ codeserver-swift.x86_64: .built.$(ARCH).Dockerfile.codeserver-swift
 
 ghrunner: .built.$(ARCH).Dockerfile.ghrunner
 
-.built.$(ARCH).Dockerfile.ghrunner: .rev
+.built.$(ARCH).Dockerfile.ghrunner:
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ghrunner
 	cat Dockertempl.ghrunner >> .build.$(ARCH).Dockerfile.ghrunner
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner > .build.$(ARCH).Dockerfile.ghrunner.versioned
@@ -275,7 +275,7 @@ codeserver.armv7l:
 
 codeserver.x86_64 codeserver.aarch64: .built.$(ARCH).Dockerfile.codeserver
 
-.built.$(ARCH).Dockerfile.codeserver: .rev
+.built.$(ARCH).Dockerfile.codeserver:
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.codeserver
 	cat Dockertempl.codeserver >> .build.$(ARCH).Dockerfile.codeserver
 	./.versioner < .build.$(ARCH).Dockerfile.codeserver > .build.$(ARCH).Dockerfile.codeserver.versioned
