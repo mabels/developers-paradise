@@ -161,7 +161,10 @@ tag: .rev tag.codeserver.$(ARCH)
 tag.codeserver.armv7l:
 	echo "Tag Skip-CodeServer"
 
-tag.codeserver.x86_64 tag.codeserver.aarch64:
+tag.codeserver.x86_64:
+	$(DOCKER) tag developers-paradise:codeserver-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:codeserver-$(ARCH)-$(shell cat .rev)"
+
+tag.codeserver.aarch64:
 	$(DOCKER) tag developers-paradise:codeserver-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:codeserver-$(ARCH)-$(shell cat .rev)"
 
 
@@ -187,7 +190,9 @@ push.base: .pushed.developers-paradise-base-$(ARCH)$(REV) \
 push.codeserver.armv7l:
 	echo "Push Skip-CodeServer"
 
-push.codeserver.x86_64 push.codeserver.aarch64: .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
+push.codeserver.x86_64: .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
+
+push.codeserver.aarch64: .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
 
 .pushed.developers-paradise-codeserver-$(ARCH)$(REV):
 	$(DOCKER) push "$(REPO)/developers-paradise:codeserver-$(ARCH)-$(REV)"
@@ -235,7 +240,10 @@ Dockertempl.oracle.$(ARCH):
 
 Dockertempl.oracle.x86_64:
 
-ghrunner-swift.aarch64 ghrunner-swift.armv7l:
+ghrunner-swift.aarch64:
+	echo "Skip GHRunner Swift"
+
+ghrunner-swift.armv7l:
 	echo "Skip GHRunner Swift"
 
 ghrunner-swift.x86_64: .built.$(ARCH).Dockerfile.ghrunner-swift
@@ -248,7 +256,9 @@ ghrunner-swift.x86_64: .built.$(ARCH).Dockerfile.ghrunner-swift
 	$(DOCKER) tag developers-paradise:ghrunner-swift-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:ghrunner-swift-$(ARCH)-$(shell cat .rev)"
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.ghrunner-swift
 
-codeserver-swift.aarch64 codeserver-swift.armv7l:
+codeserver-swift.aarch64:
+	echo "Skip GHRunner Swift"
+codeserver-swift.armv7l:
 	echo "Skip GHRunner Swift"
 
 codeserver-swift.x86_64: .built.$(ARCH).Dockerfile.codeserver-swift
@@ -273,7 +283,9 @@ ghrunner: .built.$(ARCH).Dockerfile.ghrunner
 codeserver.armv7l:
 	echo "Skip-CodeServer"
 
-codeserver.x86_64 codeserver.aarch64: .built.$(ARCH).Dockerfile.codeserver
+codeserver.x86_64: .built.$(ARCH).Dockerfile.codeserver
+
+codeserver.aarch64: .built.$(ARCH).Dockerfile.codeserver
 
 .built.$(ARCH).Dockerfile.codeserver:
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.codeserver
