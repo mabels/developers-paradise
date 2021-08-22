@@ -18,6 +18,9 @@ COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
 #COPY worker.sh /usr/local/bin/worker.sh
 RUN chmod +x /home/runner/actions-runner/entry-worker.sh
 
+COPY startup-dockerd.sh /etc/supervisor/conf.d/startup-dockerd.sh
+RUN chmod 755 /etc/supervisor/conf.d/startup-dockerd.sh
+
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
 
