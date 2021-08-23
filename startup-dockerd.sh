@@ -1,8 +1,8 @@
 #!/bin/sh
 PATH=/sbin:/usr/sbin:$PATH 
 export PATH
-mount | grep /var/lib/docker | grep type.zfs
 HASZFS=""
+mount | grep /var/lib/docker | grep type.zfs
 if [ $? = 0 ]
 then
 	apt install -y zfsutils-linux
