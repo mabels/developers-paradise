@@ -9,11 +9,11 @@ nvm use lts/fermium
 mkdir -p $HOME/bin
 export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-if [ ! -z "$RUNNER_COUNT" -a $RUNNER_COUNT -gt 1 ] 
+if [ ! -z "$RUNNER_COUNT" -a "0$RUNNER_COUNT" -gt 1 ]
 then
 	for i in `seq 2 1 $RUNNER_COUNT`
 	do
-          RUNNER_NAME=`hostname`-$i RUNNER_WORK_DIRECTORY=_work-$i bash ./start-worker.sh &
+          RUNNER_NAME=`hostname`-$i RUNNER_WORK_DIRECTORY=_work-$i bash /home/runner/actions-runner/start-worker.sh ./run.sh &
 	done
 fi
-exec bash ./start-worker.sh
+exec bash /home/runner/actions-runner/start-worker.sh ./run.sh
