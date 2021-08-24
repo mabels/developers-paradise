@@ -46,7 +46,7 @@ prepare.tar: .rev
 	#cat .versioner
 
 
-.build_versions: Makefile .npm_install.done query_versions.js latest_versions.js
+.build_versions: .npm_install.done
 	rm -f .build_versions
 	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
