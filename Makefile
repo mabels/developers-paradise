@@ -4,7 +4,8 @@ REPO ?= public.ecr.aws/d3g6c8d4
 TOUCHSLEEP ?= sleep 1; touch
 
 REV=$(shell test -f .rev && cat .rev)
-ARCHS = aarch64 armv7l x86_64
+#ARCHS = aarch64 armv7l x86_64
+ARCHS = aarch64 x86_64
 
 GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs/aws-vault cdr/code-server \
 		actions/runner estesp/manifest-tool pulumi/pulumictl pulumi/pulumi containers/skopeo \
