@@ -66,59 +66,60 @@ clean_repo: .npm_install.done
 manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner
 # manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 
+#		--arch armv7l:ghrunner \
+#		--arch armv7l:ghrunner \
+	
 manifest-latest:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag latest --tag codeserver \
 		$(ARCHSELECT) \
 	       	--arch aarch64 \
-		--arch armv7l:ghrunner \
 		--arch x86_64 --out .build.manifest-latest.yaml
 	manifest-tool push from-spec .build.manifest-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag $(shell cat .rev) --tag codeserver \
 		$(ARCHSELECT) \
 	       	--arch aarch64 \
-		--arch armv7l:ghrunner \
 		--arch x86_64  --out .build.manifest-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-$(shell cat .rev).yaml
 
+#		--arch armv7l \
+#		--arch armv7l \
 manifest-base:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag base-latest --tag base \
 		$(ARCHSELECT) \
 		--arch aarch64 \
-		--arch armv7l \
 		--arch x86_64 --out .build.manifest-base-latest.yaml
 	manifest-tool push from-spec .build.manifest-base-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag base-$(shell cat .rev) --tag base \
 		$(ARCHSELECT) \
 		--arch aarch64 \
-		--arch armv7l \
 		--arch x86_64 --out .build.manifest-base-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-base-$(shell cat .rev).yaml
 
+#		--arch armv7l \
+#		--arch armv7l \
 manifest-extend:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag extend-latest --tag extend \
 		$(ARCHSELECT) \
 		--arch aarch64 \
-		--arch armv7l \
 		--arch x86_64 --out .build.manifest-extend-latest.yaml
 	manifest-tool push from-spec .build.manifest-extend-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag extend-$(shell cat .rev) --tag extend \
 		$(ARCHSELECT) \
 		--arch aarch64 \
-		--arch armv7l \
 		--arch x86_64 --out .build.manifest-extend-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-extend-$(shell cat .rev).yaml
 
+#		--arch armv7l \
+#		--arch armv7l \
 manifest-ghrunner:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-latest --tag ghrunner \
 		$(ARCHSELECT) \
 		--arch aarch64 \
-		--arch armv7l \
 		--arch x86_64 --out .build.manifest-ghrunner-latest.yaml
 	manifest-tool push from-spec .build.manifest-ghrunner-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-$(shell cat .rev) --tag ghrunner \
 		$(ARCHSELECT) \
 		--arch aarch64 \
-		--arch armv7l \
 		--arch x86_64 --out .build.manifest-ghrunner-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-ghrunner-$(shell cat .rev).yaml
 
