@@ -62,8 +62,8 @@ jobs:
         include:
           - platform: ['self-hosted', 'Linux', 'ARM64']
             arch: arm64
-          - platform: ['self-hosted', 'Linux', 'ARM']
-            arch: arm
+#         - platform: ['self-hosted', 'Linux', 'ARM']
+#           arch: arm
           - platform: ['self-hosted', 'Linux', 'X64']
             arch: amd64
 

@@ -1,4 +1,4 @@
-ENV NODE_VERSION=lts/fermium
+ENV NODE_VERSION=lts/gallium
 
 RUN NVMVERSION=@@NVM_SH_NVM_VERSION@@ && export NVM_DIR="/usr/local/nvm" && \
     mkdir -p $NVM_DIR && \
