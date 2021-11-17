@@ -21,7 +21,7 @@ jobs:
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           make prepare.tar APIUSER=${APIUSER}
           make clean_repo
-          find . -ls | grep -v node_modules
+          # find . -ls | grep -v node_modules
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1

@@ -9,9 +9,8 @@ version: 0.2
 phases:
   install:
     commands:
-      - echo Entered the install phase...
-      - apt-get update -y
-      - apt-get upgrade -y
-    finally:
-      - echo This always runs even if the update or install command fails 
+      - make all REPO=public.ecr.aws/d3g6c8d4
+
+#   finally:
+#     - echo This always runs even if the update or install command fails 
 
