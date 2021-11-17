@@ -1,14 +1,19 @@
 version: 0.2
 
-#env:
+env:
   #variables:
   #  JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-amd64"
-  #parameter-store:
-  #  LOGIN_PASSWORD: /CodeBuild/dockerLoginPassword
+  secrets-manager:
+    NECKLESS_PRIVKEY: "arn:aws:secretsmanager:eu-central-1:167250265666:secret:developer-paradise/neckless/privkey-BxWSH6"
+#  parameter-store:
 
 phases:
   install:
     commands:
+      - curl -Lo ./neckless https://github.com/mabels/neckless/releases/download/v0.1.7/default.neckless-linux-amd64
+      - chmod 755 ./neckless
+      - eval $(./neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+      - env
       - make all REPO=public.ecr.aws/d3g6c8d4
 
 #   finally:
