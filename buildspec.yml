@@ -16,15 +16,3 @@ phases:
       - env
       - make all REPO=public.ecr.aws/d3g6c8d4
 
-#   finally:
-#     - echo This always runs even if the update or install command fails 
-
-arn:aws:sts::167250265666:assumed-role/codebuild-developer-paradise-service-role/AWSCodeBuild-8ea017c3-bebf-42dd-b9bd-19d5aba28d2c
-arn:aws:iam::167250265666:role/service-role/codebuild-developer-paradise-service-role
-  {
-    "Version":"2012-10-17","Statement":{
-      "Effect":"Allow",
-      "Principal":{"arn:aws:iam::167250265666:role/service-role/codebuild-developer-paradise-service-role"},
-      "Action":["secretsmanager:GetSecret","secretsmanager:GetSecretValue"],"Resource":"*"}}"
-}
-
