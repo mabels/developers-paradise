@@ -1,0 +1,17 @@
+
+RUN VERSION=@@ACTIONS_RUNNER_VERSION@@ && \
+    git clone https://github.com/aws/amazon-ssm-agent.git && \
+    cd amazon-ssm-agent && \
+    make build-arm64 && \
+    cp bin/linux_arm64/* /usr/local/bin 
+
+COPY startup-ssm.sh /etc/supervisor/conf.d/startup-ssm.sh
+RUN chmod 755 /etc/supervisor/conf.d/startup-ssm.sh
+
+COPY startup-dockerd.sh /etc/supervisor/conf.d/startup-dockerd.sh
+RUN chmod 755 /etc/supervisor/conf.d/startup-dockerd.sh
+
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
+
+CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf

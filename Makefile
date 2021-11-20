@@ -10,7 +10,7 @@ GITHUB_VERSIONS=helm/helm roboll/helmfile mabels/neckless derailed/k9s 99designs
 		actions/runner estesp/manifest-tool pulumi/pulumictl pulumi/pulumi containers/skopeo \
 		nvm-sh/nvm cli/cli xo/usql
 
-all: .rev base extend ghrunner codeserver.$(ARCH) tag # ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
+all: .rev base extend ghrunner ssm codeserver.$(ARCH) tag # ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
 	@echo REV=$(shell cat .rev)
 
@@ -18,7 +18,7 @@ all: .rev base extend ghrunner codeserver.$(ARCH) tag # ghrunner-swift.$(ARCH) c
 prepare.tar: .rev
 	(for arch in $(ARCHS); \
 	do \
-	   for image in "$(REPO)/developers-paradise:base-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}-$(shell cat .rev)"; \
+	   for image in "$(REPO)/developers-paradise:base-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:extend-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:ghrunner-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:ssm-$${arch}-$(shell cat .rev)" "$(REPO)/developers-paradise:codeserver-$${arch}-$(shell cat .rev)"; \
 	   do \
 		if DOCKER_CLI_EXPERIMENTAL=enabled docker manifest inspect $$image > /dev/null; \
 		then \
@@ -62,7 +62,7 @@ clean_repo: .npm_install.done
 	npm install
 	$(TOUCHSLEEP) .npm_install.done
 
-manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-ghrunner
+manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend 
 # manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
 
 manifest-latest:
@@ -121,6 +121,18 @@ manifest-ghrunner:
 		--arch x86_64 --out .build.manifest-ghrunner-$(shell cat .rev).yaml
 	manifest-tool push from-spec .build.manifest-ghrunner-$(shell cat .rev).yaml
 
+manifest-ssm:
+	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ssm-latest --tag ssm \
+		$(ARCHSELECT) \
+		--arch aarch64 \
+		--arch x86_64 --out .build.manifest-ssm-latest.yaml
+	manifest-tool push from-spec .build.manifest-ssm-latest.yaml
+	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ssm-$(shell cat .rev) --tag ssm \
+		$(ARCHSELECT) \
+		--arch aarch64 \
+		--arch x86_64 --out .build.manifest-ssm-$(shell cat .rev).yaml
+	manifest-tool push from-spec .build.manifest-ssm-$(shell cat .rev).yaml
+
 manifest-codeserver:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-latest --tag codeserver \
 		$(ARCHSELECT) \
@@ -157,6 +169,7 @@ tag: .rev tag.codeserver.$(ARCH)
 	$(DOCKER) tag developers-paradise:base-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:base-$(ARCH)-$(shell cat .rev)"
 	$(DOCKER) tag developers-paradise:extend-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:extend-$(ARCH)-$(shell cat .rev)"
 	$(DOCKER) tag developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev)"
+	$(DOCKER) tag developers-paradise:ssm-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:ssm-$(ARCH)-$(shell cat .rev)"
 
 tag.codeserver.armv7l:
 	echo "Tag Skip-CodeServer"
@@ -186,6 +199,10 @@ push.base: .pushed.developers-paradise-base-$(ARCH)$(REV) \
 .pushed.developers-paradise-ghrunner-$(ARCH)$(REV):
 	$(DOCKER) push "$(REPO)/developers-paradise:ghrunner-$(ARCH)-$(REV)"
 	$(TOUCHSLEEP) .pushed.developers-paradise-ghrunner-$(ARCH)$(REV)
+
+.pushed.developers-paradise-ssm-$(ARCH)$(REV):
+	$(DOCKER) push "$(REPO)/developers-paradise:ssm-$(ARCH)-$(REV)"
+	$(TOUCHSLEEP) .pushed.developers-paradise-ssm-$(ARCH)$(REV)
 
 push.codeserver.armv7l:
 	echo "Push Skip-CodeServer"
@@ -279,6 +296,15 @@ ghrunner: .built.$(ARCH).Dockerfile.ghrunner
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner > .build.$(ARCH).Dockerfile.ghrunner.versioned
 	$(DOCKER) build -t developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ghrunner.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.ghrunner
+
+ssm: .built.$(ARCH).Dockerfile.ssm
+
+.built.$(ARCH).Dockerfile.ssm:
+	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ssm
+	cat Dockertempl.ssm >> .build.$(ARCH).Dockerfile.ssm
+	./.versioner < .build.$(ARCH).Dockerfile.ssm > .build.$(ARCH).Dockerfile.ssm.versioned
+	$(DOCKER) build -t developers-paradise:ssm-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ssm.versioned .
+	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.ssm
 
 codeserver.armv7l:
 	echo "Skip-CodeServer"
