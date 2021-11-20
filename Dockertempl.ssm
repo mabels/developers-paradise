@@ -2,8 +2,13 @@
 RUN VERSION=@@ACTIONS_RUNNER_VERSION@@ && \
     git clone https://github.com/aws/amazon-ssm-agent.git && \
     cd amazon-ssm-agent && \
-    make build-arm64 && \
-    cp bin/linux_arm64/* /usr/local/bin 
+    if [ $(uname -m) = "x86_64" ]; then \
+       make build-linux \
+       cp bin/linux_amd64/* /usr/local/bin  \
+    elif [ $(uname -m) = "aarch64" ]; then \
+       make build-arm64 && \
+       cp bin/linux_arm64/* /usr/local/bin  \
+    fi
 
 COPY startup-ssm.sh /etc/supervisor/conf.d/startup-ssm.sh
 RUN chmod 755 /etc/supervisor/conf.d/startup-ssm.sh
