@@ -1,6 +1,9 @@
 FROM ubuntu:impish
 
-RUN sed -i.orig 's/archive.ubuntu.com/de.archive.ubuntu.com/g' /etc/apt/sources.list && \
+ENV UBUNTU=eu-central-1a.clouds.ports.ubuntu.com/ubuntu-ports
+
+RUN sed -i.orig "s|archive.ubuntu.com|${UBUNTU}|g" /etc/apt/sources.list && \
+    sed -i.orig "s|ports.ubuntu.com|${UBUNTU}|g" /etc/apt/sources.list && \
   apt update && \
   DEBIAN_FRONTEND=noninteractive apt upgrade -y && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \

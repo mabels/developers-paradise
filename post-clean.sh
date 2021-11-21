@@ -1,3 +1,4 @@
+echo "PostClean: "$@
 rm -rf \
 	/root/.cache/go-build \
 	/root/.cache/pip \

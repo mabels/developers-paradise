@@ -13,7 +13,7 @@ RUN git clone https://github.com/nodenv/nodenv.git /usr/local/nodenv && \
     eval "$(nodenv init -)" && \
     nodenv install $NODE_VERSION && \
     nodenv global $NODE_VERSION && \
-    npm install yarn typescript -g
+    npm install yarn typescript -g && \
     bash /post-clean.sh 
 
 
