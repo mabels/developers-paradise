@@ -10,7 +10,12 @@ env:
 phases:
   install:
     commands:
+      - mkdir -p /var/lib/containers/storage
+      - rsync -vaxH /var/lib/containers/storage . 
+      - rm -rf /var/lib/containers/storage/
+      - mount --bind storage /var/lib/containers/storage 
       - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
       - make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
+      - aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
       - make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
 
