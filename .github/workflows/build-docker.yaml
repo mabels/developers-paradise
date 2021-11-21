@@ -19,8 +19,8 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          make prepare.tar APIUSER=${APIUSER}
-          make clean_repo
+          make prepare.tar APIUSER=${APIUSER} 
+          make clean_repo 
           # find . -ls | grep -v node_modules
 
       - name: Upload prepare.tar
@@ -51,6 +51,7 @@ jobs:
           export DOCKER_CONFIG=$HOME/.docker
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
            ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
 
@@ -85,9 +86,9 @@ jobs:
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          make all REPO=public.ecr.aws/d3g6c8d4
-          make push REPO=public.ecr.aws/d3g6c8d4
+          aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
+          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
+          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
 
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4

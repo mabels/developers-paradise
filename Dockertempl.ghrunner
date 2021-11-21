@@ -1,5 +1,6 @@
 
-RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
+RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root runner && \
+    cat /etc/passwd && \
     VERSION=@@ACTIONS_RUNNER_VERSION@@ && \
     V=$(echo $VERSION | sed 's/^v//') && \
     echo "runner    ALL=(ALL) NOPASSWD:ALL" > /etc/sudoers.d/runner && \
