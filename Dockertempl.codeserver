@@ -9,7 +9,7 @@ RUN VERSION=@@CDR_CODE_SERVER_VERSION@@ && \
       wget https://github.com/cdr/code-server/releases/download/$VERSION/code-server_${V}_arm64.deb && \
       dpkg -i code-server_${V}_arm64.deb && \
       rm -f code-server_${V}_arm64.deb; \
-    fi
-    apt clean
+    fi ; \
+    apt clean && \
     bash /post-clean.sh
 
