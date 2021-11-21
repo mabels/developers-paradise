@@ -16,7 +16,7 @@ RUN chmod 755 /etc/supervisor/conf.d/startup-ssm.sh
 COPY startup-dockerd.sh /etc/supervisor/conf.d/startup-dockerd.sh
 RUN chmod 755 /etc/supervisor/conf.d/startup-dockerd.sh
 
-COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
+COPY supervisord-ssh.conf /etc/supervisor/conf.d/supervisord.conf
 RUN chmod 644 /etc/supervisor/conf.d/supervisord.conf
 
 CMD /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
