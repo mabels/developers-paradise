@@ -10,9 +10,10 @@ env:
 phases:
   install:
     commands:
-      - curl -Lo ./neckless https://github.com/mabels/neckless/releases/download/v0.1.7/default.neckless-linux-amd64
-      - chmod 755 ./neckless
-      - eval $(./neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+      - export NVM_DIR="/usr/local/nvm"
+      - . "$NVM_DIR/nvm.sh"
+      - nvm use lts/gallium
+      - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
       - env
       - make all REPO=public.ecr.aws/d3g6c8d4
 
