@@ -11,7 +11,7 @@ phases:
   install:
     commands:
       - env
-      - bash -c 'export NVM_DIR="/usr/local/nvm" && eval $(cat $NVM_DIR/nvm.sh) ; nvm use lts/gallium'
+      - PATH-/usr/local/nodenv/shims:/usr/local/nodenv/versions/16.13.0/bin:$PATH
       - which node ; which npm
       - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
       - make all REPO=public.ecr.aws/d3g6c8d4

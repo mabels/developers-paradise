@@ -2,7 +2,7 @@ ENV NODE_VERSION=lts/gallium
 
 ENV NODENV_ROOT=/usr/local/nodenv
 
-ENV PATH=${NODENV_ROOT}/shims:${PATH}"
+ENV PATH="${NODENV_ROOT}/shims:${PATH}"
 
 #RUN NVMVERSION=@@NVM_SH_NVM_VERSION@@ && export NVM_DIR="/usr/local/nvm" && \
 #    mkdir -p $NVM_DIR && \
