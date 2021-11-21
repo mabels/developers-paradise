@@ -1,4 +1,4 @@
-FROM ubuntu:focal
+FROM ubuntu:impish
 
 RUN sed -i.orig 's/archive.ubuntu.com/de.archive.ubuntu.com/g' /etc/apt/sources.list && \
   apt update && \
@@ -8,7 +8,7 @@ RUN sed -i.orig 's/archive.ubuntu.com/de.archive.ubuntu.com/g' /etc/apt/sources.
     language-pack-de language-pack-en docker.io rsync ripgrep make dnsutils procps \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip python3-mypy iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux tig lsof htop sysstat \
-    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev && \
+    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev podman && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   yes | unminimize && \
   apt clean 

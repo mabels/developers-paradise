@@ -186,6 +186,7 @@ push: push.base push.codeserver.$(ARCH)
 
 push.base: .pushed.developers-paradise-base-$(ARCH)$(REV) \
 	.pushed.developers-paradise-extend-$(ARCH)$(REV) \
+	.pushed.developers-paradise-ssm-$(ARCH)$(REV) \
 	.pushed.developers-paradise-ghrunner-$(ARCH)$(REV)
 
 .pushed.developers-paradise-base-$(ARCH)$(REV):
