@@ -11,7 +11,7 @@ phases:
   install:
     commands:
       - export NVM_DIR="/usr/local/nvm"
-      - . "$NVM_DIR/nvm.sh"
+      - eval $(cat $NVM_DIR/nvm.sh)
       - nvm use lts/gallium
       - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
       - env
