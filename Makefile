@@ -299,7 +299,7 @@ ghrunner: .built.$(ARCH).Dockerfile.ghrunner
 
 ssm: .built.$(ARCH).Dockerfile.ssm
 
-.built.$(ARCH).Dockerfile.ssm:
+.built.$(ARCH).Dockerfile.ssm: startup-ssm.sh
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ssm
 	cat Dockertempl.ssm >> .build.$(ARCH).Dockerfile.ssm
 	./.versioner < .build.$(ARCH).Dockerfile.ssm > .build.$(ARCH).Dockerfile.ssm.versioned
