@@ -1,6 +1,6 @@
 FROM ubuntu:impish
 
-ENV UBUNTU=eu-central-1a.clouds.ports.ubuntu.com/ubuntu-ports
+ENV UBUNTU=eu-central-1.ec2.archive.ubuntu.com
 
 RUN sed -i.orig "s|archive.ubuntu.com|${UBUNTU}|g" /etc/apt/sources.list && \
     sed -i.orig "s|ports.ubuntu.com|${UBUNTU}|g" /etc/apt/sources.list && \
