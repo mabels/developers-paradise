@@ -10,9 +10,9 @@ env:
 phases:
   install:
     commands:
-      - export NVM_DIR="/usr/local/nvm"
-      - eval $(cat $NVM_DIR/nvm.sh) && nvm use lts/gallium
-      - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
       - env
+      - export NVM_DIR="/usr/local/nvm" && eval $(cat $NVM_DIR/nvm.sh; echo nvm use lts/gallium)
+      - which node ; which npm
+      - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
       - make all REPO=public.ecr.aws/d3g6c8d4
 
