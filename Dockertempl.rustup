@@ -1,5 +1,6 @@
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs > rustup.sh && \
    CARGO_HOME=/usr/local sh rustup.sh -y --profile default && \
-   rm -f rustup.sh
+   rm -f rustup.sh && \
+   bash /post-clean.sh  
 

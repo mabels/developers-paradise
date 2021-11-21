@@ -8,7 +8,7 @@ RUN VERSION=@@PULUMI_PULUMICTL_VERSION@@ && \
     cd pulumictl && \
     go build github.com/pulumi/pulumictl/cmd/pulumictl && \
     cp ./pulumictl /usr/local/bin && \
-    rm -rf $HOME/go
+    bash /post-clean.sh 
 
 RUN VERSION=@@PULUMI_PULUMI_VERSION@@ && \
     git clone https://github.com/pulumi/pulumi.git -b $VERSION --depth 1 && \
@@ -17,5 +17,5 @@ RUN VERSION=@@PULUMI_PULUMI_VERSION@@ && \
     PATH=$HOME/go/bin:$PATH GOPATH=$HOME/go PULUMI_ROOT=$GOPATH make ensure && \
     PATH=$HOME/go/bin:$PATH GOPATH=$HOME/go PULUMI_ROOT=$GOPATH make dist && \
     cp $HOME/go/bin/* /usr/local/bin && \
-    rm -rf ../pulumi $HOME/go
+    cd .. && bash /post-clean.sh pulumi
 

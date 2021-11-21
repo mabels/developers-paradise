@@ -8,4 +8,4 @@ RUN VERSION=@@ESTESP_MANIFEST_TOOL_VERSION@@ && \
     cd  manifest-tool && \
     make binary && \
     cp manifest-tool /usr/local/bin && \
-    rm -rf $HOME/go
+    cd .. && bash /post-clean.sh kr

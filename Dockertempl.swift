@@ -18,7 +18,7 @@ RUN if [ $(uname -p) = "x86_64" ]; then \
     pkg-config \
     tzdata \
     zlib1g-dev \
-    && rm -r /var/lib/apt/lists/*; \
+    && rm -r /var/lib/apt/lists/*; apt clean; \
   fi
 
 # Everything up to here should cache nicely between Swift versions, assuming dev dependencies change little

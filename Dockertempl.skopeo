@@ -9,4 +9,4 @@ RUN VERSION=@@CONTAINERS_SKOPEO_VERSION@@ && \
     cd skopeo && \
     make bin/skopeo && \
     cp bin/skopeo /usr/local/bin && \
-    rm -rf $HOME/go
+    cd .. && bash /post-clean.sh skopeo

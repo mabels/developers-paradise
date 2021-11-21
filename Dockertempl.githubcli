@@ -3,6 +3,5 @@ RUN VERSION=@@CLI_CLI_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/cli/cli && \
     cd cli && make && make install && cd .. && \
-    rm -rf cli && \
-    rm -rf /root/.cache $HOME/go /root/.local
+    bash /post-clean.sh cli
 

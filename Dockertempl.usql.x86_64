@@ -4,8 +4,9 @@ RUN VERSION=@@XO_USQL_VERSION@@ && \
     apt install -y unixodbc-dev libicu-dev libaio1 && \
     git clone -b $VERSION --depth 1 https://github.com/xo/usql && \
     cd usql && go build -tags "odbc,oracle,mysql,postgresql,sqlite3" && cp ./usql /usr/local/bin && cd .. && \
-    rm -rf /root/.cache $HOME/go /root/.local $ORACLE_HOME 
+    bash /post-clean.sh usql $ORACLE_HOME
 
+#    rm -rf /root/.cache $HOME/go /root/.local $ORACLE_HOME 
 #    cd usql && sh all.sh && cp ./usql /usr/local/bin && cd .. && \
 #    cd $HOME && curl -sS -o oci.zip \
 #    	https://download.oracle.com/otn_software/linux/instantclient/19600/instantclient-basic-linux.x64-19.6.0.0.0dbru.zip && \

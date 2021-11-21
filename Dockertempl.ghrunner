@@ -12,6 +12,7 @@ RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root,docker runner && \
     fi; \
     cd /home/runner/actions-runner && ./bin/installdependencies.sh && \
     apt clean
+    bash /post-clean.sh
 
 
 COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh

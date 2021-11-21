@@ -10,4 +10,6 @@ RUN VERSION=@@CDR_CODE_SERVER_VERSION@@ && \
       dpkg -i code-server_${V}_arm64.deb && \
       rm -f code-server_${V}_arm64.deb; \
     fi
+    apt clean
+    bash /post-clean.sh
 

@@ -6,4 +6,4 @@ RUN export GOPATH=$HOME/go && \
     git clone https://github.com/kryptco/kr.git --depth 1 && \
     cd kr && \
     make PREFIX=/usr/local install && \
-    rm -rf $HOME/go
+    cd .. && bash /post-clean.sh kr

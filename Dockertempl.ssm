@@ -9,6 +9,7 @@ RUN VERSION=@@ACTIONS_RUNNER_VERSION@@ && \
        make build-arm64 && \
        cp bin/linux_arm64/* /usr/local/bin ; \
     fi
+    cd .. && bash /post-clean.sh amazon-ssm-agent
 
 COPY startup-ssm.sh /etc/supervisor/conf.d/startup-ssm.sh
 RUN chmod 755 /etc/supervisor/conf.d/startup-ssm.sh
