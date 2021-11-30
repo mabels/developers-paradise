@@ -87,8 +87,8 @@ jobs:
           export DOCKER_CONFIG=$HOME/.docker
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
-          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
-          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
+          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
+          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
 
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4
