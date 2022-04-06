@@ -17,13 +17,14 @@ phases:
       - mount --bind storage /var/lib/containers/storage 
       - echo PATH=$PATH
       - uname -a
-      - curl -Lo /usr/local/bin/neckless https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname-m).tar.gz
+      - curl -Lo /usr/local/bin/neckless https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m).tar.gz
       - chmod 755 /usr/local/bin/neckless
-      - podman ps || echo "no podman"
+      - ls -l /usr/local/bin/neckless
+      - df
       - docker ps || echo "no docker"
-      - neckless || echo "no neckless"
+      - neckless version || echo "no neckless"
       - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-      - make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
-      - aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
-      - make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=podman
+      - make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
+      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+      - make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
 
