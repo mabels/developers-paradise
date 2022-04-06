@@ -72,7 +72,7 @@ RUN VERSION=@@GORELEASER_GORELEASER_VERSION@@ && \
 RUN VERSION=@@MABELS_NECKLESS_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/mabels/neckless.git && \
-    cd neckless && make build && \
+    cd neckless && make neckless && \
     cp neckless /usr/local/bin && cd .. && \
     cd .. && bash /post-clean.sh neckless
 
