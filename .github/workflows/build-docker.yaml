@@ -15,13 +15,21 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-EBL5T20QBLTR
+          aws-region: eu-central-1
+
       - shell: bash
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
+          aws sts get-caller-identity
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          echo ${NECKLESS_PRIVKEY}
           make prepare.tar APIUSER=${APIUSER} 
-          make clean_repo 
+          #make clean_repo 
           # find . -ls | grep -v node_modules
 
       - name: Upload prepare.tar
