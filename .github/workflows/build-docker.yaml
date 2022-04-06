@@ -20,8 +20,10 @@ jobs:
         with:
           role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-EBL5T20QBLTR
           aws-region: eu-central-1
+          role-session-name: GitHubAction
 
       - shell: bash
+        name: prepare
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
