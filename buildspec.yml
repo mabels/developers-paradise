@@ -16,7 +16,7 @@ phases:
       - mkdir -p /var/lib/containers/storage
       - mount --bind storage /var/lib/containers/storage 
       - uname -a
-      - curl -Lo /tmp/neckless.tar.gz https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m | sed 's/aar).tar.gz
+      - curl -Lo /tmp/neckless.tar.gz https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m | sed 's/aarch64/arm64/').tar.gz
       - tar xvzCf /usr/local/bin /tmp/neckless.tar.gz neckless
       - docker ps || echo "no docker"
       - neckless version || echo "no neckless"
