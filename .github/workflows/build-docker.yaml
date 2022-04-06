@@ -19,19 +19,15 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.6.1
+      - uses: mabels/neckless@main
         with:
-          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-Q87GVA3CBOER
-          aws-region: eu-central-1
-          role-session-name: GitHubAction
+          version: v0.1.12
 
       - shell: bash
         name: prepare
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          aws sts get-caller-identity
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           echo ${NECKLESS_PRIVKEY}
           make prepare.tar APIUSER=${APIUSER} 
@@ -53,6 +49,10 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - uses: mabels/neckless@main
+        with:
+          version: v0.1.12
+
       - name: extract prepare.tar
         uses: actions/download-artifact@v1
         with:
@@ -60,17 +60,17 @@ jobs:
 
       - name: Write Manifest
         env:
-          DOCKERHUB: ${{ secrets.DOCKERHUB }}
+          #DOCKERHUB: ${{ secrets.DOCKERHUB }}
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
            ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
 
+          #aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -80,20 +80,25 @@ jobs:
         include:
           - platform: ubuntu-latest
             arch: arm64
-#         - platform: ubuntu-latest
-#           arch: arm
           - platform: ubuntu-latest
             arch: amd64
+#         - platform: ubuntu-latest
+#           arch: arm
 
     name: Build Docker ${{ matrix.arch }}
     steps:
       - uses: actions/checkout@v2
 
-      - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1
+      - uses: mabels/neckless@main
         with:
-          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-EBL5T20QBLTR
+          version: v0.1.12
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1.6.1
+        with:
+          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-Q87GVA3CBOER
           aws-region: eu-central-1
+          role-session-name: GitHubAction
 
       - name: extract prepare.tar
         uses: actions/download-artifact@v1
@@ -102,16 +107,20 @@ jobs:
 
       - name: Build Docker
         env:
-          DOCKERHUB: ${{ secrets.DOCKERHUB }}
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
+          # DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
+          env
           aws sts get-caller-identity
-          tar xf ./prepare.tar/prepare.tar
-          export DOCKER_CONFIG=$HOME/.docker
-          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
-          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
-          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
+          
+          #aws codebuild start-build --project-name developers-paradise-arm
+          #aws sts get-caller-identity
+          #tar xf ./prepare.tar/prepare.tar
+          #export DOCKER_CONFIG=$HOME/.docker
+          #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          #aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
+          #make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
+          #make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
 
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4
