@@ -108,13 +108,14 @@ jobs:
       - name: Build Docker
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
+          MATRIX_ARCH: ${{ matrix.arch }}
           # DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
-          env
+          env | grep MATRIX
           aws sts get-caller-identity
-          
-          #aws codebuild start-build --project-name developers-paradise-arm
-          #aws sts get-caller-identity
+          [ "$MATRIX_ARCH" = "arm64" ] &&  aws codebuild start-build --project-name developers-paradise-arm
+          [ "$MATRIX_ARCH" = "amd64" ] &&  aws codebuild start-build --project-name developers-paradise
+
           #tar xf ./prepare.tar/prepare.tar
           #export DOCKER_CONFIG=$HOME/.docker
           #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
