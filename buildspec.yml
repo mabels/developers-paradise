@@ -4,7 +4,7 @@ env:
   #variables:
   #  JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-amd64"
   secrets-manager:
-    NECKLESS_PRIVKEY: "arn:aws:secretsmanager:eu-central-1:167250265666:secret:developer-paradise/neckless/privkey-BxWSH6"
+    NECKLESS_PRIVKEY: "arn:aws:secretsmanager:eu-central-1:973800055156:secret:developers-paradise/neckless-PzSfaq"
 #  parameter-store:
 
 phases:
