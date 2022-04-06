@@ -18,13 +18,13 @@ phases:
       - uname -a
       - curl -Lo /tmp/neckless.tar.gz https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m | sed 's/aarch64/arm64/').tar.gz
       - tar xvzCf /usr/local/bin /tmp/neckless.tar.gz neckless
-      - env | grep NECK | base64
-      - neckless kv ls
+      - AWS_ACCESS_KEY_ID=$(neckless kv ls AWS_ACCESS_KEY_ID --onlyValue) AWS_SECRET_ACCESS_KEY=$(neckless kv ls AWS_SECRET_ACCESS_KEY --onlyValue) aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
       - APIUSER=$(neckless kv ls APIUSER --onlyValue) make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
       - APIUSER=$(neckless kv ls APIUSER --onlyValue) make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
 
+
+#      - neckless kv ls
+#      - env | grep NECK | base64
 #      - docker ps || echo "no docker"
 #      - neckless version || echo "no neckless"
-# | docker login --username AWS --password-stdin public.ecr.aws
 #      - env | grep AWS
-#      - AWS_ACCESS_KEY_ID=$(neckless kv ls AWS_ACCESS_KEY_ID --onlyValue) AWS_SECRET_ACCESS_KEY=$(neckless kv ls AWS_SECRET_ACCESS_KEY --onlyValue) aws ecr-public get-login-password --region us-east-1
