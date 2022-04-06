@@ -10,7 +10,8 @@ jobs:
   prepare:
     name: Prepare Versions
     # X64 we need for nodegit
-    runs-on: ['self-hosted', 'Linux', 'X64']
+    # runs-on: ['self-hosted', 'Linux', 'X64']
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
@@ -31,7 +32,8 @@ jobs:
 
   update-manifest:
     # X64 we need for nodegit
-    runs-on: ['self-hosted', 'Linux', 'X64']
+    # runs-on: ['self-hosted', 'Linux', 'X64']
+    runs-on: ubuntu-latest
     name: Update-Manifest
     needs: docker-build
     steps:
@@ -62,11 +64,11 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: ['self-hosted', 'Linux', 'ARM64']
+          - platform: ubuntu-latest
             arch: arm64
-#         - platform: ['self-hosted', 'Linux', 'ARM']
+#         - platform: ubuntu-latest
 #           arch: arm
-          - platform: ['self-hosted', 'Linux', 'X64']
+          - platform: ubuntu-latest
             arch: amd64
 
     name: Build Docker ${{ matrix.arch }}
