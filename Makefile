@@ -2,6 +2,7 @@ ARCH ?= $(shell uname -m)
 DOCKER ?= docker
 REPO ?= public.ecr.aws/d3g6c8d4
 TOUCHSLEEP ?= sleep 1; touch
+APIUSER ?= "api rate limiting applies"
 
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
@@ -14,6 +15,8 @@ all: .rev base extend ghrunner ssm codeserver.$(ARCH) tag # ghrunner-swift.$(ARC
 	@echo "ARCH=$(ARCH)"
 	@echo REV=$(shell cat .rev)
 
+env:
+	env
 
 prepare.tar: .rev
 	(for arch in $(ARCHS); \
@@ -48,8 +51,8 @@ prepare.tar: .rev
 
 .build_versions: .npm_install.done
 	rm -f .build_versions
-	APIUSER=$(APIUSER) npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
-	APIUSER=$(APIUSER) npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
+	npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
+	npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
 	npm run --silent git_version https://go.googlesource.com/go >> .build_versions
 	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions
