@@ -62,6 +62,13 @@ RUN VERSION=@@ROBOLL_HELMFILE_VERSION@@ && \
     cp $GOPATH/bin/helmfile /usr/local/bin && \
     cd .. && bash /post-clean.sh helmfile
 
+RUN VERSION=@@GORELEASER_GORELEASER_VERSION@@ && \
+    export GOPATH=$HOME/go && \
+    git clone -b $VERSION --depth 1 https://github.com/goreleaser/goreleaser.git && \
+    cd goreleaser && go build && \
+    cp goreleaser /usr/local/bin && cd .. && \
+    cd .. && bash /post-clean.sh goreleaser
+
 RUN VERSION=@@MABELS_NECKLESS_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/mabels/neckless.git && \
