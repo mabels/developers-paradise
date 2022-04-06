@@ -47,7 +47,7 @@ RUN export HELM_HOME=/usr/local/helm && \
     echo "::set-env name=HELM_PLUGIN_DIR::/usr/local/helm/plugins" >> /usr/local/env.sh && \
     echo "::set-env name=HELM_PLUGINS::/usr/local/helm/plugins" >> /usr/local/env.sh && \
     echo "export HELM_PLUGINS=/usr/local/helm/plugins" >> /usr/local/env.sh && \
-    go get -u golang.org/x/lint/golint && \
+    go install golang.org/x/lint/golint@latest && \
     mkdir -p $GOPATH/src/github.com/databus23/ && \
     cd $GOPATH/src/github.com/databus23/ && \
     git clone --depth 1 https://github.com/databus23/helm-diff.git && \

@@ -15,16 +15,12 @@ phases:
       - rm -rf /var/lib/containers/storage/
       - mkdir -p /var/lib/containers/storage
       - mount --bind storage /var/lib/containers/storage 
-      - echo PATH=$PATH
       - uname -a
       - curl -Lo /usr/local/bin/neckless https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m).tar.gz
-      - chmod 755 /usr/local/bin/neckless
-      - ls -l /usr/local/bin/neckless
-      - df
+      - tar xvzCf /usr/local/bin /tmp/neckless.tar.gz neckless
       - docker ps || echo "no docker"
       - neckless version || echo "no neckless"
-      - eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-      - make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
-      - aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-      - make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
+      - AWS_ACCESS_KEY_ID=$(neckless kv ls AWS_ACCESS_KEY_ID --onlyValue) AWS_SECRET_ACCESS_KEY=$(neckless kv ls AWS_SECRET_ACCESS_KEY --onlyValue) aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+      - APIUSER=$(neckless kv ls APIUSER --onlyValue) make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
+      - APIUSER=$(neckless kv ls APIUSER --onlyValue) make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
 
