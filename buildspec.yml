@@ -20,9 +20,10 @@ phases:
       - tar xvzCf /usr/local/bin /tmp/neckless.tar.gz neckless
       - docker ps || echo "no docker"
       - neckless version || echo "no neckless"
-      - env | grep AWS
-      - AWS_ACCESS_KEY_ID=$(neckless kv ls AWS_ACCESS_KEY_ID --onlyValue) AWS_SECRET_ACCESS_KEY=$(neckless kv ls AWS_SECRET_ACCESS_KEY --onlyValue) aws ecr-public get-login-password --region us-east-1
+      - neckless kv ls
       - APIUSER=$(neckless kv ls APIUSER --onlyValue) make all REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
       - APIUSER=$(neckless kv ls APIUSER --onlyValue) make push REPO=public.ecr.aws/d3g6c8d4 DOCKER=docker
 
 # | docker login --username AWS --password-stdin public.ecr.aws
+#      - env | grep AWS
+#      - AWS_ACCESS_KEY_ID=$(neckless kv ls AWS_ACCESS_KEY_ID --onlyValue) AWS_SECRET_ACCESS_KEY=$(neckless kv ls AWS_SECRET_ACCESS_KEY --onlyValue) aws ecr-public get-login-password --region us-east-1
