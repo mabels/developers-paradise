@@ -72,8 +72,8 @@ RUN VERSION=@@GORELEASER_GORELEASER_VERSION@@ && \
 RUN VERSION=@@MABELS_NECKLESS_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/mabels/neckless.git && \
-    cd neckless && make neckless && \
-    cp neckless /usr/local/bin && cd .. && \
+    cd neckless && make all && \
+    make install INSTALL_DIR=/usr/local/bin && \
     cd .. && bash /post-clean.sh neckless
 
 RUN K9SVERSION=@@DERAILED_K9S_VERSION@@ && \
