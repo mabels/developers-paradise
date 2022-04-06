@@ -4,8 +4,8 @@ env:
   #variables:
   #  JAVA_HOME: "/usr/lib/jvm/java-8-openjdk-amd64"
   secrets-manager:
-    NECKLESS_PRIVKEY: "arn:aws:secretsmanager:eu-central-1:973800055156:secret:developers-paradise/neckless-PzSfaq"
-#  parameter-store:
+    NECKLESS_PRIVKEY: "arn:aws:secretsmanager:eu-central-1:973800055156:secret:developers-paradise/neckless-PzSfaq:developers-paradise"
+#  parakmeter-store:
 
 phases:
   install:
@@ -16,7 +16,7 @@ phases:
       - mkdir -p /var/lib/containers/storage
       - mount --bind storage /var/lib/containers/storage 
       - uname -a
-      - curl -Lo /tmp/neckless.tar.gz https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m).tar.gz
+      - curl -Lo /tmp/neckless.tar.gz https://github.com/mabels/neckless/releases/download/v0.1.9/neckless_0.1.9_Linux_$(uname -m | sed 's/aar).tar.gz
       - tar xvzCf /usr/local/bin /tmp/neckless.tar.gz neckless
       - docker ps || echo "no docker"
       - neckless version || echo "no neckless"
