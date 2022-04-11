@@ -16,6 +16,7 @@ env:
 phases:
   install:
     commands:
+      #docker run -v /run/docker.sock:/run/docker.sock -e GITHUB_ACCESS_TOKEN=xxxxxxxx -e RUNNER_LABELS=foo -e RUNNER_REPOSITORY_URL=https://github.com/mabels/developers-paradise -ti public.ecr.aws/mabels/developers-paradise:ghrunner-x86_64-a88149a-61f02921 su runner -c "cd /home/runner/actions-runner &&  /home/runner/actions-runner/start-worker.sh ./run.sh --ephemeral"
       - mkdir -p /var/lib/containers/storage
       - rsync -vaxH /var/lib/containers/storage . 
       - rm -rf /var/lib/containers/storage/

@@ -4,7 +4,7 @@ on:
   push:
     branches: [ main ]
   schedule:
-    - cron: "3 3 * * *"
+    - cron: "3 3 * * 0"
 
 permissions:
   id-token: write
@@ -111,10 +111,18 @@ jobs:
           MATRIX_ARCH: ${{ matrix.arch }}
           # DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
-          env | grep MATRIX
-          aws sts get-caller-identity
-          [ "$MATRIX_ARCH" = "arm64" ] &&  aws codebuild start-build --project-name developers-paradise-arm
-          [ "$MATRIX_ARCH" = "amd64" ] &&  aws codebuild start-build --project-name developers-paradise
+          #env | grep MATRIX
+          #aws sts get-caller-identity
+          if [ "$MATRIX_ARCH" = "arm64" ]
+          then
+            aws codebuild start-build --project-name developers-paradise-arm 
+          elif [ "$MATRIX_ARCH" = "amd64" ] 
+          then
+            aws codebuild start-build --project-name developers-paradise
+          else
+            echo "Unhandle ARCH $MATRIX_ARCH"
+            exit 23
+          fi
 
           #tar xf ./prepare.tar/prepare.tar
           #export DOCKER_CONFIG=$HOME/.docker
