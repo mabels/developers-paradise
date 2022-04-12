@@ -23,11 +23,20 @@ jobs:
         with:
           version: v0.1.12
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1.6.1
+        with:
+          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-Q87GVA3CBOER
+          aws-region: eu-central-1
+          role-session-name: GitHubAction
+
       - shell: bash
         name: prepare
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
+          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA::12}} x86_64 > ec2.x86_64.worker
+          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA::12}} aarch64 > ec2.aarch64.worker
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           echo ${NECKLESS_PRIVKEY}
           make prepare.tar APIUSER=${APIUSER} 
@@ -53,6 +62,13 @@ jobs:
         with:
           version: v0.1.12
 
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1.6.1
+        with:
+          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-Q87GVA3CBOER
+          aws-region: eu-central-1
+          role-session-name: GitHubAction
+
       - name: extract prepare.tar
         uses: actions/download-artifact@v1
         with:
@@ -69,6 +85,10 @@ jobs:
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
            ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
+          for i in ec2.*.worker
+          do
+            aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
+          done
 
           #aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
 
@@ -78,9 +98,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: ubuntu-latest
+          - platform: ['self-hosted', 'linux', 'ARM64', '${{GITHUB_SHA::12}}']
             arch: arm64
-          - platform: ubuntu-latest
+          - platform: ['self-hosted', 'linux', 'X64', '${{GITHUB_SHA::12}}']
             arch: amd64
 #         - platform: ubuntu-latest
 #           arch: arm

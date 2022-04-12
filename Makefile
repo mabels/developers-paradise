@@ -33,7 +33,7 @@ prepare.tar: .rev
 	   done \
 	done)
 	touch .pushed.DUMMY .built.DUMMY
-	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules
+	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules $(find . -name "ec2.*.worker")
 
 .rev: .versioner
 	$(TOUCHSLEEP) /dev/null
