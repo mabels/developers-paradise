@@ -4,7 +4,8 @@ version: 0.2
 # aws logs tail  developers-paradise --follow
 # aws codebuild batch-get-build  --ids developers-paradise:84668fdd-9e44-4911-b478-852691365680
 # aws cloudformation deploy  --template-file .github/workflows/gh-aws-iam.cloudformation --stack-name gh-iam-developers-paradise  --capabilities CAPABILITY_NAMED_IAM
-# streamname
+# aws iam create-instance-profile --instance-profile-name Neckless
+# aws iam add-role-to-instance-profile --instance-profile-name Neckless --role-name codebuild-developers-paradise-service-role
 
 env:
   #variables:
