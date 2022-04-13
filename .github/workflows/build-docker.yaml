@@ -162,7 +162,6 @@ jobs:
 
       - shell: bash
         name: terminate ec2
-        env:
         run: |
           tar xf ./prepare.tar/prepare.tar
           for i in $(find . -name "ec2.*.worker")
