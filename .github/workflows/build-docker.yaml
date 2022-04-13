@@ -35,13 +35,11 @@ jobs:
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA::12}} x86_64 > ec2.x86_64.worker
-          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA::12}} aarch64 > ec2.aarch64.worker
+          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA}} x86_64 > ec2.x86_64.worker
+          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA}} aarch64 > ec2.aarch64.worker
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           echo ${NECKLESS_PRIVKEY}
           make prepare.tar APIUSER=${APIUSER} 
-          #make clean_repo 
-          # find . -ls | grep -v node_modules
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1
@@ -76,7 +74,6 @@ jobs:
 
       - name: Write Manifest
         env:
-          #DOCKERHUB: ${{ secrets.DOCKERHUB }}
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           tar xf ./prepare.tar/prepare.tar
@@ -84,13 +81,8 @@ jobs:
           eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
-           ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
-          for i in ec2.*.worker
-          do
-            aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
-          done
-
-          #aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
+            ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
+          make clean_repo 
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -98,9 +90,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: ['self-hosted', 'linux', 'ARM64', '${{GITHUB_SHA::12}}']
+          - platform: ['self-hosted', 'linux', 'ARM64', '${{GITHUB_SHA}}']
             arch: arm64
-          - platform: ['self-hosted', 'linux', 'X64', '${{GITHUB_SHA::12}}']
+          - platform: ['self-hosted', 'linux', 'X64', '${{GITHUB_SHA}}']
             arch: amd64
 #         - platform: ubuntu-latest
 #           arch: arm
@@ -131,26 +123,49 @@ jobs:
           MATRIX_ARCH: ${{ matrix.arch }}
           # DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
-          #env | grep MATRIX
-          #aws sts get-caller-identity
-          if [ "$MATRIX_ARCH" = "arm64" ]
-          then
-            aws codebuild start-build --project-name developers-paradise-arm 
-          elif [ "$MATRIX_ARCH" = "amd64" ] 
-          then
-            aws codebuild start-build --project-name developers-paradise
-          else
-            echo "Unhandle ARCH $MATRIX_ARCH"
-            exit 23
-          fi
-
-          #tar xf ./prepare.tar/prepare.tar
-          #export DOCKER_CONFIG=$HOME/.docker
-          #eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          #aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
-          #make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
-          #make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
+          tar xf ./prepare.tar/prepare.tar
+          export DOCKER_CONFIG=$HOME/.docker
+          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+          aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
+          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
+          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
 
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4
 
+      # - name: Kill the EC2's
+      #   if: always()
+      #   uses: actions/upload-artifact@v1
+      #   with:
+      #     name: test-results
+      #     path: app/build
+
+  cleanup:
+    runs-on: ubuntu-latest
+    name: Cleanup
+    if: always()
+    needs: [prepare, update-manifest, docker-build]
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: extract prepare.tar
+        uses: actions/download-artifact@v1
+        with:
+          name: prepare.tar
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1.6.1
+        with:
+          role-to-assume: arn:aws:iam::973800055156:role/gh-iam-developers-paradise-Role-Q87GVA3CBOER
+          aws-region: eu-central-1
+          role-session-name: GitHubAction
+
+      - shell: bash
+        name: terminate ec2
+        env:
+        run: |
+          tar xf ./prepare.tar/prepare.tar
+          for i in $(find . -name "ec2.*.worker")
+          do
+            aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
+          done

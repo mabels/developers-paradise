@@ -77,7 +77,7 @@ snap install docker
 while true
 do
    sleep 5
-   docker run -v /run/docker.sock:/run/docker.sock -e GITHUB_ACCESS_TOKEN=\$GITHUB_ACCESS_TOKEN -e RUNNER_NAME=dp-$ARCH-$REV -e RUNNER_LABELS=$REV -e RUNNER_REPOSITORY_URL=https://github.com/mabels/developers-paradise public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG su runner -c 'cd /home/runner/actions-runner &&  /home/runner/actions-runner/start-worker.sh ./run.sh' && exit 0
+   docker run --privileged -v /run/docker.sock:/run/docker.sock -e GITHUB_ACCESS_TOKEN=\$GITHUB_ACCESS_TOKEN -e RUNNER_NAME=dp-$ARCH-$REV -e RUNNER_LABELS=$REV -e RUNNER_REPOSITORY_URL=https://github.com/mabels/developers-paradise public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG su runner -c 'cd /home/runner/actions-runner &&  /home/runner/actions-runner/start-worker.sh ./run.sh' && exit 0
 done
 EOF
 
