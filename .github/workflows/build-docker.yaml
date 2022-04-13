@@ -35,8 +35,8 @@ jobs:
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA}} x86_64 > ec2.x86_64.worker
-          bash .github/workflows/run-ec2-github-worker.sh ${{GITHUB_SHA}} aarch64 > ec2.aarch64.worker
+          bash .github/workflows/run-ec2-github-worker.sh ${{github.sha}} x86_64 > ec2.x86_64.worker
+          bash .github/workflows/run-ec2-github-worker.sh ${{github.sha}} aarch64 > ec2.aarch64.worker
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           echo ${NECKLESS_PRIVKEY}
           make prepare.tar APIUSER=${APIUSER} 
@@ -90,9 +90,9 @@ jobs:
     strategy:
       matrix:
         include:
-          - platform: ['self-hosted', 'linux', 'ARM64', '${{GITHUB_SHA}}']
+          - platform: ['self-hosted', 'linux', 'ARM64', '${{github.sha}}']
             arch: arm64
-          - platform: ['self-hosted', 'linux', 'X64', '${{GITHUB_SHA}}']
+          - platform: ['self-hosted', 'linux', 'X64', '${{github.sha}}']
             arch: amd64
 #         - platform: ubuntu-latest
 #           arch: arm
