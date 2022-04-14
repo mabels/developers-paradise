@@ -3,6 +3,7 @@ DOCKER ?= docker
 REPO ?= public.ecr.aws/d3g6c8d4
 TOUCHSLEEP ?= sleep 1; touch
 APIUSER ?= "api rate limiting applies"
+MANIFEST_TOOL ?= manifest-tool
 
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
@@ -74,13 +75,13 @@ manifest-latest:
 	       	--arch aarch64 \
 		--arch armv7l:ghrunner \
 		--arch x86_64 --out .build.manifest-latest.yaml
-	manifest-tool push from-spec .build.manifest-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag $(shell cat .rev) --tag codeserver \
 		$(ARCHSELECT) \
 	       	--arch aarch64 \
 		--arch armv7l:ghrunner \
 		--arch x86_64  --out .build.manifest-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-$(shell cat .rev).yaml
 
 manifest-base:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag base-latest --tag base \
@@ -88,13 +89,13 @@ manifest-base:
 		--arch aarch64 \
 		--arch armv7l \
 		--arch x86_64 --out .build.manifest-base-latest.yaml
-	manifest-tool push from-spec .build.manifest-base-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-base-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag base-$(shell cat .rev) --tag base \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch armv7l \
 		--arch x86_64 --out .build.manifest-base-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-base-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-base-$(shell cat .rev).yaml
 
 manifest-extend:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag extend-latest --tag extend \
@@ -102,13 +103,13 @@ manifest-extend:
 		--arch aarch64 \
 		--arch armv7l \
 		--arch x86_64 --out .build.manifest-extend-latest.yaml
-	manifest-tool push from-spec .build.manifest-extend-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-extend-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag extend-$(shell cat .rev) --tag extend \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch armv7l \
 		--arch x86_64 --out .build.manifest-extend-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-extend-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-extend-$(shell cat .rev).yaml
 
 manifest-ghrunner:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-latest --tag ghrunner \
@@ -116,57 +117,57 @@ manifest-ghrunner:
 		--arch aarch64 \
 		--arch armv7l \
 		--arch x86_64 --out .build.manifest-ghrunner-latest.yaml
-	manifest-tool push from-spec .build.manifest-ghrunner-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-ghrunner-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-$(shell cat .rev) --tag ghrunner \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch armv7l \
 		--arch x86_64 --out .build.manifest-ghrunner-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-ghrunner-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-ghrunner-$(shell cat .rev).yaml
 
 manifest-ssm:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ssm-latest --tag ssm \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch x86_64 --out .build.manifest-ssm-latest.yaml
-	manifest-tool push from-spec .build.manifest-ssm-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-ssm-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ssm-$(shell cat .rev) --tag ssm \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch x86_64 --out .build.manifest-ssm-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-ssm-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-ssm-$(shell cat .rev).yaml
 
 manifest-codeserver:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-latest --tag codeserver \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch x86_64 --out .build.manifest-codeserver-latest.yaml
-	manifest-tool push from-spec .build.manifest-codeserver-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-codeserver-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-$(shell cat .rev) --tag codeserver  \
 		$(ARCHSELECT) \
 		--arch aarch64 \
 		--arch x86_64 --out .build.manifest-codeserver-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-codeserver-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-codeserver-$(shell cat .rev).yaml
 
 manifest-codeserver-swift:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-swift-latest --tag codeserver-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-codeserver-swift-latest.yaml
-	manifest-tool push from-spec .build.manifest-codeserver-swift-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-codeserver-swift-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag codeserver-swift-$(shell cat .rev)--tag codeserver-swift  \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-codeserver-swift-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-codeserver-swift-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-codeserver-swift-$(shell cat .rev).yaml
 
 manifest-ghrunner-swift:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-swift-latest --tag ghrunner-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-ghrunner-swift-latest.yaml
-	manifest-tool push from-spec .build.manifest-ghrunner-swift-latest.yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-ghrunner-swift-latest.yaml
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag ghrunner-swift-$(shell cat .rev) --tag ghrunner-swift \
 		$(ARCHSELECT) \
 		--arch "x86_64" --out .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
-	manifest-tool push from-spec .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
+	$(MANIFEST_TOOL) push from-spec .build.manifest-ghrunner-swift-$(shell cat .rev).yaml
 
 tag: .rev tag.codeserver.$(ARCH)
 	$(DOCKER) tag developers-paradise:base-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:base-$(ARCH)-$(shell cat .rev)"
