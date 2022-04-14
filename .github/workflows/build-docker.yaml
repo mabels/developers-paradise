@@ -83,11 +83,13 @@ jobs:
         run: |
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
-          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
             ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
-          make clean_repo 
+          make clean_repo
+          
+          # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
+    
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -130,11 +132,11 @@ jobs:
         run: |
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
-          eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
           make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
           make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
-
+          
+          # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4
 
@@ -172,6 +174,6 @@ jobs:
           ls -l ec2*
           for i in $(find . -name "ec2.*.worker")
           do
-            echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)
+            echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)"
             aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
           done
