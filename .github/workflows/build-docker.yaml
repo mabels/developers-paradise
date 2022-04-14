@@ -36,6 +36,10 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           aws sts get-caller-identity
+          sudo apt update -y
+          sudo apt install -y docker.io
+          sudo chmod 666 /run/docker.sock
+          docker ps
           bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
           bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "ec2.*.worker")
@@ -43,8 +47,7 @@ jobs:
             echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
           done
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          make prepare.tar APIUSER=${APIUSER}
-          ls -l prepare.tar
+          make prepare.tar APIUSER=${APIUSER} DOCKER=docker
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1
@@ -85,7 +88,7 @@ jobs:
           export DOCKER_CONFIG=$HOME/.docker
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
-            ARCHSELECT="--archSelect x86_64 --archSelect aarch64"
+            ARCHSELECT="--archSelect x86_64 --archSelect aarch64" DOCKER=docker
           make clean_repo
           
           # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
@@ -132,9 +135,9 @@ jobs:
         run: |
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
-          aws ecr-public get-login-password --region us-east-1 | podman login --username AWS --password-stdin public.ecr.aws
-          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
-          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="sudo podman"
+          aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
+          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker"
+          make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker"
           
           # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           #find . -ls | grep -v node_modules
@@ -171,7 +174,6 @@ jobs:
         name: terminate ec2
         run: |
           tar xf ./prepare.tar/prepare.tar
-          ls -l ec2*
           for i in $(find . -name "ec2.*.worker")
           do
             echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)"
