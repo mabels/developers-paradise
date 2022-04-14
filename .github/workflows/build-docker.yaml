@@ -43,7 +43,8 @@ jobs:
             echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
           done
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          make prepare.tar APIUSER=${APIUSER} 
+          make prepare.tar APIUSER=${APIUSER}
+          ls -l prepare.tar
 
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v1
@@ -168,7 +169,9 @@ jobs:
         name: terminate ec2
         run: |
           tar xf ./prepare.tar/prepare.tar
+          ls -l ec2*
           for i in $(find . -name "ec2.*.worker")
           do
+            echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)
             aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
           done
