@@ -85,7 +85,7 @@ jobs:
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
             ARCHSELECT="--archSelect x86_64 --archSelect aarch64" DOCKER=docker \
-            MANIFEST_TOOL="docker run -v $(pwd):/app  -w /app -t mplatform/manifest-tool:latest"
+            MANIFEST_TOOL="docker run -v $DOCKER_CONFIG:/.docker -v $(pwd):/app  -w /app -t mplatform/manifest-tool:latest"
           make clean_repo
           
           # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
@@ -133,7 +133,6 @@ jobs:
           sudo apt update -y
           sudo apt install -y docker.io
           sudo chmod 666 /run/docker.sock
-          docker ps
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
