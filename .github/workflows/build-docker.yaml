@@ -36,10 +36,13 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           aws sts get-caller-identity
-          bash .github/workflows/run-ec2-github-worker.sh ${{github.sha}} x86_64 > ec2.x86_64.worker
-          bash .github/workflows/run-ec2-github-worker.sh ${{github.sha}} aarch64 > ec2.aarch64.worker
+          bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
+          bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
+          for i in $(find . -name "ec2.*.worker")
+          do
+            echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
+          done
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          echo ${NECKLESS_PRIVKEY}
           make prepare.tar APIUSER=${APIUSER} 
 
       - name: Upload prepare.tar
