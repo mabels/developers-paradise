@@ -1,3 +1,4 @@
+#!/bin/bash
 REV=$1
 if [ -z "$REV" ]
 then
@@ -13,6 +14,7 @@ INSTANCE_TYPE=$3
 AMI=$4
 DOCKER_TAG=$5
 NECKLESS_URL=$6
+EC2_WORKER=ec2.$ARCH.$REV.worker
 if [ ! -z "$INSTANCE_TYPE" ]
 then
    echo Use $INSTANCE_TYPE - $ARCH
@@ -88,5 +90,5 @@ aws ec2 run-instances \
         --security-group-ids sg-01eeff3ca295f3fda \
 	--key-name krypton-oneplus \
 	--associate-public-ip-address \
-	--iam-instance-profile Name=Neckless
+	--iam-instance-profile Name=Neckless > $EC2_WORKER
 
