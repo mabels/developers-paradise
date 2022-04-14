@@ -66,8 +66,8 @@ clean_repo: .npm_install.done
 	npm install
 	$(TOUCHSLEEP) .npm_install.done
 
-manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend 
-# manifest-codeserver manifest-ghrunner-swift manifest-codeserver-swift
+manifest: .rev .npm_install.done manifest-latest manifest-base manifest-extend manifest-codeserver manifest-ghrunner
+#-swift manifest-codeserver-swift
 
 manifest-latest:
 	npm run produce -- --repo $(REPO) --rev $(shell cat .rev) --imageTag latest --tag codeserver \
