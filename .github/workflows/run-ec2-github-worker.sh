@@ -87,8 +87,8 @@ aws ec2 run-instances \
 	--image-id $AMI \
 	--instance-type $INSTANCE_TYPE \
 	--user-data file://./user-data \
-        --security-group-ids sg-01eeff3ca295f3fda \
-	--key-name krypton-oneplus \
+   --security-group-ids "developers-paradise-ec2-github-runner" \
+	--key-name developers-paradise-ec2-github-manager \
 	--associate-public-ip-address \
-	--iam-instance-profile Name=Neckless > $EC2_WORKER
+	--iam-instance-profile Name=developers-paradise-ec2-github-runner > $EC2_WORKER
 
