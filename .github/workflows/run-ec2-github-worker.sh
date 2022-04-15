@@ -84,11 +84,11 @@ done
 EOF
 
 aws ec2 run-instances \
-	--image-id $AMI \
-	--instance-type $INSTANCE_TYPE \
-	--user-data file://./user-data \
-        --security-groups "developers-paradise-ec2-github-runner" \
-	--key-name developers-paradise-ec2-github-manager \
-	--associate-public-ip-address \
-	--iam-instance-profile Name=developers-paradise-ec2-github-runner > $EC2_WORKER
+  --image-id $AMI \
+  --instance-type $INSTANCE_TYPE \
+  --user-data file://./user-data \
+  --security-group-ids $(aws ec2 describe-security-groups | jq '.SecurityGroups[] | select(.GroupName=="developers-paradise-ec2-github-runner") .GroupId' -r)
+  --key-name developers-paradise-ec2-github-manager \
+  --associate-public-ip-address \
+  --iam-instance-profile Name=developers-paradise-ec2-github-runner > $EC2_WORKER
 
