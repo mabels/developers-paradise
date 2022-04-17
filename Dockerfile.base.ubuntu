@@ -1,5 +1,5 @@
-#FROM ubuntu:impish
-FROM ubuntu:jammy
+FROM ubuntu:impish
+#FROM ubuntu:jammy
 
 ENV UBUNTU=eu-central-1.ec2.archive.ubuntu.com
 
