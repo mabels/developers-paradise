@@ -1,4 +1,5 @@
-FROM ubuntu:impish
+#FROM ubuntu:impish
+FROM ubuntu:jammy
 
 ENV UBUNTU=eu-central-1.ec2.archive.ubuntu.com
 
@@ -13,6 +14,6 @@ RUN \
     language-pack-de language-pack-en rsync ripgrep make dnsutils procps \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip python3-mypy python3-venv iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux tig lsof htop sysstat \
-    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev podman && \
+    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev docker.io podman && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   apt clean 

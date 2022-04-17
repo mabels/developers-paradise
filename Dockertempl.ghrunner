@@ -15,7 +15,6 @@ RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root runner && \
     apt clean && \
     bash /post-clean.sh
 
-
 COPY entry-worker.sh /home/runner/actions-runner/entry-worker.sh
 RUN chmod +x /home/runner/actions-runner/entry-worker.sh
 
