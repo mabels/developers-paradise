@@ -1,5 +1,6 @@
 
 RUN VERSION=@@CDR_CODE_SERVER_VERSION@@ && \
+    apt install language-pack-de language-pack-en man-db && \
     yes | unminimize && \
     V=$(echo $VERSION | sed 's/^v//') && \
     if [ $(uname -m) = "x86_64" ]; then  \

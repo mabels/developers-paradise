@@ -69,6 +69,23 @@ RUN VERSION=@@GORELEASER_GORELEASER_VERSION@@ && \
     cp goreleaser /usr/local/bin && cd .. && \
     cd .. && bash /post-clean.sh goreleaser
 
+
+RUN VERSION=@@DOCKER_BUILDX_VERSION@@ && \
+   export GOPATH=$HOME/go && \
+   git clone -b $VERSION --depth 1 https://github.com/docker/buildx.git && \
+   cd buildx && \
+   export PKG=github.com/docker/buildx && \
+   export VERSION=$(git describe --match 'v[0-9]*' --dirty='.m' --always --tags) && \
+   export REVISION=$(git rev-parse HEAD)$(if ! git diff --no-ext-diff --quiet --exit-code; then echo .m; fi) && \
+   echo "-X ${PKG}/version.Version=${VERSION} -X ${PKG}/version.Revision=${REVISION} -X ${PKG}/version.Package=${PKG}" | tee /tmp/.ldflags && \
+   echo -n "${VERSION}" | tee /tmp/.version && \
+   export LDFLAGS="-w -s" && \
+   go build -ldflags "$(cat /tmp/.ldflags) ${LDFLAGS}" -o ./buildx ./cmd/buildx && \
+   mkdir -p /usr/libexec/docker/cli-plugins && \
+   cp ./buildx /usr/libexec/docker/cli-plugins/docker-buildx && \
+   docker buildx version && \
+   cd .. && bash /post-clean.sh buildx
+
 RUN VERSION=@@MABELS_NECKLESS_VERSION@@ && \
     export GOPATH=$HOME/go && \
     git clone -b $VERSION --depth 1 https://github.com/mabels/neckless.git && \
