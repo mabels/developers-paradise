@@ -23,13 +23,15 @@ then
 elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=m5ad.large 
-   [ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
+   #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
+   [ -z "$AMI" ] && AMI=ami-015c25ad8763b2f11
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=m6gd.large
-   [ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
+   #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
+   [ -z "$AMI" ] && AMI=ami-0641bed8c0ce71686
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_arm64.tar.gz
 else
