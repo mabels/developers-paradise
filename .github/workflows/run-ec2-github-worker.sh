@@ -91,11 +91,11 @@ eval \$(NECKLESS_PRIVKEY=\$(aws --region eu-central-1 secretsmanager get-secret-
 while true
 do
    sleep 5
-   cat > /tmp/start.sh <<EOF
+   cat > /tmp/start.sh <<EOF1
 chmod 666 /run/docker.sock
 docker ps
 su runner -c 'docker ps; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
-EOF
+EOF1
    chmod 666 /run/docker.sock
    docker run \
      -v /run/docker.sock:/run/docker.sock \
