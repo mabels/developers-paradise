@@ -69,6 +69,7 @@ else
         --name $RUNNER_NAME \
         --work $RUNNER_WORK_DIRECTORY \
         $CONFIG_OPTS \
+        --ephemeral \
         --unattended
 fi
 
