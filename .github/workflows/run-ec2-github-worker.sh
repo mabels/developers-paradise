@@ -86,9 +86,84 @@ do
    -e RUNNER_LABELS=$REV \
    -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
    public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
-   su runner -c 'cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh' && exit 0
+   su runner -c 'cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh --ephemeral' && \
+      poweroff && \
+      exit 0
 done
 EOF
+
+cat > spot.json <<EOF
+{
+    "MarketType": "spot",
+    "SpotOptions": {
+      "MaxPrice": "string",
+      "SpotInstanceType": "one-time"|"persistent",
+      "BlockDurationMinutes": integer,
+      "ValidUntil": timestamp,
+      "InstanceInterruptionBehavior": "hibernate"|"stop"|"terminate"
+    }
+}
+EOF
+
+cat > spot-config.json <<EOF
+{
+    "IamFleetRole": "arn:aws:iam::973800055156:role/aws-ec2-spot-fleet-tagging-role",
+    "AllocationStrategy": "lowestPrice",
+    "TargetCapacity": 1,
+    "ValidFrom": "2022-05-19T20:13:15.000Z",
+    "ValidUntil": "2023-05-19T20:23:00.000Z",
+    "TerminateInstancesWithExpiration": true,
+    "Type": "maintain",
+    "TargetCapacityUnitType": "units",
+    "SpotPrice": "40.9447",
+    "LaunchSpecifications": [
+        {
+            "ImageId": "ami-015c25ad8763b2f11",
+            "KeyName": "krypton-oneplus",
+            "BlockDeviceMappings": [
+                {
+                    "DeviceName": "/dev/sda1",
+                    "Ebs": {
+                        "DeleteOnTermination": true,
+                        "SnapshotId": "snap-0bda75060a0810cac",
+                        "VolumeSize": 8,
+                        "VolumeType": "gp2",
+                        "Encrypted": true
+                    }
+                }
+            ],
+            "SubnetId": "subnet-ea761282, subnet-b26bc5c8, subnet-29516963",
+            "InstanceRequirements": {
+                "VCpuCount": {
+                    "Min": 4
+                },
+                "MemoryMiB": {
+                    "Min": 8192
+                },
+                "LocalStorage": "required",
+                "TotalLocalStorageGB": {
+                    "Min": 100
+                },
+                "LocalStorageTypes": [
+                    "ssd"
+                ]
+            }
+        }
+    ]
+}
+EOF
+
+cat > spot-options.json <<EOF
+{
+  "MarketType": "spot",
+  "SpotOptions": {
+    "MaxPrice": "0.02",
+    "SpotInstanceType": "one-time"
+  }
+}
+EOF
+
+#  --instance-market-options file://./spot-options.json
 
 aws ec2 run-instances \
   --image-id $AMI \
@@ -97,5 +172,6 @@ aws ec2 run-instances \
   --security-group-ids $(aws ec2 describe-security-groups | jq ".SecurityGroups[] | select(.GroupName==\"${PROJECT}-ec2-github-runner\") .GroupId" -r) \
   --key-name ${PROJECT}-ec2-github-manager \
   --associate-public-ip-address \
+  --instance-initiated-shutdown-behavior terminate \
   --iam-instance-profile Name=${PROJECT}-ec2-github-runner > $EC2_WORKER
 
