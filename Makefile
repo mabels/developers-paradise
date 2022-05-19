@@ -54,7 +54,7 @@ prepare.tar: .rev
 .build_versions: .npm_install.done
 	rm -f .build_versions
 	npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
-	npm run --silent latest dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
+	npm run --silent latest boto/botocore dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
 	npm run --silent git_version https://go.googlesource.com/go >> .build_versions
 	@echo ESTESP_MANIFEST_TOOL_VERSION=main >> .build_versions
 	cat .build_versions

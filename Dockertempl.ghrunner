@@ -11,7 +11,9 @@ RUN useradd -s /bin/bash -r -m -u 666 -G adm,sudo,root runner && \
     elif [ $(uname -m) = "aarch64" ]; then \
       su - runner -c "mkdir actions-runner && cd actions-runner && curl -sS -O -L https://github.com/actions/runner/releases/download/v$V/actions-runner-linux-arm64-$V.tar.gz && tar xzf ./actions-runner-linux-arm64-$V.tar.gz && rm actions-runner-linux-arm64-$V.tar.gz"; \
     fi; \
-    cd /home/runner/actions-runner && ./bin/installdependencies.sh && \
+    cd /home/runner/actions-runner && \
+    sed -i.orig 's/liblttng-ust0/liblttng-ust1/' ./bin/installdependencies.sh && \
+    ./bin/installdependencies.sh && \
     apt clean && \
     bash /post-clean.sh
 
