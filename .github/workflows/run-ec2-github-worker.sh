@@ -58,9 +58,27 @@ fi
 cat > user-data <<EOF
 #!/bin/bash -x
 export HOME=/root
+
+mkfs.ext4 /dev/nvme1n1
+mount /dev/nvme1n1 /mnt
+
+mkdir -p /nnt/snap
+mkdir -p /nnt/docker
+
+
+mv /var/snap /var/snap-off
+mkdir -p /var/snap
+mount --bind /nnt/snap /var/snap
+rsync -vaxH /var/snap-off/ /var/snap/
+
+mv /var/lib/docker /var/lib/docker-off
+mkdir -p /var/lib/docker
+mount --bind /nnt/docker /var/lib/docker
+rsync -vaxH /var/lib/docker-off/ /var/lib/docker/
+
 apt update -y
 apt upgrade -y
-apt install -y awscli jq curl
+apt install -y awscli jq curl docker.io
 aws sts get-caller-identity
 curl -L -o /tmp/neckless.tar.gz $NECKLESS_URL
 (cd /tmp && tar xvzf neckless.tar.gz)
@@ -69,13 +87,8 @@ curl -L -o .neckless https://raw.githubusercontent.com/${USER}/${PROJECT}/main/.
 eval \$(NECKLESS_PRIVKEY=\$(aws --region eu-central-1 secretsmanager get-secret-value \
   --secret-id arn:aws:secretsmanager:eu-central-1:973800055156:secret:${PROJECT}/neckless \
   --query SecretString --output text | jq -r ".\"${PROJECT}\"") neckless kv ls GITHUB_ACCESS_TOKEN)
-mkfs.ext4 /dev/nvme1n1
-mv /var/snap /var/snap-off
-mkdir -p /var/snap
-mount /dev/nvme1n1 /var/snap
-cd /var/snap 
-rsync -vaxH /var/snap-off/ .
-snap install docker
+#cd /var/snap 
+#snap install docker
 while true
 do
    sleep 5
