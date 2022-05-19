@@ -91,18 +91,25 @@ eval \$(NECKLESS_PRIVKEY=\$(aws --region eu-central-1 secretsmanager get-secret-
 while true
 do
    sleep 5
+   cat > /tmp/start.sh <<EOF
+chmod 666 /run/docker.sock
+docker ps
+su runner -c 'docker ps; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
+EOF
+   chmod 666 /run/docker.sock
    docker run \
-   -v /run/docker.sock:/run/docker.sock \
-   -e DOCKER_HOST=unix:///run/docker.sock \
-   -e GITHUB_ACCESS_TOKEN="\$GITHUB_ACCESS_TOKEN" \
-   -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
-   -e CONFIG_OPTS="--ephemeral" \
-   -e RUNNER_LABELS="$REV" \
-   -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
-   public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
-   su runner -c 'docker ps; echo $DOCKER_HOST; ls -l /run/docker.sock; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh' && \
-      poweroff && \
-      exit 0
+     -v /run/docker.sock:/run/docker.sock \
+     -v /tmp/start.sh:/tmp/start.sh \
+     -e DOCKER_HOST=unix:///run/docker.sock \
+     -e GITHUB_ACCESS_TOKEN="\$GITHUB_ACCESS_TOKEN" \
+     -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
+     -e CONFIG_OPTS="--ephemeral" \
+     -e RUNNER_LABELS="$REV" \
+     -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
+     public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
+     bash /tmp/start.sh && \
+   poweroff && \
+   exit 0
 done
 EOF
 
