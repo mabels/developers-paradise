@@ -28,9 +28,9 @@ if [[ -z $RUNNER_REPLACE_EXISTING ]]; then
     export RUNNER_REPLACE_EXISTING="true"
 fi
 
-CONFIG_OPTS=""
+CONFIG_OPTS="${CONFIG_OPTS}"
 if [ "$(echo $RUNNER_REPLACE_EXISTING | tr '[:upper:]' '[:lower:]')" == "true" ]; then
-	CONFIG_OPTS="--replace"
+	CONFIG_OPTS="${CONFIG_OPTS} --replace"
 fi
 
 if [[ -n $RUNNER_LABELS ]]; then
