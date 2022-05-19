@@ -93,13 +93,14 @@ do
    sleep 5
    docker run \
    -v /run/docker.sock:/run/docker.sock \
+   -e DOCKER_HOST=unix:///run/docker.sock \
    -e GITHUB_ACCESS_TOKEN="\$GITHUB_ACCESS_TOKEN" \
    -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
    -e CONFIG_OPTS="--ephemeral" \
    -e RUNNER_LABELS="$REV" \
    -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
    public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
-   su runner -c 'cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh' && \
+   su runner -c 'docker ps; echo $DOCKER_HOST; ls -l /run/docker.sock; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh' && \
       poweroff && \
       exit 0
 done
