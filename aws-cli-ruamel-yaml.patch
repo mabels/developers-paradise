@@ -1,0 +1,14 @@
+diff --git a/setup.cfg b/setup.cfg
+index 5ac69db..bcf2f40 100644
+--- a/setup.cfg
++++ b/setup.cfg
+@@ -31,7 +31,7 @@ install_requires =
+     colorama>=0.2.5,<0.4.4
+     docutils>=0.10,<0.16
+     cryptography>=3.3.2,<37.0.0
+-    ruamel.yaml>=0.15.0,<0.16.0
++    ruamel.yaml>=0.17.21,<0.18.0
+     wcwidth<0.2.0
+     prompt-toolkit>=3.0.24,<3.0.29
+     distro>=1.5.0,<1.6.0
+
