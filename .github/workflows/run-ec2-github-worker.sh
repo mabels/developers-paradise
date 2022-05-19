@@ -62,18 +62,17 @@ export HOME=/root
 mkfs.ext4 /dev/nvme1n1
 mount /dev/nvme1n1 /mnt
 
-mkdir -p /nnt/snap
-mkdir -p /nnt/docker
-
+mkdir -p /mnt/snap /var/snap
+mkdir -p /mnt/docker /var/lib/docker
 
 mv /var/snap /var/snap-off
 mkdir -p /var/snap
-mount --bind /nnt/snap /var/snap
+mount --bind /mnt/snap /var/snap
 rsync -vaxH /var/snap-off/ /var/snap/
 
 mv /var/lib/docker /var/lib/docker-off
 mkdir -p /var/lib/docker
-mount --bind /nnt/docker /var/lib/docker
+mount --bind /mnt/docker /var/lib/docker
 rsync -vaxH /var/lib/docker-off/ /var/lib/docker/
 
 apt update -y
