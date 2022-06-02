@@ -92,7 +92,7 @@ while true
 do
    sleep 5
    docker info > /dev/null
-   if $? == 0
+   if [ \$? = 0 ]
    then
    	cat > /tmp/start.sh <<EOF1
 #!/bin/bash
