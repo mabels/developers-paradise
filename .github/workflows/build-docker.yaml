@@ -21,7 +21,7 @@ jobs:
 
       - uses: mabels/neckless@main
         with:
-          version: v0.1.12
+          version: v0.1.15
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1.6.1
@@ -30,18 +30,42 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
+      - shell bash
+        name: 'OCI Write Config & Key Files'
+        run: |
+          mkdir $HOME/.oci
+          neckless kv ls OCI_KEY_FILE@$HOME/.oci/instances_oci_api_key.pem
+          eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
+          echo $OCI_CONFIG > $HOME/.oci/config
+          unset OCI_CONFIG
+          oci --version || true
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          oci --version 
+
       - shell: bash
         name: prepare
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          aws sts get-caller-identity
-          bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
-          bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
-          for i in $(find . -name "ec2.*.worker")
+          eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
+          oci setup repair-file-permissions --file /home/runner/.oci/config
+          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+          bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
+          bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
+          for i in $(find . -name "oci.*.worker")
           do
-            echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
+            echo "Special OCI-Worker instances: $worker -- $(jq -r '.data.id' < $i)"
           done
+          #aws sts get-caller-identity
+          #bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
+          #bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
+          #for i in $(find . -name "ec2.*.worker")
+          #do
+          #  echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
+          #done
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER)
           make prepare.tar APIUSER=${APIUSER} DOCKER=docker
 
@@ -70,6 +94,7 @@ jobs:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
           role-session-name: GitHubAction
+
 
       - name: extract prepare.tar
         uses: actions/download-artifact@v1
@@ -170,6 +195,21 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
+      - shell bash
+        name: 'OCI Write Config & Key Files'
+        run: |
+          mkdir $HOME/.oci
+          neckless kv ls OCI_KEY_FILE@$HOME/.oci/instances_oci_api_key.pem
+          eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
+          echo $OCI_CONFIG > $HOME/.oci/config
+          unset OCI_CONFIG
+          oci --version || true
+          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          chmod +x install.sh
+          ./install.sh --accept-all-defaults
+          echo "::add-path::/home/runner/bin"
+          oci --version 
+
       - shell: bash
         name: terminate ec2
         run: |
@@ -178,4 +218,12 @@ jobs:
           do
             echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)"
             aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
+          done
+          for i in $(find . -name "oci.*.worker")
+          do
+            echo "OCI to terminate: $i -- $(jq -r '.data.id' < $i)"
+            oci --auth api_key \
+              compute instance terminate \
+              --instance-id $(jq -r '.data.id' < $i) \
+              --force
           done
