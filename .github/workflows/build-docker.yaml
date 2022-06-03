@@ -44,13 +44,8 @@ jobs:
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
           oci --version 
-          cat .oci/config | base64
           oci setup repair-file-permissions --file $HOME/.oci/config
           oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
-          #curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          #chmod +x install.sh
-          #./install.sh --accept-all-defaults
-          #echo "$HOME/bin" >> $GITHUB_PATH
 
       - shell: bash
         name: prepare
@@ -200,20 +195,24 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
+
       - shell: bash
-        name: 'OCI Write Config & Key Files'
+        name: OCI Write Config and Key File
+        env:
+          NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          mkdir $HOME/.oci
-          neckless kv ls OCI_KEY_FILE@$HOME/.oci/instances_oci_api_key.pem
+          mkdir -p .oci
+          neckless kv ls OCI_KEY_FILE@.oci/instances_oci_api_key.pem --rawValue
           eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
-          echo $OCI_CONFIG > $HOME/.oci/config
+          echo -e "$OCI_CONFIG" > .oci/config
           unset OCI_CONFIG
-          oci --version || true
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
-          echo "::add-path::/home/runner/bin"
+          ls -l .oci
+          cp .github/workflows/oci-via.docker /usr/local/bin/oci
+          chmod +x /usr/local/bin/oci
           oci --version 
+          oci setup repair-file-permissions --file $HOME/.oci/config
+          oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
+
 
       - shell: bash
         name: terminate ec2
