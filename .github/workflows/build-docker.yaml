@@ -40,8 +40,7 @@ jobs:
           eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
           echo $OCI_CONFIG > $HOME/.oci/config
           unset OCI_CONFIG
-          curl -L\# https://raw.githubusercontent.com/shakiyam/oci-cli-docker/master/oci \
-              | tee /usr/local/bin/oci >/dev/null
+          cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
           oci --version 
           cat $HOME/.oci/config
