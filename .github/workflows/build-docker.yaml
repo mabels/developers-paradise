@@ -32,6 +32,8 @@ jobs:
 
       - shell: bash
         name: OCI Write Config and Key File
+        env:
+          NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           mkdir $HOME/.oci
           neckless kv ls OCI_KEY_FILE@$HOME/.oci/instances_oci_api_key.pem
