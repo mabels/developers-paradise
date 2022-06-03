@@ -31,7 +31,7 @@ jobs:
           role-session-name: GitHubAction
 
       - shell bash
-        name: 'OCI Write Config & Key Files'
+        name: OCI Write Config and Key Files
         run: |
           mkdir $HOME/.oci
           neckless kv ls OCI_KEY_FILE@$HOME/.oci/instances_oci_api_key.pem
