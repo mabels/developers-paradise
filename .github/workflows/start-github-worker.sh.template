@@ -45,7 +45,16 @@ done
 
 cat > /tmp/start.sh <<EOF1
 #!/bin/bash
-su runner -c 'export DOCKER_HOST=$DOCKER_HOST; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
+mv /usr/bin/docker /usr/bin/docker-orig
+cat > /usr/bin/docker <<EOF3
+#!/bin/bash
+export DOCKER_HOST=$DOCKER_HOST
+exec /usr/bin/docker-orig \$@
+EOF3
+chmod +x /usr/bin/docker
+echo "DOCKER_HOST=$DOCKER_HOST"
+docker ps
+su runner -c 'cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
 EOF1
 while true
 do
