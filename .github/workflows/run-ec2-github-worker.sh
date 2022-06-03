@@ -86,36 +86,8 @@ curl -L -o .neckless https://raw.githubusercontent.com/${USER}/${PROJECT}/main/.
 eval \$(NECKLESS_PRIVKEY=\$(aws --region eu-central-1 secretsmanager get-secret-value \
   --secret-id arn:aws:secretsmanager:eu-central-1:973800055156:secret:${PROJECT}/neckless \
   --query SecretString --output text | jq -r ".\"${PROJECT}\"") neckless kv ls GITHUB_ACCESS_TOKEN)
-#cd /var/snap 
-#snap install docker
-while true
-do
-   sleep 5
-   docker info > /dev/null
-   if [ \$? = 0 ]
-   then
-   	cat > /tmp/start.sh <<EOF1
-#!/bin/bash
-chmod 666 /run/docker.sock
-docker ps
-su runner -c 'docker ps; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
-EOF1
-	chmod 666 /run/docker.sock
-        docker run \
-	     -v /run/docker.sock:/run/docker.sock \
-	     -v /tmp/start.sh:/tmp/start.sh \
-	     -e DOCKER_HOST=unix:///run/docker.sock \
-	     -e GITHUB_ACCESS_TOKEN="\$GITHUB_ACCESS_TOKEN" \
-	     -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
-	     -e CONFIG_OPTS="--ephemeral" \
-	     -e RUNNER_LABELS="$REV" \
-	     -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
-	     public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
-	     bash /tmp/start.sh && \
-	 poweroff && \
-         exit 0
-   fi
-done
+
+$(cat ./.github/workflows/start-github-worker.sh)
 EOF
 
 cat > spot.json <<EOF

@@ -61,36 +61,9 @@ export HOME=/root
 
 apt update -y
 apt upgrade -y
-apt install -y awscli jq curl docker.io
+apt install -y jq curl docker.io
 
-while true
-do
-   sleep 5
-   docker info > /dev/null
-   if [ \$? = 0 ]
-   then
-   	cat > /tmp/start.sh <<EOF1
-#!/bin/bash
-chmod 666 /run/docker.sock
-docker ps
-su runner -c 'docker ps; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
-EOF1
-	chmod 666 /run/docker.sock
-        docker run \
-	     -v /run/docker.sock:/run/docker.sock \
-	     -v /tmp/start.sh:/tmp/start.sh \
-	     -e DOCKER_HOST=unix:///run/docker.sock \
-	     -e GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
-	     -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
-	     -e CONFIG_OPTS="--ephemeral" \
-	     -e RUNNER_LABELS="$REV" \
-	     -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
-	     public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
-	     bash /tmp/start.sh && \
-	 poweroff && \
-         exit 0
-   fi
-done
+$(cat ./.github/workflows/start-github-worker.sh)
 EOF
 
 # $HOME/user-data is a artefact of docker
