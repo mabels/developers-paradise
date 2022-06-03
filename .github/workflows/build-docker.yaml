@@ -38,6 +38,8 @@ jobs:
           eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
           echo $OCI_CONFIG > $HOME/.oci/config
           unset OCI_CONFIG
+          ls -l $HOME/.oci
+          cat $HOME/.oci/config
           oci --version || true
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
