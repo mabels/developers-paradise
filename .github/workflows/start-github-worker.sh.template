@@ -8,8 +8,14 @@ do
   if [ $stop = 0 ]
   then
     bindip=$(jq -r '.[0].IPAM.Config[0].Gateway' < out.json)
+    if [ $bindip = "null" ]
+      stop=1
+    fi
     echo "Binding: $bindip"
-    rm -f out.json
+  fi
+  rm -f out.json
+  if [ $stop = 0 ]
+  then
     mkdir -p /etc/systemd/system/docker.service.d
     cat >/etc/systemd/system/docker.service.d/override.conf <<EOF2
 [Service]
