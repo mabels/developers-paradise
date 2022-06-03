@@ -7,12 +7,13 @@ do
   stop=$?
   if [ $stop = 0 ]
   then
-    bindip=$(jq -r '.[0].IPAM.Config[0].Gateway' < out.json)
+    bindif=$(jq -r '.[0].Options."com.docker.network.bridge.name"' < out.json)
+    bindip=$(ip -j a l  dev $bindif | jq '.[0].addr_info[0].local')
     if [ $bindip = "null" ]
     then
       stop=1
     fi
-    echo "Binding: $bindip"
+    echo "Binding: $bindip:$bindif"
   fi
   rm -f out.json
   if [ $stop = 0 ]
