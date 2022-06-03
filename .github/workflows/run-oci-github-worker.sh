@@ -54,7 +54,6 @@ then
    exit 1
 fi
 
-
 cat > user-data <<EOF
 #!/bin/bash -x
 export HOME=/root
@@ -62,6 +61,13 @@ export HOME=/root
 apt update -y
 apt upgrade -y
 apt install -y jq curl docker.io
+
+GITHUB_ACCESS_TOKEN=$GITHUB_ACCESS_TOKEN
+ARCH=$ARCH
+REV=$REV
+USER=$USER
+PROJECT=$PROJECT
+DOCKER_TAG=$DOCKER_TAG
 
 $(cat ./.github/workflows/start-github-worker.sh.template)
 EOF

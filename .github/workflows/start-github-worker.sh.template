@@ -45,12 +45,12 @@ done
 
 cat > /tmp/start.sh <<EOF1
 #!/bin/bash
-su runner -c 'export DOCKER_HOST=\$DOCKER_HOST; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
+su runner -c 'export DOCKER_HOST=$DOCKER_HOST; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
 EOF1
 docker run \
 	     -v /tmp/start.sh:/tmp/start.sh \
-	     -e DOCKER_HOST=\$DOCKER_HOST \
-	     -e GITHUB_ACCESS_TOKEN="\$GITHUB_ACCESS_TOKEN" \
+	     -e DOCKER_HOST=$DOCKER_HOST \
+	     -e GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
 	     -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
 	     -e CONFIG_OPTS="--ephemeral" \
 	     -e RUNNER_LABELS="$REV" \

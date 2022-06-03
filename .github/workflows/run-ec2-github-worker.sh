@@ -87,6 +87,13 @@ eval \$(NECKLESS_PRIVKEY=\$(aws --region eu-central-1 secretsmanager get-secret-
   --secret-id arn:aws:secretsmanager:eu-central-1:973800055156:secret:${PROJECT}/neckless \
   --query SecretString --output text | jq -r ".\"${PROJECT}\"") neckless kv ls GITHUB_ACCESS_TOKEN)
 
+GITHUB_ACCESS_TOKEN=\$GITHUB_ACCESS_TOKEN
+ARCH=$ARCH
+REV=$REV
+USER=$USER
+PROJECT=$PROJECT
+DOCKER_TAG=$DOCKER_TAG
+
 $(cat ./.github/workflows/start-github-worker.sh.template)
 EOF
 
