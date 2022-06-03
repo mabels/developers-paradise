@@ -9,6 +9,7 @@ do
   then
     bindip=$(jq -r '.[0].IPAM.Config[0].Gateway' < out.json)
     if [ $bindip = "null" ]
+    then
       stop=1
     fi
     echo "Binding: $bindip"
