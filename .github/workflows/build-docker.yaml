@@ -42,8 +42,9 @@ jobs:
           unset OCI_CONFIG
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
+          touch user-data 
           oci --version 
-          cat $HOME/.oci/config
+          cat $HOME/.oci/config | base64
           oci setup repair-file-permissions --file $HOME/.oci/config
           oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
           #curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
@@ -57,7 +58,6 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
-          which oci
           bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
           bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "oci.*.worker")
