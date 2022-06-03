@@ -16,9 +16,7 @@ if [[ $(command -v docker) ]]; then
     -e HOME="$HOME" \
     -e USER_NAME="$(id -un)" \
     -u "$(id -u):$(id -g)" \
-    -v "$HOME/.kube:$HOME/.kube" \
-    -v "$HOME/.oci:$HOME/.oci" \
-    -v "$(pwd)/user-data:$HOME/user-data" \
+    -v "$(pwd):$HOME" \
     $([[ -v OCI_CLI_PROFILE ]] && echo "-e OCI_CLI_PROFILE=$OCI_CLI_PROFILE") \
     docker.io/shakiyam/oci-cli "$@"
 else

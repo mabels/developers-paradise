@@ -35,14 +35,13 @@ jobs:
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          mkdir $HOME/.oci
-          neckless kv ls OCI_KEY_FILE@$HOME/.oci/instances_oci_api_key.pem
-          eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
-          echo $OCI_CONFIG > $HOME/.oci/config
+          mkdir -p .oci
+          neckless kv ls OCI_KEY_FILE@.oci/instances_oci_api_key.pem
+          eval $(printf neckless kv ls OCI_CONFIG --shEvalKeyValue)
+          echo $OCI_CONFIG > .oci/config
           unset OCI_CONFIG
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
-          touch user-data 
           oci --version 
           cat $HOME/.oci/config | base64
           oci setup repair-file-permissions --file $HOME/.oci/config
