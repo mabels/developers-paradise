@@ -40,13 +40,17 @@ jobs:
           eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
           echo $OCI_CONFIG > $HOME/.oci/config
           unset OCI_CONFIG
-          curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
-          chmod +x install.sh
-          ./install.sh --accept-all-defaults
-          echo "$HOME/bin" >> $GITHUB_PATH
-          $HOME/bin/oci --version 
-          $HOME/bin/oci setup repair-file-permissions --file $HOME/.oci/config
-          $HOME/bin/oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
+          curl -L\# https://raw.githubusercontent.com/shakiyam/oci-cli-docker/master/oci \
+              | tee /usr/local/bin/oci >/dev/null
+          chmod +x /usr/local/bin/oci
+          oci --version 
+          cat $HOME/.oci/config
+          oci setup repair-file-permissions --file $HOME/.oci/config
+          oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
+          #curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
+          #chmod +x install.sh
+          #./install.sh --accept-all-defaults
+          #echo "$HOME/bin" >> $GITHUB_PATH
 
       - shell: bash
         name: prepare
