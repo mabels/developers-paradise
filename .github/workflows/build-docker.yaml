@@ -37,8 +37,8 @@ jobs:
         run: |
           mkdir -p .oci
           neckless kv ls OCI_KEY_FILE@.oci/instances_oci_api_key.pem
-          eval $(printf neckless kv ls OCI_CONFIG --shEvalKeyValue)
-          echo $OCI_CONFIG > .oci/config
+          eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
+          echo -e "$OCI_CONFIG" > .oci/config
           unset OCI_CONFIG
           ls -l .oci
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
