@@ -40,14 +40,13 @@ jobs:
           eval $(neckless kv ls OCI_CONFIG --shEvalKeyValue)
           echo $OCI_CONFIG > $HOME/.oci/config
           unset OCI_CONFIG
-          ls -l $HOME/.oci
-          cat $HOME/.oci/config
-          oci --version || true
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
           ./install.sh --accept-all-defaults
-          echo "::add-path::/home/runner/bin"
-          oci --version 
+	  echo "$HOME/bin" >> $GITHUB_PATH
+          $HOME/bin/oci --version 
+          $HOME/bin/oci setup repair-file-permissions --file $HOME/.oci/config
+          $HOME/bin/oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
 
       - shell: bash
         name: prepare
@@ -55,8 +54,7 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
-          oci setup repair-file-permissions --file /home/runner/.oci/config
-          oci setup repair-file-permissions --file /home/runner/.oci/key.pem
+          which oci
           bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
           bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "oci.*.worker")
