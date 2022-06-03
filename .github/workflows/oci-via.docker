@@ -18,6 +18,7 @@ if [[ $(command -v docker) ]]; then
     -u "$(id -u):$(id -g)" \
     -v "$HOME/.kube:$HOME/.kube" \
     -v "$HOME/.oci:$HOME/.oci" \
+    -v "$(pwd)/user-data:$HOME/user-data" \
     $([[ -v OCI_CLI_PROFILE ]] && echo "-e OCI_CLI_PROFILE=$OCI_CLI_PROFILE") \
     docker.io/shakiyam/oci-cli "$@"
 else
@@ -31,6 +32,7 @@ else
     -e HOME="$HOME" \
     -v "$HOME/.kube:$HOME/.kube" \
     -v "$HOME/.oci:$HOME/.oci" \
+    -v "$(pwd)/user-data:$HOME/user-data" \
     $([[ -v OCI_CLI_PROFILE ]] && echo "-e OCI_CLI_PROFILE=$OCI_CLI_PROFILE") \
     docker.io/shakiyam/oci-cli "$@"
 fi
