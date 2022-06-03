@@ -43,7 +43,7 @@ jobs:
           curl -L -O https://raw.githubusercontent.com/oracle/oci-cli/master/scripts/install/install.sh
           chmod +x install.sh
           ./install.sh --accept-all-defaults
-	  echo "$HOME/bin" >> $GITHUB_PATH
+          echo "$HOME/bin" >> $GITHUB_PATH
           $HOME/bin/oci --version 
           $HOME/bin/oci setup repair-file-permissions --file $HOME/.oci/config
           $HOME/bin/oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
