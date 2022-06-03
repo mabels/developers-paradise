@@ -40,6 +40,7 @@ jobs:
           eval $(printf neckless kv ls OCI_CONFIG --shEvalKeyValue)
           echo $OCI_CONFIG > .oci/config
           unset OCI_CONFIG
+          ls -l .oci
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
           oci --version 
