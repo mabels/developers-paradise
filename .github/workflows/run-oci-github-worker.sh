@@ -63,7 +63,7 @@ apt update -y
 apt upgrade -y
 apt install -y jq curl docker.io
 
-$(cat ./.github/workflows/start-github-worker.sh)
+$(cat ./.github/workflows/start-github-worker.sh.template)
 EOF
 
 # $HOME/user-data is a artefact of docker

@@ -2,18 +2,20 @@ stop=1
 systemctl start docker.service
 while [ $stop -ne 0 ]
 do
-  docker network inspect bridge > out.json
+  docker network ls
+  docker network inspect bridge | tee out.json
   stop=$?
   if [ $stop = 0 ]
   then
     bindip=$(jq -r '.[0].IPAM.Config[0].Gateway' < out.json)
+    echo "Binding: $bindip"
     rm -f out.json
     mkdir -p /etc/systemd/system/docker.service.d
-    cat >/etc/systemd/system/docker.service.d/override.conf <<EOF
+    cat >/etc/systemd/system/docker.service.d/override.conf <<EOF2
 [Service]
 ExecStart=
 ExecStart=/usr/bin/dockerd -H fd:// -H tcp://$bindip:2376 --containerd=/run/containerd/containerd.sock
-EOF
+EOF2
     systemctl stop docker.service
     systemctl daemon-reload
     systemctl start docker.service
@@ -35,11 +37,11 @@ done
 
 cat > /tmp/start.sh <<EOF1
 #!/bin/bash
-su runner -c 'export DOCKER_HOST=$DOCKER_HOST; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
+su runner -c 'export DOCKER_HOST=\$DOCKER_HOST; cd /home/runner/actions-runner && /home/runner/actions-runner/start-worker.sh ./run.sh'
 EOF1
 docker run \
 	     -v /tmp/start.sh:/tmp/start.sh \
-	     -e DOCKER_HOST=$DOCKER_HOST \
+	     -e DOCKER_HOST=\$DOCKER_HOST \
 	     -e GITHUB_ACCESS_TOKEN="\$GITHUB_ACCESS_TOKEN" \
 	     -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
 	     -e CONFIG_OPTS="--ephemeral" \
