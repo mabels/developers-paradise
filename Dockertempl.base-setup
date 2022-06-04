@@ -1,0 +1,5 @@
+
+ARG DOCKER_HOST=default_value
+ENV DOCKER_HOST=$DOCKER_HOST
+
+RUN docker ps
