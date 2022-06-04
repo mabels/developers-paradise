@@ -54,7 +54,8 @@ then
    exit 1
 fi
 
-cat > ./user-data <<EOF
+USER_DATA_FILE=$(pwd)/user-data
+cat > $USER_DATA_FILE <<EOF
 #!/bin/bash -x
 export HOME=/root
 
@@ -72,8 +73,6 @@ DOCKER_TAG=$DOCKER_TAG
 $(cat ./.github/workflows/start-github-worker.sh.template)
 EOF
 
-pwd
-find $(pwd) -xdev -name user-data -ls
 # $HOME/user-data is a artefact of docker
 #--shape-config '{"ocpus":4.0,"memoryInGBs":12.0,"baselineOcpuUtilization":12.5}' 
 oci \
@@ -87,7 +86,7 @@ compute instance launch  \
 --shape-config '{"ocpus":16.0,"memoryInGBs":16.0,"baselineOcpuUtilization":12.5}' \
 --assign-public-ip true \
 --boot-volume-size-in-gbs 120 \
---user-data-file "./user-data" \
+--user-data-file "$USER_DATA_FILE" \
 --is-pv-encryption-in-transit-enabled true \
 --metadata "{\"ssh_authorized_keys\": \"$(curl https://github.com/mabels.keys)\"}" \
  > $OCI_WORKER 
