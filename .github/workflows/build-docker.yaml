@@ -153,11 +153,8 @@ jobs:
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
           MATRIX_ARCH: ${{ matrix.arch }}
-          # DOCKERHUB: ${{ secrets.DOCKERHUB }}
         run: |
-          sudo apt update -y
-          sudo apt install -y docker.io
-          sudo chmod 666 /run/docker.sock
+          docker ps
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
@@ -168,6 +165,9 @@ jobs:
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4
 
+      #sudo apt update -y
+      #sudo apt install -y docker.io
+      #sudo chmod 666 /run/docker.sock
       # - name: Kill the EC2's
       #   if: always()
       #   uses: actions/upload-artifact@v1
