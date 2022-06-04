@@ -86,7 +86,7 @@ compute instance launch  \
 --boot-volume-size-in-gbs 120 \
 --user-data-file "$HOME/user-data" \
 --is-pv-encryption-in-transit-enabled true \
---metadata "{\"ssh_authorized_keys\": \"$(curl https://github.com/mabels.keys)\"}" \
+--metadata "{\"ssh_authorized_keys\": $(curl https://github.com/mabels.keys | jq -Rsa .)}" \
  > $OCI_WORKER 
 
 #aws ec2 run-instances \
