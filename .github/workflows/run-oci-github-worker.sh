@@ -81,7 +81,7 @@ compute instance launch  \
 --shape $INSTANCE_TYPE \
 --image-id $AMI \
 --compartment-id ocid1.tenancy.oc1..aaaaaaaax2n5snd6z7n3ddnnii5x2727bh4zhjzcb7umshzorp4qnp7a2jda \
---shape-config '{"ocpus":16.0,"memoryInGBs":16.0,"baselineOcpuUtilization":12.5}' \
+--shape-config '{"ocpus":16.0,"memoryInGBs":16.0,"baselineOcpuUtilization":"BASELINE_1_8"}' \
 --assign-public-ip true \
 --boot-volume-size-in-gbs 120 \
 --user-data-file "$HOME/user-data" \
