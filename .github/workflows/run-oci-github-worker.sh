@@ -22,7 +22,7 @@ then
    echo Use $INSTANCE_TYPE - $ARCH
 elif [ $ARCH = "x86_64" ]
 then
-   INSTANCE_TYPE=VM.OptimizedE3.Flex
+   INSTANCE_TYPE=VM.Standard.E4.Flex
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
    [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaalt2wothtrqva253mkuujx56ciafjkalpa7gsctog2y6vwb2werya 
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
@@ -81,7 +81,7 @@ compute instance launch  \
 --shape $INSTANCE_TYPE \
 --image-id $AMI \
 --compartment-id ocid1.tenancy.oc1..aaaaaaaax2n5snd6z7n3ddnnii5x2727bh4zhjzcb7umshzorp4qnp7a2jda \
---shape-config '{"ocpus":4.0,"memoryInGBs":12.0}' \
+--shape-config '{"ocpus":16.0,"memoryInGBs":12.0,"baselineOcpuUtilization":12.5}' \
 --assign-public-ip true \
 --boot-volume-size-in-gbs 120 \
 --user-data-file "$HOME/user-data" \
