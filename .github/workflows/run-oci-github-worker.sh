@@ -22,18 +22,18 @@ then
    echo Use $INSTANCE_TYPE - $ARCH
 elif [ $ARCH = "x86_64" ]
 then
-   INSTANCE_TYPE=VM.Optimized3.Flex
+   INSTANCE_TYPE=VM.OptimizedE3.Flex
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
    [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaalt2wothtrqva253mkuujx56ciafjkalpa7gsctog2y6vwb2werya 
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
-   [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_x86_64.tar.gz
+   [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=VM.Standard.A1.Flex
    #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
    [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa7eis5rnrr2tyvwa27ko53yp4ua7jur7xgnhppockzytlsa3soara 
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
-   [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_arm64.tar.gz
+   [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_arm64.tar.gz
 else
    echo "the is no INSTANCE_TYPE known for the arch $ARCH"
    exit 1

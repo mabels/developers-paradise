@@ -154,6 +154,9 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
           MATRIX_ARCH: ${{ matrix.arch }}
         run: |
+          ip a l
+          ip r l
+          cat /usr/bin/docker
           docker ps
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
