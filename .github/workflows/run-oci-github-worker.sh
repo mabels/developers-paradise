@@ -27,7 +27,7 @@ then
    [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaalt2wothtrqva253mkuujx56ciafjkalpa7gsctog2y6vwb2werya 
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_x86_64.tar.gz
-   BURSTABLE=',"baselineOcpuUtilization":"BASELINE_1_8"'
+   SHAPE='{"ocpus":16.0,"memoryInGBs":16.0,"baselineOcpuUtilization":"BASELINE_1_8"}'
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=VM.Standard.A1.Flex
@@ -35,7 +35,7 @@ then
    [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa7eis5rnrr2tyvwa27ko53yp4ua7jur7xgnhppockzytlsa3soara 
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_arm64.tar.gz
-   BURSTABLE=''
+   SHAPE='{"ocpus":16.0,"memoryInGBs":16.0}'
 else
    echo "the is no INSTANCE_TYPE known for the arch $ARCH"
    exit 1
@@ -83,7 +83,7 @@ compute instance launch  \
 --shape $INSTANCE_TYPE \
 --image-id $AMI \
 --compartment-id ocid1.tenancy.oc1..aaaaaaaax2n5snd6z7n3ddnnii5x2727bh4zhjzcb7umshzorp4qnp7a2jda \
---shape-config '{"ocpus":16.0,"memoryInGBs":16.0$BURSTABLE}' \
+--shape-config "$SHAPE" \
 --assign-public-ip true \
 --boot-volume-size-in-gbs 120 \
 --user-data-file "$HOME/user-data" \
