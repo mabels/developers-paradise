@@ -73,7 +73,7 @@ $(cat ./.github/workflows/start-github-worker.sh.template)
 EOF
 
 pwd
-find / -name user-data
+find $(pwd) -xdev -name user-data -ls
 # $HOME/user-data is a artefact of docker
 #--shape-config '{"ocpus":4.0,"memoryInGBs":12.0,"baselineOcpuUtilization":12.5}' 
 oci \
