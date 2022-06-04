@@ -54,7 +54,7 @@ then
    exit 1
 fi
 
-cat > user-data <<EOF
+cat > ./user-data <<EOF
 #!/bin/bash -x
 export HOME=/root
 
@@ -85,10 +85,11 @@ compute instance launch  \
 --shape-config '{"ocpus":4.0,"memoryInGBs":12.0}' \
 --assign-public-ip true \
 --boot-volume-size-in-gbs 120 \
---user-data-file "$HOME/user-data" \
+--user-data-file "./user-data" \
 --is-pv-encryption-in-transit-enabled true \
 --metadata '{"ssh_authorized_keys": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABgQC7BOKHV5d3/cnXsZ23X8d6MT9H/1kn+oT2LRaKtyyKB6iLsEN6Hk2017RyFR98oWXqo5EM5ttL4ZTQNEawqp52KPGujDV7XHvu4/cxfNzjxhOUtJ9j5wOG4qVVvBfcvbFRo1wVuJRe+7uiA9seGU3LZ01ASM+ajEtRY2tLBrwJhY/4q08ghy8gBfFV0LDkY8wH965PYUZButHpJvCz6xTEzVVqeLKobD6jsE0PafgdBuiRC+ErRH0vkVfb5NEoB2UhZB/L9QqeVDEyrKTk2AcxlCa6zcLkcLq5ygel8+MUuW3zBscDQrNxJ09vzBFq0auV+Wq8/ElTJC5eIIYJ1WO88EuoMiG/BCMM75NrUqa6Bn5rgbHNVZAAxo0/qJSV4i7RTE+0OVEDu2jt+wNpWZEmCJ4TNIQyNFmxuRGjQqxHAtSWnkkO/LzOUw8rWCGLvgnrIX8jtRXvNqNnv1lTQ5X97d8TTA55dNkeYUCC4NbeWr49zqcW//36r4KIku48PuU= revealsix"}' \
  > $OCI_WORKER 
+rm -f ./user-data
 
 #aws ec2 run-instances \
 #  --image-id $AMI \
