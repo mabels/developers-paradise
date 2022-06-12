@@ -4,6 +4,7 @@ REPO ?= public.ecr.aws/d3g6c8d4
 TOUCHSLEEP ?= sleep 1; touch
 APIUSER ?= "api rate limiting applies"
 MANIFEST_TOOL ?= manifest-tool
+DOCKER_BUILD_ARGS ?= ""
 
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
@@ -223,10 +224,10 @@ push.codeserver.aarch64: .pushed.developers-paradise-codeserver-$(ARCH)$(REV)
 
 base: .rev .built.$(ARCH).Dockerfile.base
 
-.built.$(ARCH).Dockerfile.base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base Dockertempl.base
-	cat .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base > .build.$(ARCH).Dockerfile.base
+.built.$(ARCH).Dockerfile.base: .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base-setup Dockertempl.base Dockertempl.base
+	cat .build.$(ARCH).Dockerfile.base.$(ARCH) Dockertempl.base-setup Dockertempl.base > .build.$(ARCH).Dockerfile.base
 	./.versioner < .build.$(ARCH).Dockerfile.base > .build.$(ARCH).Dockerfile.base.versioned
-	$(DOCKER) build -t developers-paradise:base-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.base.versioned .
+	$(DOCKER) build $(DOCKER_BUILD_ARGS) -t developers-paradise:base-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.base.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.base
 
 .build.x86_64.Dockerfile.base.x86_64: Dockerfile.base.ubuntu
@@ -242,6 +243,7 @@ extend: .versioner .built.$(ARCH).Dockerfile.extend
 
 .built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH)
 	echo "FROM developers-paradise:base-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.extend
+	cat Dockertempl.base-setup >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.manifest-tool >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.skopeo >> .build.$(ARCH).Dockerfile.extend
@@ -250,7 +252,7 @@ extend: .versioner .built.$(ARCH).Dockerfile.extend
 	cat Dockertempl.usql.$(ARCH) >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.kryptco >> .build.$(ARCH).Dockerfile.extend
 	./.versioner < .build.$(ARCH).Dockerfile.extend > .build.$(ARCH).Dockerfile.extend.versioned
-	$(DOCKER) build -t developers-paradise:extend-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.extend.versioned .
+	$(DOCKER) build $(DOCKER_BUILD_ARGS) -t developers-paradise:extend-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.extend.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.extend
 
 Dockertempl.usql.$(ARCH):
@@ -273,9 +275,10 @@ ghrunner-swift.x86_64: .built.$(ARCH).Dockerfile.ghrunner-swift
 
 .built.$(ARCH).Dockerfile.ghrunner-swift:
 	echo "FROM developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ghrunner-swift
+	cat Dockertempl.base-setup >> .build.$(ARCH).Dockerfile.ghrunner-swift
 	cat Dockertempl.swift >> .build.$(ARCH).Dockerfile.ghrunner-swift
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner-swift > .build.$(ARCH).Dockerfile.ghrunner-swift.versioned
-	$(DOCKER) build -t developers-paradise:ghrunner-swift-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ghrunner-swift.versioned .
+	$(DOCKER) build $(DOCKER_BUILD_ARGS) -t developers-paradise:ghrunner-swift-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ghrunner-swift.versioned .
 	$(DOCKER) tag developers-paradise:ghrunner-swift-$(ARCH)-$(shell cat .rev) "$(REPO)/developers-paradise:ghrunner-swift-$(ARCH)-$(shell cat .rev)"
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.ghrunner-swift
 
@@ -298,18 +301,20 @@ ghrunner: .built.$(ARCH).Dockerfile.ghrunner
 
 .built.$(ARCH).Dockerfile.ghrunner:
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ghrunner
+	cat Dockertempl.base-setup >> .build.$(ARCH).Dockerfile.ghrunner
 	cat Dockertempl.ghrunner >> .build.$(ARCH).Dockerfile.ghrunner
 	./.versioner < .build.$(ARCH).Dockerfile.ghrunner > .build.$(ARCH).Dockerfile.ghrunner.versioned
-	$(DOCKER) build -t developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ghrunner.versioned .
+	$(DOCKER) build $(DOCKER_BUILD_ARGS) -t developers-paradise:ghrunner-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ghrunner.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.ghrunner
 
 ssm: .built.$(ARCH).Dockerfile.ssm
 
 .built.$(ARCH).Dockerfile.ssm: startup-ssm.sh
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.ssm
+	cat Dockertempl.base-setup >> .build.$(ARCH).Dockerfile.ssm
 	cat Dockertempl.ssm >> .build.$(ARCH).Dockerfile.ssm
 	./.versioner < .build.$(ARCH).Dockerfile.ssm > .build.$(ARCH).Dockerfile.ssm.versioned
-	$(DOCKER) build -t developers-paradise:ssm-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ssm.versioned .
+	$(DOCKER) build $(DOCKER_BUILD_ARGS) -t developers-paradise:ssm-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.ssm.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.ssm
 
 codeserver.armv7l:
@@ -321,8 +326,9 @@ codeserver.aarch64: .built.$(ARCH).Dockerfile.codeserver
 
 .built.$(ARCH).Dockerfile.codeserver:
 	echo "FROM developers-paradise:extend-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.codeserver
+	cat Dockertempl.base-setup >> .build.$(ARCH).Dockerfile.codeserver
 	cat Dockertempl.codeserver >> .build.$(ARCH).Dockerfile.codeserver
 	./.versioner < .build.$(ARCH).Dockerfile.codeserver > .build.$(ARCH).Dockerfile.codeserver.versioned
-	$(DOCKER) build -t developers-paradise:codeserver-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.codeserver.versioned .
+	$(DOCKER) build $(DOCKER_BUILD_ARGS) -t developers-paradise:codeserver-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.codeserver.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.codeserver
 

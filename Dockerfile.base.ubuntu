@@ -17,3 +17,4 @@ RUN \
     libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev docker.io && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
   apt clean 
+

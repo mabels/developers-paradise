@@ -158,10 +158,12 @@ jobs:
           ip r l
           cat /usr/bin/docker
           docker ps
+          source /usr/bin/docker-host-env
+          echo $DOCKER_HOST
           tar xf ./prepare.tar/prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
-          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker"
+          make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker" DOCKER_BUILD_ARGS="DOCKER_HOST=$(docker-host-env)"
           make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker"
           
           # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
