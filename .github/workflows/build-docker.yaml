@@ -227,16 +227,16 @@ jobs:
         name: terminate ec2
         run: |
           tar xf ./prepare.tar/prepare.tar
-          for i in $(find . -name "ec2.*.worker")
+          for i in $(find . -name "ec2.*.worker" -print)
           do
             echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)"
-            aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i)
+            aws ec2 terminate-instances --instance-ids $(jq -r '.Instances[0].InstanceId' < $i) || true
           done
-          for i in $(find . -name "oci.*.worker")
+          for i in $(find . -name "oci.*.worker" -print)
           do
             echo "OCI to terminate: $i -- $(jq -r '.data.id' < $i)"
             oci --auth api_key \
               compute instance terminate \
               --instance-id $(jq -r '.data.id' < $i) \
-              --force
+              --force || true
           done
