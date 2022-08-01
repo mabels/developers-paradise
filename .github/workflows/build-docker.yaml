@@ -3,8 +3,8 @@ name: Build Docker
 on:
   push:
     branches: [ main ]
-  schedule:
-    - cron: "3 3 * * 0"
+#  schedule:
+#    - cron: "3 3 * * 0"
 
 permissions:
   id-token: write
@@ -53,12 +53,12 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
-          bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
-          bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
-          for i in $(find . -name "oci.*.worker")
-          do
-            echo "Special OCI-Worker instances: $worker -- $(jq -r '.data.id' < $i)"
-          done
+          #bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
+          #bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
+          #for i in $(find . -name "oci.*.worker")
+          #do
+          #  echo "Special OCI-Worker instances: $worker -- $(jq -r '.data.id' < $i)"
+          #done
           #aws sts get-caller-identity
           #bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
           #bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
