@@ -121,7 +121,7 @@ RUN VERSION=@@AWS_AWS_CLI_VERSION@@; mkdir -p /usr/local/bin && \
     bash /post-clean.sh botocore && \
     git clone -b $VERSION --depth 1 https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
-    python3 setup.py install --prefix /usr/local && \
+    python3 -m pip install . --prefix /usr/local && \
     /usr/local/bin/aws --version && \
     cd .. && bash /post-clean.sh aws-cli 
 
