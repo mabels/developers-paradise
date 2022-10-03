@@ -78,7 +78,7 @@ EOF
 oci \
 --auth api_key \
 compute instance launch  \
---availability-domain Rjsp:EU-FRANKFURT-1-AD-3 \
+--availability-domain Rjsp:EU-FRANKFURT-1-AD-2 \
 --subnet-id ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaauzimrxgjorgl27ug3i6hoflyoi4gwlnr7ihiuxgagr4bahmcejyq \
 --shape $INSTANCE_TYPE \
 --image-id $AMI \
