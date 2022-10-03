@@ -110,7 +110,8 @@ RUN VERSION=@@99DESIGNS_AWS_VAULT_VERSION@@ && \
     cp aws-vault /usr/local/bin && cd .. && \
     bash /post-clean.sh aws-vault
 
-COPY ./aws-cli-ruamel-yaml.patch /
+#COPY ./aws-cli-ruamel-yaml.patch /
+#patch -p1 < /aws-cli-ruamel-yaml.patch && \
 
 RUN VERSION=@@AWS_AWS_CLI_VERSION@@; mkdir -p /usr/local/bin && \
     git clone -b @@BOTO_BOTOCORE_VERSION@@ --depth 1 https://github.com/boto/botocore.git && \
@@ -120,7 +121,6 @@ RUN VERSION=@@AWS_AWS_CLI_VERSION@@; mkdir -p /usr/local/bin && \
     bash /post-clean.sh botocore && \
     git clone -b $VERSION --depth 1 https://github.com/aws/aws-cli.git && \
     cd aws-cli && \
-    patch -p1 < /aws-cli-ruamel-yaml.patch && \
     python3 setup.py install --prefix /usr/local && \
     /usr/local/bin/aws --version && \
     cd .. && bash /post-clean.sh aws-cli 
