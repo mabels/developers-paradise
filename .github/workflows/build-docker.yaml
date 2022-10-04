@@ -3,8 +3,8 @@ name: Build Docker
 on:
   push:
     branches: [ main ]
-#  schedule:
-#    - cron: "3 3 * * 0"
+  schedule:
+    - cron: "3 3 * * 0"
 
 permissions:
   id-token: write
