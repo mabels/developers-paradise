@@ -72,8 +72,8 @@ jobs:
       - name: Upload prepare.tar
         uses: actions/upload-artifact@v3
         with:
-          name: prepare.tar
-          path: prepare.tar
+          name: prepare-tar
+          path: ./prepare.tar
 
   update-manifest:
     # X64 we need for nodegit
@@ -99,13 +99,13 @@ jobs:
       - name: extract prepare.tar
         uses: actions/download-artifact@v3
         with:
-          name: prepare.tar
+          name: prepare-tar
 
       - name: Write Manifest
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
-          tar xf ./prepare.tar/prepare.tar
+          tar xf ./prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make manifest REPO=public.ecr.aws/d3g6c8d4 \
@@ -147,7 +147,7 @@ jobs:
       - name: extract prepare.tar
         uses: actions/download-artifact@v3
         with:
-          name: prepare.tar
+          name: prepare-tar
 
       - name: Build Docker
         env:
@@ -161,7 +161,7 @@ jobs:
           docker ps
           source /usr/bin/docker-host-env
           echo $DOCKER_HOST
-          tar xf ./prepare.tar/prepare.tar
+          tar xf ./prepare.tar
           export DOCKER_CONFIG=$HOME/.docker
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker" DOCKER_BUILD_ARGS="--build-arg DOCKER_HOST=$(docker-host-env)"
@@ -192,7 +192,7 @@ jobs:
       - name: extract prepare.tar
         uses: actions/download-artifact@v3
         with:
-          name: prepare.tar
+          name: prepare-tar
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1.7.0
@@ -226,7 +226,7 @@ jobs:
       - shell: bash
         name: terminate ec2
         run: |
-          tar xf ./prepare.tar/prepare.tar
+          tar xf ./prepare.tar
           for i in $(find . -name "ec2.*.worker" -print)
           do
             echo "EC2 to terminate: $i -- $(jq -r '.Instances[0].InstanceId' < $i)" || true
