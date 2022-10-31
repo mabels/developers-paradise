@@ -17,14 +17,14 @@ jobs:
     # runs-on: ['self-hosted', 'Linux', 'X64']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: mabels/neckless@main
         with:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.6.1
+        uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
@@ -70,7 +70,7 @@ jobs:
           make prepare.tar APIUSER=${APIUSER} DOCKER=docker
 
       - name: Upload prepare.tar
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v3
         with:
           name: prepare.tar
           path: prepare.tar
@@ -82,14 +82,14 @@ jobs:
     name: Update-Manifest
     needs: docker-build
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: mabels/neckless@main
         with:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.6.1
+        uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
@@ -97,7 +97,7 @@ jobs:
 
 
       - name: extract prepare.tar
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: prepare.tar
 
@@ -131,21 +131,21 @@ jobs:
 
     name: Build Docker ${{ matrix.arch }}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - uses: mabels/neckless@main
         with:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.6.1
+        uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
       - name: extract prepare.tar
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: prepare.tar
 
@@ -187,15 +187,15 @@ jobs:
     if: always()
     needs: [prepare, update-manifest, docker-build]
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: extract prepare.tar
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v3
         with:
           name: prepare.tar
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.6.1
+        uses: aws-actions/configure-aws-credentials@v1.7.0
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
