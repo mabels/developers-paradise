@@ -76,6 +76,7 @@ jobs:
           #  echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
           #done
           # GCP
+          gcloud auth login --no-browser --brief --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
           bash .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" x86_64
           bash .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "gcp.*.worker")
