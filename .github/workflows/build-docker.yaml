@@ -30,6 +30,14 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
+      - id: gcp_auth
+        name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v1.0.0'
+        with:
+          create_credentials_file: 'true'
+          workload_identity_provider: 'projects/307390870127/locations/global/workloadIdentityPools/github-action-pool/providers/github-action-provider'
+          service_account: 'github-action-service-account@vibrant-mantis-723.iam.gserviceaccount.com'
+
       - shell: bash
         name: OCI Write Config and Key File
         env:
@@ -43,7 +51,7 @@ jobs:
           ls -l .oci
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
-          oci --version 
+          oci --version
           oci setup repair-file-permissions --file $HOME/.oci/config
           oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
 
@@ -53,19 +61,27 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
-          bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
-          bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
-          for i in $(find . -name "oci.*.worker")
-          do
-            echo "Special OCI-Worker instances: $worker -- $(jq -r '.data.id' < $i)"
-          done
-          #aws sts get-caller-identity
+          # OCI
+          #bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" x86_64
+          #bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
+          #for i in $(find . -name "oci.*.worker")
+          #do
+          #  echo "Special OCI-Worker instances: $worker -- $(jq -r '.data.id' < $i)"
+          #done
+          # AWS
           #bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
           #bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
           #for i in $(find . -name "ec2.*.worker")
           #do
           #  echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
           #done
+          # GCP
+          bash .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" x86_64
+          bash .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" aarch64
+          for i in $(find . -name "gcp.*.worker")
+          do
+            echo "Special EC2-Worker instances: $worker -- $(cat $i)"
+          done
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER)
           make prepare.tar APIUSER=${APIUSER} DOCKER=docker
 
@@ -112,9 +128,9 @@ jobs:
             ARCHSELECT="--archSelect x86_64 --archSelect aarch64" DOCKER=docker \
             MANIFEST_TOOL="docker run -v $DOCKER_CONFIG:/.docker -v $(pwd):/app  -w /app -t mplatform/manifest-tool:latest"
           make clean_repo
-          
+
           # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-    
+
 
   docker-build:
     runs-on: ${{ matrix.platform }}
@@ -144,6 +160,14 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
+      - id: gcp_auth
+        name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v1.0.0'
+        with:
+          create_credentials_file: 'true'
+          workload_identity_provider: 'projects/307390870127/locations/global/workloadIdentityPools/github-action-pool/providers/github-action-provider'
+          service_account: 'github-action-service-account@vibrant-mantis-723.iam.gserviceaccount.com'
+
       - name: extract prepare.tar
         uses: actions/download-artifact@v3
         with:
@@ -166,7 +190,7 @@ jobs:
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker" DOCKER_BUILD_ARGS="--build-arg DOCKER_HOST=$(docker-host-env)"
           make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker"
-          
+
           # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
           #find . -ls | grep -v node_modules
           # make -dn all REPO=public.ecr.aws/d3g6c8d4
@@ -201,6 +225,14 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
+      - id: gcp_auth
+        name: 'Authenticate to GCP'
+        uses: 'google-github-actions/auth@v1.0.0'
+        with:
+          create_credentials_file: 'true'
+          workload_identity_provider: 'projects/307390870127/locations/global/workloadIdentityPools/github-action-pool/providers/github-action-provider'
+          service_account: 'github-action-service-account@vibrant-mantis-723.iam.gserviceaccount.com'
+
       - uses: mabels/neckless@main
         with:
           version: v0.1.15
@@ -218,7 +250,7 @@ jobs:
           ls -l .oci
           cp .github/workflows/oci-via.docker /usr/local/bin/oci
           chmod +x /usr/local/bin/oci
-          oci --version 
+          oci --version
           oci setup repair-file-permissions --file $HOME/.oci/config
           oci setup repair-file-permissions --file $HOME/.oci/instances_oci_api_key.pem
 
@@ -239,4 +271,9 @@ jobs:
               compute instance terminate \
               --instance-id $(jq -r '.data.id' < $i) \
               --force || true
+          done
+          for i in $(find . -name "gcp.*.worker" -print)
+          do
+            echo "GCP to terminate: $(cat $i)" || true
+            bash -x $i
           done

@@ -24,7 +24,7 @@ elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=VM.Standard.E4.Flex
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
-   [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaalt2wothtrqva253mkuujx56ciafjkalpa7gsctog2y6vwb2werya 
+   [ -z "$AMI" ] && AMI=$(node .github/workflows/oci-find-image.js $ARCH)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_x86_64.tar.gz
    SHAPE='{"ocpus":16.0,"memoryInGBs":16.0,"baselineOcpuUtilization":"BASELINE_1_8"}'
@@ -32,7 +32,7 @@ elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=VM.Standard.A1.Flex
    #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
-   [ -z "$AMI" ] && AMI=ocid1.image.oc1.eu-frankfurt-1.aaaaaaaa7eis5rnrr2tyvwa27ko53yp4ua7jur7xgnhppockzytlsa3soara 
+   [ -z "$AMI" ] && AMI=$(node .github/workflows/oci-find-image.js $ARCH)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_arm64.tar.gz
    SHAPE='{"ocpus":16.0,"memoryInGBs":16.0}'

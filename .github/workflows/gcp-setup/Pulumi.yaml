@@ -1,0 +1,3 @@
+name: gcp-setup
+description: Setup the GCP OpenID Requirements for Github
+runtime: go
