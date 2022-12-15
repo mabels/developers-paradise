@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp/iam"
 	"github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp/projects"
 	"github.com/pulumi/pulumi-gcp/sdk/v6/go/gcp/serviceaccount"
@@ -22,6 +20,7 @@ func main() {
 		sa, err := serviceaccount.NewAccount(ctx, "github-action-service-account", &serviceaccount.AccountArgs{
 			AccountId:   pulumi.String("github-action-service-account"),
 			DisplayName: pulumi.String("Github Action Service Account"),
+			Project:     gcpProject,
 		})
 		if err != nil {
 			return err
@@ -47,14 +46,7 @@ func main() {
 		if err != nil {
 			return err
 		}
-		_, err = projects.NewIAMBinding(ctx, "iam-serviceAccountTokenCreator", &projects.IAMBindingArgs{
-			Members: pulumi.StringArray{pulumi.Sprintf("serviceAccount:%s", sa.Email)},
-			Project: gcpProject,
-			Role:    pulumi.String("roles/iam.serviceAccountTokenCreator"),
-		})
-		if err != nil {
-			return err
-		}
+
 		// gcloud iam workload-identity-pools create "github-action-pool" --project="${PROJECT_ID}" \
 		//   --location="global" \
 		//   --display-name="Github Action Pool"
@@ -112,23 +104,33 @@ func main() {
 			}
 		}
 		// export REPO="mabels/mailu-arm" # e.g. "google/chrome"
+		members := pulumi.StringArray{pulumi.String("user:meno.abels@gmail.com")}
 		for _, repo := range []string{"mabels/mailu-arm", "mabels/developers-paradise"} {
-
 			// gcloud iam service-accounts add-iam-policy-binding "github-action-service-account@${PROJECT_ID}.iam.gserviceaccount.com" \
 			//   --project="${PROJECT_ID}" \
 			//   --role="roles/iam.workloadIdentityUser" \
 			//   --member="principalSet://iam.googleapis.com/${WORKLOAD_IDENTITY_POOL_ID}/attribute.repository/${REPO}"
-			_, err = serviceaccount.NewIAMBinding(ctx, fmt.Sprintf("workloadIdentityUser-%s", repo), &serviceaccount.IAMBindingArgs{
-				ServiceAccountId: sa.Name,
-				Role:             pulumi.String("roles/iam.workloadIdentityUser"),
-				Members: pulumi.StringArray{
-					pulumi.Sprintf("principalSet://iam.googleapis.com/%s/attribute.repository/%s", wip.Name, repo),
-				},
-			})
-			// ctx.Export(fmt.Sprintf("workloadIdentityUser-%s", repo), pulumi.Sprintf("principalSet://iam.googleapis.com/%s/attribute.repository/%s", wip.Name, repo))
-			if err != nil {
-				return nil
-			}
+			members = append(members, pulumi.Sprintf("principalSet://iam.googleapis.com/%s/attribute.repository/%s", wip.Name, repo))
+		}
+
+		_, err = serviceaccount.NewIAMBinding(ctx, "workloadIdentityUser", &serviceaccount.IAMBindingArgs{
+			ServiceAccountId: sa.ID(),
+			Role:             pulumi.String("roles/iam.workloadIdentityUser"),
+			Members:          members,
+		})
+		if err != nil {
+			return err
+		}
+
+		_, err = serviceaccount.NewIAMBinding(ctx, "sa-iam-serviceAccountTokenCreator", &serviceaccount.IAMBindingArgs{
+			ServiceAccountId: sa.ID(),
+			Members: members,
+			// pulumi.StringArray{pulumi.Sprintf("serviceAccount:%s", sa.Email)},
+			// Project: gcpProject,
+			Role:    pulumi.String("roles/iam.serviceAccountTokenCreator"),
+		})
+		if err != nil {
+			return err
 		}
 
 		// gcloud iam workload-identity-pools providers describe "github-action-provider" \
