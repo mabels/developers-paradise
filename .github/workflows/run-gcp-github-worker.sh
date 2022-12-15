@@ -92,10 +92,8 @@ runcmd:
 - bash -x /setup.sh
 EOF
 
-# $HOME/user-data is a artefact of docker
-
-
-gcloud compute instances create $PROJECT-$ARCH-$REV \
+instance=$(echo $PROJECT-$(echo $ARCH | tr -dc '[:alpha:]')-$(echo $REV | fold -w 10 | head -1))
+gcloud compute instances create $instance \
 	--project=vibrant-mantis-723 \
 	--zone=us-central1-a \
 	--machine-type=$INSTANCE_TYPE \
@@ -111,30 +109,5 @@ gcloud compute instances create $PROJECT-$ARCH-$REV \
 	--reservation-affinity=any \
 	--metadata-from-file user-data=./user-data.yaml
 
-echo "gcloud compute instances delete $PROJECT-$iid --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
-#oci \
-#--auth api_key \
-#compute instance launch  \
-#--availability-domain Rjsp:EU-FRANKFURT-1-AD-2 \
-#--subnet-id ocid1.subnet.oc1.eu-frankfurt-1.aaaaaaaauzimrxgjorgl27ug3i6hoflyoi4gwlnr7ihiuxgagr4bahmcejyq \
-#--shape $INSTANCE_TYPE \
-#--image-id $AMI \
-#--compartment-id ocid1.tenancy.oc1..aaaaaaaax2n5snd6z7n3ddnnii5x2727bh4zhjzcb7umshzorp4qnp7a2jda \
-#--shape-config "$SHAPE" \
-#--assign-public-ip true \
-#--boot-volume-size-in-gbs 200 \
-#--user-data-file "$HOME/user-data" \
-#--is-pv-encryption-in-transit-enabled true \
-#--metadata "{\"ssh_authorized_keys\": $(curl https://github.com/mabels.keys | jq -Rsa .)}" \
-# > $OCI_WORKER
-
-#aws ec2 run-instances \
-#  --image-id $AMI \
-#  --instance-type $INSTANCE_TYPE \
-#  --user-data file://./user-data \
-#  --security-group-ids $(aws ec2 describe-security-groups | jq ".SecurityGroups[] | select(.GroupName==\"${PROJECT}-ec2-github-runner\") .GroupId" -r) \
-#  --key-name ${PROJECT}-ec2-github-manager \
-#  --associate-public-ip-address \
-#  --instance-initiated-shutdown-behavior terminate \
-#  --iam-instance-profile Name=${PROJECT}-ec2-github-runner > $OCI_WORKER
+echo "gcloud compute instances delete instance --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
 
