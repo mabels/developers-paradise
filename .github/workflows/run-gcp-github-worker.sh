@@ -102,7 +102,7 @@ gcloud compute instances create $instance \
 	--provisioning-model=STANDARD \
 	--service-account=307390870127-compute@developer.gserviceaccount.com \
 	--scopes=https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/logging.write,https://www.googleapis.com/auth/monitoring.write,https://www.googleapis.com/auth/servicecontrol,https://www.googleapis.com/auth/service.management.readonly,https://www.googleapis.com/auth/trace.append \
-	--create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=projects/ubuntu-os-cloud/global/images/ubuntu-2204-jammy-arm64-v20221206,mode=rw,size=200,type=projects/vibrant-mantis-723/zones/us-central1-a/diskTypes/pd-balanced \
+	--create-disk=auto-delete=yes,boot=yes,device-name=instance-1,image=$AMI,mode=rw,size=200,type=projects/vibrant-mantis-723/zones/us-central1-a/diskTypes/pd-balanced \
 	--no-shielded-secure-boot \
 	--shielded-vtpm \
 	--shielded-integrity-monitoring \

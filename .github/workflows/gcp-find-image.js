@@ -26,5 +26,5 @@ exec(cmd, (error, stdout, stderr) => {
     return;
   }
   const result = JSON.parse(stdout);
-  process.stdout.write(result.filter(filter)[0].name);
+  process.stdout.write(result.filter(filter)[0].selfLink);
 });
