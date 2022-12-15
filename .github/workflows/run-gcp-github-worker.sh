@@ -54,8 +54,8 @@ then
    exit 1
 fi
 
-node .github/workflows/gcp-find-image.js $ARCH
-echo $AMI
+#node .github/workflows/gcp-find-image.js $ARCH
+#echo $AMI
 
 cat > ./user-data <<EOF
 #cloud-config
@@ -95,7 +95,7 @@ EOF
 # $HOME/user-data is a artefact of docker
 
 
-iid=\$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w \${1:-10} | head -n 1)
+iid=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1)
 
 gcloud compute instances create $PROJECT-$iid \
 	--project=vibrant-mantis-723 \
