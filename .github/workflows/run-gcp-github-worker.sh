@@ -1,5 +1,5 @@
 #!/bin/bash
-PROJECT=mailu-arm
+PROJECT=developers-paradise
 USER=mabels
 REV=$1
 if [ -z "$REV" ]
@@ -57,7 +57,7 @@ fi
 #node .github/workflows/gcp-find-image.js $ARCH
 #echo $AMI
 
-cat > ./user-data <<EOF
+cat > ./user-data.yaml <<EOF
 #cloud-config
 
 users:
@@ -95,9 +95,7 @@ EOF
 # $HOME/user-data is a artefact of docker
 
 
-iid=$(cat /dev/urandom | tr -dc '[:alpha:]' | fold -w ${1:-10} | head -n 1)
-
-gcloud compute instances create $PROJECT-$iid \
+gcloud compute instances create $PROJECT-$ARCH-$REV \
 	--project=vibrant-mantis-723 \
 	--zone=us-central1-a \
 	--machine-type=$INSTANCE_TYPE \
