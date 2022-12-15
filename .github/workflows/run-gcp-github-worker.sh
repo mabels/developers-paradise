@@ -22,7 +22,7 @@ then
    echo Use $INSTANCE_TYPE - $ARCH
 elif [ $ARCH = "x86_64" ]
 then
-   INSTANCE_TYPE=t2d-standard-4
+   INSTANCE_TYPE=e2-standard-4
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
    [ -z "$AMI" ] && AMI=$(node .github/workflows/gcp-find-image.js $ARCH)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
@@ -109,5 +109,5 @@ gcloud compute instances create $instance \
 	--reservation-affinity=any \
 	--metadata-from-file user-data=./user-data.yaml
 
-echo "gcloud compute instances delete instance --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
+echo "gcloud compute instances delete $instance --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
 
