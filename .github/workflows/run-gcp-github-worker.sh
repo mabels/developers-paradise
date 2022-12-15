@@ -93,7 +93,7 @@ runcmd:
 EOF
 
 instance=$(echo $PROJECT-$(echo $ARCH | tr -dc '[:alpha:]')-$(echo $REV | fold -w 10 | head -1))
-gcloud compute instances create $instance \
+gcloud --quiet compute instances create $instance \
 	--project=vibrant-mantis-723 \
 	--zone=us-central1-a \
 	--machine-type=$INSTANCE_TYPE \
@@ -109,5 +109,5 @@ gcloud compute instances create $instance \
 	--reservation-affinity=any \
 	--metadata-from-file user-data=./user-data.yaml
 
-echo "gcloud compute instances delete $instance --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
+echo "gcloud --quiet compute instances delete $instance --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
 

@@ -76,12 +76,12 @@ jobs:
           #  echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
           #done
           # GCP
-          gcloud auth login --no-browser --brief --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
+          #gcloud --quiet auth login --no-browser --brief --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
           bash -x .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" x86_64
           bash -x .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "gcp.*.worker")
           do
-            echo "Special EC2-Worker instances: $worker -- $(cat $i)"
+            echo "Special GCP-Worker instances: $worker -- $(cat $i)"
           done
           eval $(neckless kv ls --ghAddMask  --shKeyValue APIUSER)
           make prepare.tar APIUSER=${APIUSER} DOCKER=docker
