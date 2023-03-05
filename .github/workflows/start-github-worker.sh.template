@@ -65,15 +65,16 @@ EOF1
 while true
 do
   docker run \
-	     -v /tmp/start.sh:/tmp/start.sh \
-	     -e DOCKER_HOST=$DOCKER_HOST \
-	     -e GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
-	     -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
-	     -e CONFIG_OPTS="--ephemeral" \
-	     -e RUNNER_LABELS="$REV" \
-	     -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
-	     public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
-	     bash /tmp/start.sh && \
+         --net host \
+         -v /tmp/start.sh:/tmp/start.sh \
+         -e DOCKER_HOST=$DOCKER_HOST \
+         -e GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
+         -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
+         -e CONFIG_OPTS="--ephemeral" \
+         -e RUNNER_LABELS="$REV" \
+         -e RUNNER_REPOSITORY_URL=https://github.com/${USER}/${PROJECT} \
+         public.ecr.aws/mabels/developers-paradise:$DOCKER_TAG \
+         bash /tmp/start.sh && \
     poweroff && \
     exit 0
   sleep 5
