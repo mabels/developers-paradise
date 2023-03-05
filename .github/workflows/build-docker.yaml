@@ -24,7 +24,7 @@ jobs:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
@@ -106,7 +106,7 @@ jobs:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
@@ -155,7 +155,7 @@ jobs:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
@@ -220,7 +220,7 @@ jobs:
           name: prepare-tar
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1.7.0
+        uses: aws-actions/configure-aws-credentials@v1-node16
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
