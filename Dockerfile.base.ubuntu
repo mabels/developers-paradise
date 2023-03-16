@@ -11,7 +11,7 @@ RUN \
   DEBIAN_FRONTEND=noninteractive apt upgrade -y && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim neovim unzip zip powerline fonts-powerline zsh-theme-powerlevel9k \
-    rsync ripgrep make dnsutils procps python-is-python3 \
+    rsync ripgrep make dnsutils procps python-is-python3 mandoc \
     apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip python3-mypy python3-venv iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux tig lsof htop sysstat \
     libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev docker.io docker-compose && \
