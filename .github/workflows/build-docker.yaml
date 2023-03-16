@@ -39,6 +39,7 @@ jobs:
           service_account: 'github-action-service-account@vibrant-mantis-723.iam.gserviceaccount.com'
 
       - shell: bash
+        if: github.repository == 'octo-org/octo-repo-prod'
         name: OCI Write Config and Key File
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
