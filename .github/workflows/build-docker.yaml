@@ -78,6 +78,7 @@ jobs:
           #done
           # GCP
           #gcloud --quiet auth login --no-browser --brief --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
+          cat $GOOGLE_APPLICATION_CREDENTIALS
           bash -x .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" x86_64
           bash -x .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "gcp.*.worker")
