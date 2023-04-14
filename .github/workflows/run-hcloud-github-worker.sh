@@ -76,7 +76,7 @@ hcloud server create \
    --type $INSTANCE_TYPE \
    --ssh-key meno \
    --user-data-from-file ./user-data \
-   --name gh-runner-$ARCH-$REV && \
-   echo "gh-runner-$ARCH-$REV" > $HCLOUD_WORKER
+   --name gh-runner-$INSTANCE_TYPE-$REV && \
+   echo "gh-runner-$INSTANCE_TYPE-$REV" > $HCLOUD_WORKER
 
 echo "hcloud server delete $(cat $HCLOUD_WORKER)" > shutdown.$HCLOUD_WORKER
