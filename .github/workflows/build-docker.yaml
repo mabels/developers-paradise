@@ -114,12 +114,12 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN HCLOUD_TOKEN)
-          bash -x .github/workflows/run-hcloud-github-worker.sh "${{github.sha}}" x86_64
-          bash -x .github/workflows/run-hcloud-github-worker.sh "${{github.sha}}" aarch64
+          bash .github/workflows/run-hcloud-github-worker.sh "${{github.sha}}" x86_64
+          bash .github/workflows/run-hcloud-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "hcloud.*.worker")
           do
-            echo "HCLOUD-Worker instances: $(cat $worker)"
-            hcloud server describe $(cat $worker)
+            echo "HCLOUD-Worker instances: $(cat $i)"
+            hcloud server describe $(cat $i)
           done
 
       - shell: bash
