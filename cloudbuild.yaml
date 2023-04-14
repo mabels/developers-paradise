@@ -1,7 +1,0 @@
-steps:
-- name: "ubuntu"
-  args: ["bash", "-c", "echo hello world"]
-- name: "ubuntu"
-  args: ["uname:, "-a"]
-- name: "ubuntu"
-  args: ["find:, "/", "-ls"]

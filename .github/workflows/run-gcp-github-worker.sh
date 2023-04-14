@@ -109,5 +109,5 @@ gcloud --quiet compute instances create $instance \
 	--reservation-affinity=any \
 	--metadata-from-file user-data=./user-data.yaml
 
-echo "gcloud --quiet compute instances delete $instance --project=vibrant-mantis-723 --zone=us-central1-a" > $GCP_WORKER
+echo "gcloud --quiet compute instances delete $instance --project=vibrant-mantis-723 --zone=us-central1-a" > shutdown.$GCP_WORKER
 

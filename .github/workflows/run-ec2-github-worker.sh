@@ -22,7 +22,7 @@ then
    echo Use $INSTANCE_TYPE - $ARCH
 elif [ $ARCH = "x86_64" ]
 then
-   INSTANCE_TYPE=m5ad.large 
+   INSTANCE_TYPE=m5ad.large
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
    [ -z "$AMI" ] && AMI=ami-015c25ad8763b2f11
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
@@ -180,3 +180,4 @@ aws ec2 run-instances \
   --instance-initiated-shutdown-behavior terminate \
   --iam-instance-profile Name=${PROJECT}-ec2-github-runner > $EC2_WORKER
 
+echo "aws ec2 terminate-instances --instance-ids $(jq -r .Instances[0].InstanceId $EC2_WORKER)" > shutdown.$EC2_WORKER
