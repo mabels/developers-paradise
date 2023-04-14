@@ -304,15 +304,9 @@ jobs:
         if: env.CLOUD == 'hcloud'
 
       - shell: bash
-        if: env.CLOUD == 'hcloud'
-        name: start work on ${{ env.CLOUD }}
+        name: terminate
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
-        run: |
-          eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN HCLOUD_TOKEN)
-
-      - shell: bash
-        name: terminate
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN HCLOUD_TOKEN)
           tar xf ./prepare.tar

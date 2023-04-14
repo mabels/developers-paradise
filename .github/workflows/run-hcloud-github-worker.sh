@@ -22,13 +22,13 @@ then
    echo Use $INSTANCE_TYPE - $ARCH
 elif [ $ARCH = "x86_64" ]
 then
-   INSTANCE_TYPE=cpx31
+   INSTANCE_TYPE=cx21
    [ -z "$AMI" ] && AMI="ubuntu-22.04"
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
 then
-   INSTANCE_TYPE=cax31
+   INSTANCE_TYPE=cax11
    [ -z "$AMI" ] && AMI="ubuntu-22.04"
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_arm64.tar.gz
