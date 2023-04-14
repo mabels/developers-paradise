@@ -23,15 +23,12 @@ then
 elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=cpx31
-
-   hcloud server create --image "ubuntu-22.04" --type cax11  --ssh-key meno --user-data-from-file user-data --name bla  --primary-ipv4 "" --help
    [ -z "$AMI" ] && AMI="ubuntu-22.04"
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=cax31
-   #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
    [ -z "$AMI" ] && AMI="ubuntu-22.04"
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.15/neckless_0.1.15_Linux_arm64.tar.gz
