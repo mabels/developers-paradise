@@ -203,14 +203,6 @@ jobs:
           aws-region: eu-central-1
           role-session-name: GitHubAction
 
-      - id: gcp_auth
-        name: "Authenticate to GCP"
-        uses: "google-github-actions/auth@v1.0.0"
-        with:
-          create_credentials_file: "true"
-          workload_identity_provider: "projects/307390870127/locations/global/workloadIdentityPools/github-action-pool/providers/github-action-provider"
-          service_account: "github-action-service-account@vibrant-mantis-723.iam.gserviceaccount.com"
-
       - name: extract prepare.tar
         uses: actions/download-artifact@v3
         with:
@@ -221,8 +213,6 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
           MATRIX_ARCH: ${{ matrix.arch }}
         run: |
-          ip a l
-          ip r l
           export DOCKER_BUILDKIT=1
           cat /usr/bin/docker
           docker ps
@@ -233,20 +223,6 @@ jobs:
           aws ecr-public get-login-password --region us-east-1 | docker login --username AWS --password-stdin public.ecr.aws
           make all REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker" DOCKER_BUILD_ARGS="--build-arg DOCKER_HOST=$(docker-host-env)"
           make push REPO=public.ecr.aws/d3g6c8d4 DOCKER="docker"
-
-          # eval $(neckless kv ls --ghAddMask  --shKeyValue AWS_ACCESS_KEY_ID AWS_SECRET_ACCESS_KEY)
-          #find . -ls | grep -v node_modules
-          # make -dn all REPO=public.ecr.aws/d3g6c8d4
-
-      #sudo apt update -y
-      #sudo apt install -y docker.io
-      #sudo chmod 666 /run/docker.sock
-      # - name: Kill the EC2's
-      #   if: always()
-      #   uses: actions/upload-artifact@v1
-      #   with:
-      #     name: test-results
-      #     path: app/build
 
   cleanup:
     runs-on: ubuntu-latest
