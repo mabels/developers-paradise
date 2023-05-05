@@ -61,7 +61,7 @@ jobs:
 
       - shell: bash
         if: env.CLOUD == 'aws'
-        name: start work on ${{ env.CLOUD }}
+        name: start work on aws
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
@@ -76,7 +76,7 @@ jobs:
 
       - shell: bash
         if: env.CLOUD == 'gcp'
-        name: start work on ${{ env.CLOUD }}
+        name: start work on gcp
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
@@ -93,7 +93,7 @@ jobs:
 
       - shell: bash
         if: env.CLOUD == 'oci'
-        name: start work on ${{ env.CLOUD }}
+        name: start work on oci
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
@@ -112,7 +112,7 @@ jobs:
 
       - shell: bash
         if: env.CLOUD == 'hcloud'
-        name: start work on ${{ env.CLOUD }}
+        name: start work on hcloud
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
