@@ -36,6 +36,7 @@ then
 elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=m5ad.large
+   INSTANCE_TYPE=c5ad.2xlarge
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
    [ -z "$AMI" ] && AMI=$(getAmi x86_64 | jq -r .ImageId)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
@@ -43,6 +44,7 @@ then
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=m6gd.large
+   INSTANCE_TYPE=c6gd.2xlarge
    #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
    [ -z "$AMI" ] && AMI=$(getAmi arm64 | jq -r .ImageId)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
