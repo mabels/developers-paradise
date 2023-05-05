@@ -24,14 +24,14 @@ elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=m5ad.large
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
-   [ -z "$AMI" ] && AMI=ami-015c25ad8763b2f11
+   [ -z "$AMI" ] && AMI=$(aws ec2 describe-images --filters 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server*' --query 'sort_by(Images,&CreationDate)[-1].ImageId')
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=m6gd.large
    #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
-   [ -z "$AMI" ] && AMI=ami-0641bed8c0ce71686
+   [ -z "$AMI" ] && AMI=$(aws ec2 describe-images --filters 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server*' --query 'sort_by(Images,&CreationDate)[-1].ImageId')
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_arm64.tar.gz
 else
@@ -82,12 +82,8 @@ aws sts get-caller-identity
 curl -L -o /tmp/neckless.tar.gz $NECKLESS_URL
 (cd /tmp && tar xvzf neckless.tar.gz)
 cp /tmp/neckless /usr/bin
-curl -L -o .neckless https://raw.githubusercontent.com/${USER}/${PROJECT}/main/.neckless
-eval \$(NECKLESS_PRIVKEY=\$(aws --region eu-central-1 secretsmanager get-secret-value \
-  --secret-id arn:aws:secretsmanager:eu-central-1:973800055156:secret:${PROJECT}/neckless \
-  --query SecretString --output text | jq -r ".\"${PROJECT}\"") neckless kv ls GITHUB_ACCESS_TOKEN)
 
-GITHUB_ACCESS_TOKEN=\$GITHUB_ACCESS_TOKEN
+GITHUB_ACCESS_TOKEN=$GITHUB_ACCESS_TOKEN
 ARCH=$ARCH
 REV=$REV
 USER=$USER

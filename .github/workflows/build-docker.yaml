@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  CLOUD: hcloud
+  CLOUD: aws
 jobs:
   prepare:
     name: Prepare Versions
@@ -66,11 +66,12 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           # AWS
-          bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" x86_64
-          bash .github/workflows/run-ec2-github-worker.sh "${{github.sha}}" aarch64
+          bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" x86_64
+          bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "ec2.*.worker")
           do
-            echo "Special EC2-Worker instances: $worker -- $(jq -r '.Instances[0].InstanceId' < $i)"
+            echo "Special EC2-Worker instances: $i"
+            jq < $i
           done
 
       - shell: bash
@@ -86,7 +87,8 @@ jobs:
           bash -x .github/workflows/run-gcp-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "gcp.*.worker")
           do
-            echo "Special GCP-Worker instances: $worker -- $(cat $i)"
+            echo "Special GCP-Worker instances: $i"
+            jq < $i
           done
 
       - shell: bash
@@ -101,7 +103,8 @@ jobs:
           bash .github/workflows/run-oci-github-worker.sh "${{github.sha}}" aarch64
           for i in $(find . -name "oci.*.worker")
           do
-            echo "Special OCI-Worker instances: $worker -- $(jq -r '.data.id' < $i)"
+            echo "Special OCI-Worker instances: $i"
+            jq < $i
           done
 
       - uses: mabels/hcloud-cli@add_github_action
