@@ -1,6 +1,6 @@
 #!/bin/bash
 
-getAmi {
+function getAmi {
   aws ec2 describe-images --filters \
   "Name=architecture,Values=$1" \
   'Name=is-public,Values=true' \
