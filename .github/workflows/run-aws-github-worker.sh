@@ -1,4 +1,17 @@
 #!/bin/bash
+
+getAmi {
+  aws ec2 describe-images --filters \
+  "Name=architecture,Values=$1" \
+  'Name=is-public,Values=true' \
+  'Name=owner-alias,Values=amazon' \
+  'Name=root-device-type,Values=ebs' \
+  'Name=virtualization-type,Values=hvm' \
+  'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-*-server*' \
+  --query 'sort_by(Images,&CreationDate)[-1]'
+}
+
+
 PROJECT=developers-paradise
 USER=mabels
 REV=$1
@@ -24,14 +37,14 @@ elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=m5ad.large
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
-   [ -z "$AMI" ] && AMI=$(aws ec2 describe-images --filters 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server*' --query 'sort_by(Images,&CreationDate)[-1].ImageId' | jq -r)
+   [ -z "$AMI" ] && AMI=$(getAmi x86_64 | jq -r .ImageId)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
 then
    INSTANCE_TYPE=m6gd.large
    #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
-   [ -z "$AMI" ] && AMI=$(aws ec2 describe-images --filters 'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server*' --query 'sort_by(Images,&CreationDate)[-1].ImageId' | jq -r)
+   [ -z "$AMI" ] && AMI=$(getAmi arm64 | jq -r .ImageId)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_arm64.tar.gz
 else
