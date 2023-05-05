@@ -26,7 +26,7 @@ jobs:
           version: v0.1.15
 
       - name: Configure AWS Credentials
-        uses: aws-actions/configure-aws-credentials@v1-node16
+        uses: aws-actions/configure-aws-credentials@v2
         with:
           role-to-assume: arn:aws:iam::973800055156:role/developers-paradise-github-runner
           aws-region: eu-central-1
@@ -65,6 +65,7 @@ jobs:
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
+          eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
           # AWS
           bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" x86_64
           bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" aarch64
@@ -80,6 +81,7 @@ jobs:
         env:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
+          eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
           # GCP
           #gcloud --quiet auth login --no-browser --brief --cred-file="${{ steps.gcp_auth.outputs.credentials_file_path }}"
           cat $GOOGLE_APPLICATION_CREDENTIALS

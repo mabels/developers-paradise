@@ -184,7 +184,7 @@ aws ec2 run-instances \
   --instance-type $INSTANCE_TYPE \
   --user-data file://./user-data \
   --security-group-ids $(aws ec2 describe-security-groups | jq ".SecurityGroups[] | select(.GroupName==\"${PROJECT}-ec2-github-runner\") .GroupId" -r) \
-  --key-name ${PROJECT}-ec2-github-manager \
+  --key-name openpgp \
   --associate-public-ip-address \
   --instance-initiated-shutdown-behavior terminate \
   --iam-instance-profile Name=${PROJECT}-ec2-github-runner > $EC2_WORKER
