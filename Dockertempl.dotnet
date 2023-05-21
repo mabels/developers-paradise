@@ -1,6 +1,6 @@
 RUN VERSION=@@DOTNET_RUNTIME_VERSION@@ &&\
     curl -sS -L -o dotnet-install.sh https://dot.net/v1/dotnet-install.sh && \
-    bash ./dotnet-install.sh --channel Current -i /usr/local/bin
+    bash ./dotnet-install.sh --channel STS -i /usr/local/bin
 
 #RUN mkdir -p /usr/share/dotnet && cd /usr/share/dotnet && \
 #    if [ $(uname -m) = "x86_64" ]; then \
