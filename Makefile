@@ -4,7 +4,7 @@ REPO ?= public.ecr.aws/d3g6c8d4
 TOUCHSLEEP ?= sleep 1; touch
 APIUSER ?= "api rate limiting applies"
 MANIFEST_TOOL ?= manifest-tool
-DOCKER_BUILD_ARGS ?= ""
+DOCKER_BUILD_ARGS ?= --progress plain --build-arg DOCKER_HOST=$(DOCKER_HOST)
 
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64
@@ -12,7 +12,7 @@ ARCHS = aarch64 armv7l x86_64
 GITHUB_VERSIONS=helm/helm roboll/helmfile docker/buildx goreleaser/goreleaser mabels/neckless \
 		derailed/k9s 99designs/aws-vault cdr/code-server \
 		actions/runner estesp/manifest-tool pulumi/pulumictl pulumi/pulumi containers/skopeo \
-		nvm-sh/nvm cli/cli xo/usql
+		nvm-sh/nvm cli/cli xo/usql nodejs/node
 
 all: .rev base extend ghrunner ssm codeserver.$(ARCH) tag # ghrunner-swift.$(ARCH) codeserver-swift.$(ARCH)
 	@echo "ARCH=$(ARCH)"
@@ -241,7 +241,7 @@ base: .rev .built.$(ARCH).Dockerfile.base
 
 extend: .versioner .built.$(ARCH).Dockerfile.extend
 
-.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.kryptco Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH)
+.built.$(ARCH).Dockerfile.extend: Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi Dockertempl.manifest-tool Dockertempl.skopeo Dockertempl.githubcli Dockertempl.usql.$(ARCH) Dockertempl.oracle.$(ARCH)
 	echo "FROM developers-paradise:base-$(ARCH)-$(shell cat .rev) AS base" > .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.base-setup >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.dotnet Dockertempl.node Dockertempl.pulumi >> .build.$(ARCH).Dockerfile.extend
@@ -250,7 +250,6 @@ extend: .versioner .built.$(ARCH).Dockerfile.extend
 	cat Dockertempl.githubcli >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.oracle.$(ARCH) >> .build.$(ARCH).Dockerfile.extend
 	cat Dockertempl.usql.$(ARCH) >> .build.$(ARCH).Dockerfile.extend
-	cat Dockertempl.kryptco >> .build.$(ARCH).Dockerfile.extend
 	./.versioner < .build.$(ARCH).Dockerfile.extend > .build.$(ARCH).Dockerfile.extend.versioned
 	$(DOCKER) buildx build $(DOCKER_BUILD_ARGS) -t developers-paradise:extend-$(ARCH)-$(shell cat .rev) -f .build.$(ARCH).Dockerfile.extend.versioned .
 	$(TOUCHSLEEP) .built.$(ARCH).Dockerfile.extend

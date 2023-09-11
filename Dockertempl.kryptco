@@ -1,9 +1,0 @@
-RUN export GOPATH=$HOME/go && \
-    export PATH=$HOME/go/bin:$PATH && \
-    mkdir -p $GOPATH/src/github.com/kryptco && \
-    rm -rf $GOPATH/src/github.com/kryptco/kr && \
-    cd $GOPATH/src/github.com/kryptco && \
-    git clone https://github.com/kryptco/kr.git --depth 1 && \
-    cd kr && \
-    make PREFIX=/usr/local install && \
-    cd .. && bash /post-clean.sh kr
