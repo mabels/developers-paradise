@@ -7,7 +7,7 @@ function getAmi {
   'Name=owner-alias,Values=amazon' \
   'Name=root-device-type,Values=ebs' \
   'Name=virtualization-type,Values=hvm' \
-  'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-*-server*' \
+  'Name=name,Values=ubuntu/images/hvm-ssd/ubuntu-noble-24.04-*-server*' \
   --query 'sort_by(Images,&CreationDate)[-1]'
 }
 
