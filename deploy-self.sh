@@ -8,7 +8,7 @@ apt upgrade -y && \
 apt install -y wget curl jq openssh-server mysql-client \
     git sudo zsh vim unzip zip man-db \
     rsync make dnsutils procps \
-    apt-transport-https gpgv2 gnupg2 apt-utils gcc python3-pip 
+    apt-transport-https gpg apt-utils gcc python3-pip 
 
 snap install docker --devmode
 
