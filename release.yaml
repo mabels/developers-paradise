@@ -66,7 +66,7 @@ jobs:
     steps:
       - name: Download upload_url.env
         id: upload_url
-        uses: actions/download-artifact@v1
+        uses: actions/download-artifact@v6
         with:
           name: upload_url
       - shell: bash
