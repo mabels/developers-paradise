@@ -108,6 +108,8 @@ Components: stable
 Signed-By: /etc/apt/keyrings/docker.asc
 MYEOF
 
+apt update -y
+
 apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 
 aws sts get-caller-identity
