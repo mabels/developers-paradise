@@ -1,4 +1,4 @@
-FROM debian:buster
+FROM debian:bookworm
 
 RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt upgrade -y && \
