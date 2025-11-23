@@ -89,6 +89,9 @@ mkdir -p /var/lib/docker
 mount --bind /mnt/docker /var/lib/docker
 rsync -vaxH /var/lib/docker-off/ /var/lib/docker/
 
+systemctl daemon-reload
+systemctl stop docker.service
+
 apt update -y
 apt upgrade -y
 

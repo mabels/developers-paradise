@@ -25,6 +25,7 @@ ExecStart=
 ExecStart=/usr/bin/dockerd -H fd:// -H tcp://$bindip:2376 --containerd=/run/containerd/containerd.sock
 EOF2
     iptables -I INPUT -p tcp -d $bindip -m state --state NEW -m tcp --dport 2376 -j ACCEPT
+    systemctl daemon-reload
     systemctl stop docker.service
     systemctl daemon-reload
     systemctl start docker.service
