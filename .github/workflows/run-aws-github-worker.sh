@@ -91,7 +91,22 @@ rsync -vaxH /var/lib/docker-off/ /var/lib/docker/
 
 apt update -y
 apt upgrade -y
-apt install -y awscli jq curl docker.io
+
+
+apt install -y ca-certificates curl jq awscli
+install -m 0755 -d /etc/apt/keyrings
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+chmod a+r /etc/apt/keyrings/docker.asc
+tee /etc/apt/sources.list.d/docker.sources <<EOF
+Types: deb
+URIs: https://download.docker.com/linux/ubuntu
+Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
+Components: stable
+Signed-By: /etc/apt/keyrings/docker.asc
+EOF
+
+apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+
 aws sts get-caller-identity
 curl -L -o /tmp/neckless.tar.gz $NECKLESS_URL
 (cd /tmp && tar xvzf neckless.tar.gz)
