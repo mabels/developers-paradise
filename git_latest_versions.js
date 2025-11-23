@@ -36,7 +36,7 @@ const Git = {
       return new Promise((rs, rj) => {
         child_process.exec(
           `git ls-remote ${url}`,
-          { maxBuffer: 16 * 1024 * 1024 },
+          { maxBuffer: 64 * 1024 * 1024 },
           (err, strout, strerr) => {
             if (err) {
               console.error(strerr);
