@@ -136,7 +136,7 @@ jobs:
           make prepare.tar APIUSER=${APIUSER} DOCKER=docker
 
       - name: Upload prepare.tar
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: prepare-tar
           path: ./prepare.tar
