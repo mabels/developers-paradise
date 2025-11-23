@@ -78,11 +78,19 @@ mount /dev/nvme1n1 /mnt
 
 mkdir -p /mnt/snap /var/snap
 mkdir -p /mnt/docker /var/lib/docker
+mkdir -p /mnt/containerd /var/lib/containerd
 
 mv /var/snap /var/snap-off
 mkdir -p /var/snap
 mount --bind /mnt/snap /var/snap
 rsync -vaxH /var/snap-off/ /var/snap/
+
+
+mv /var/lib/containerd /var/lib/containerd-off
+mkdir -p /var/lib/containerd
+mount --bind /mnt/containerd /var/lib/containerd
+rsync -vaxH /var/lib/containerd-off/ /var/containerd/
+
 
 mv /var/lib/docker /var/lib/docker-off
 mkdir -p /var/lib/docker
