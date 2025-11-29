@@ -1,7 +1,7 @@
 #!/bin/bash
 
 function getAmi {
-  aws ec2 describe-images --filters \
+  aws ec2 describe-images --region eu-central-1 --filters \
   "Name=architecture,Values=$1" \
   'Name=is-public,Values=true' \
   'Name=owner-alias,Values=amazon' \
@@ -10,6 +10,64 @@ function getAmi {
   'Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-*-server*' \
   --query 'sort_by(Images,&CreationDate)[-1]'
 }
+
+function ensureSecurityGroup {
+  local SG_NAME="${1}"
+  local REGION="${2:-eu-central-1}"
+  
+  # Check if security group exists
+  local SG_ID=$(aws ec2 describe-security-groups --region $REGION --filters "Name=group-name,Values=$SG_NAME" --query 'SecurityGroups[0].GroupId' --output text 2>/dev/null)
+  
+  if [ ! -z "$SG_ID" ] && [ "$SG_ID" != "None" ]; then
+    echo "Security group $SG_NAME exists with ID: $SG_ID" >&2
+    echo $SG_ID
+    return 0
+  fi
+  
+  # Get default VPC ID
+  local VPC_ID=$(aws ec2 describe-vpcs --region $REGION --filters 'Name=is-default,Values=true' --query 'Vpcs[0].VpcId' --output text)
+  
+  if [ -z "$VPC_ID" ] || [ "$VPC_ID" = "None" ]; then
+    echo "Error: No default VPC found" >&2
+    return 1
+  fi
+  
+  # Create security group
+  echo "Creating security group: $SG_NAME in VPC: $VPC_ID" >&2
+  SG_ID=$(aws ec2 create-security-group \
+    --region $REGION \
+    --group-name $SG_NAME \
+    --description "Security group for EC2 GitHub runners" \
+    --vpc-id $VPC_ID \
+    --query 'GroupId' \
+    --output text)
+  
+  if [ -z "$SG_ID" ]; then
+    echo "Error: Failed to create security group" >&2
+    return 1
+  fi
+  
+  echo "Created security group: $SG_ID" >&2
+  
+  # Add SSH rule for IPv4
+  echo "Adding SSH rule for IPv4..." >&2
+  aws ec2 authorize-security-group-ingress \
+    --region $REGION \
+    --group-id $SG_ID \
+    --protocol tcp \
+    --port 22 \
+    --cidr 0.0.0.0/0 2>/dev/null || echo "IPv4 SSH rule may already exist" >&2
+  
+  # Add SSH rule for IPv6
+  echo "Adding SSH rule for IPv6..." >&2
+  aws ec2 authorize-security-group-ingress \
+    --region $REGION \
+    --group-id $SG_ID \
+    --ip-permissions IpProtocol=tcp,FromPort=22,ToPort=22,Ipv6Ranges='[{CidrIpv6=::/0,Description="SSH access IPv6"}]' 2>/dev/null || echo "IPv6 SSH rule may already exist" >&2
+  
+  echo $SG_ID
+}
+
 
 PROJECT=developers-paradise
 USER=mabels
@@ -169,7 +227,7 @@ cat > spot-config.json <<EOF
                     "Ebs": {
                         "DeleteOnTermination": true,
                         "SnapshotId": "snap-0bda75060a0810cac",
-                        "VolumeSize": 8,
+                        "VolumeSize": 100,
                         "VolumeType": "gp2",
                         "Encrypted": true
                     }
@@ -206,16 +264,27 @@ cat > spot-options.json <<EOF
 }
 EOF
 
+# Ensure security group exists
+SG_ID=$(ensureSecurityGroup "${PROJECT}-ec2-github-runner" "eu-central-1")
+if [ -z "$SG_ID" ]; then
+  echo "Error: Failed to ensure security group"
+  exit 1
+fi
+echo "Using security group: $SG_ID"
+
 #  --instance-market-options file://./spot-options.json
 
 aws ec2 run-instances \
+  --region eu-central-1 \
   --image-id $AMI \
+  --ipv6-address-count 1 \
   --instance-type $INSTANCE_TYPE \
+  --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":100,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
   --user-data file://./user-data \
-  --security-group-ids $(aws ec2 describe-security-groups | jq ".SecurityGroups[] | select(.GroupName==\"${PROJECT}-ec2-github-runner\") .GroupId" -r) \
+  --security-group-ids $SG_ID \
   --key-name openpgp \
   --associate-public-ip-address \
   --instance-initiated-shutdown-behavior terminate \
   --iam-instance-profile Name=${PROJECT}-ec2-github-runner > $EC2_WORKER
 
-echo "aws ec2 terminate-instances --instance-ids $(jq -r .Instances[0].InstanceId $EC2_WORKER)" > shutdown.$EC2_WORKER
+echo "aws ec2 terminate-instances --region eu-central-1 --instance-ids $(jq -r .Instances[0].InstanceId $EC2_WORKER)" > shutdown.$EC2_WORKER

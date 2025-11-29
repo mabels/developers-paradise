@@ -1,7 +1,7 @@
 
 RUN VERSION=@@XO_USQL_VERSION@@ && \
     export GOPATH=$HOME/go && \
-    apt install -y unixodbc-dev libicu-dev libaio1 && \
+    apt install -y unixodbc-dev libicu-dev libaio-dev && \
     git clone -b $VERSION --depth 1 https://github.com/xo/usql && \
     cd usql && go build -tags "odbc,oracle,mysql,postgresql,sqlite3" && cp ./usql /usr/local/bin && cd .. && \
     bash /post-clean.sh usql $ORACLE_HOME

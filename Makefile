@@ -43,6 +43,7 @@ prepare.tar: .rev
 	echo $(shell git rev-parse --short HEAD)-$(shell sha256sum .build_versions | cut -c1-8) > .rev
 
 .versioner: .build_versions
+	echo "FFFFFF" $(shell node merge_env.js .build_versions)
 	(echo "#!/bin/sh"; echo -n "sed "; for i in $(shell node merge_env.js .build_versions); \
 	do \
 		echo -n "-e s/@@`echo $${i} | cut -d= -f1`@@/`echo $${i} | cut -d= -f2`/g ";\
@@ -54,6 +55,7 @@ prepare.tar: .rev
 
 .build_versions: .npm_install.done
 	rm -f .build_versions
+	npm install
 	npm run --silent query $(GITHUB_VERSIONS) >> .build_versions
 	npm run --silent latest boto/botocore dotnet/runtime aws/aws-cli kubernetes/kubernetes derailed/tview >> .build_versions
 	npm run --silent git_version https://go.googlesource.com/go >> .build_versions

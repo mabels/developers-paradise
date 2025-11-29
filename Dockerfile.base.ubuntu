@@ -14,7 +14,19 @@ RUN \
     rsync ripgrep make dnsutils procps python-is-python3 mandoc \
     apt-transport-https gpg apt-utils gcc python3-pip python3-mypy python3-venv iputils-ping pipenv \
     libyaml-dev libffi-dev libssl-dev zlib1g-dev supervisor net-tools tmux tig lsof htop sysstat \
-    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev docker.io docker-compose && \
+    libgpgme-dev pkg-config libdevmapper-dev default-jdk-headless maven cmake libkrb5-dev ca-certificates \
+    curl jq && \
   ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime && \
-  apt clean 
+  install -m 0755 -d /etc/apt/keyrings && \
+  curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc && \
+  chmod a+r /etc/apt/keyrings/docker.asc && \
+  echo Types: deb >> /etc/apt/sources.list.d/docker.sources && \
+  echo URIs: https://download.docker.com/linux/ubuntu >> /etc/apt/sources.list.d/docker.sources && \
+  echo Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}") >> /etc/apt/sources.list.d/docker.sources && \
+  echo Components: stable >> /etc/apt/sources.list.d/docker.sources && \
+  echo Signed-By: /etc/apt/keyrings/docker.asc >> /etc/apt/sources.list.d/docker.sources && \
+  apt update -y && \
+  apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin && \
+  pip install uv --break-system-packages && \
+  apt clean
 
