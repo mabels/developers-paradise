@@ -16,15 +16,20 @@
 #    npm install yarn typescript -g && \
 #    bash /post-clean.sh 
 
-RUN NODE_MAJOR=22 && \
-    apt update -y && \
-    apt install -y ca-certificates curl gnupg && \
-    mkdir -p /etc/apt/keyrings && \
-    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg && \
-    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_$NODE_MAJOR.x nodistro main" | tee /etc/apt/sources.list.d/nodesource.list && \
-    apt update -y && \
-    apt install nodejs -y && \
-    npm install -g npm@11  && \
-    npm install -g yarn typescript pnpm playwright playwright-chromium && \
+RUN NODE_MAJOR=24 && \
+    ARCH=$(uname -m) && \
+    case "$ARCH" in \
+      x86_64)  NODE_ARCH=x64 ;; \
+      aarch64) NODE_ARCH=arm64 ;; \
+      armv7l)  NODE_ARCH=armv7l ;; \
+      *) echo "Unsupported arch: $ARCH" && exit 1 ;; \
+    esac && \
+    NODE_VERSION=$(curl -fsSL https://nodejs.org/dist/latest-v${NODE_MAJOR}.x/SHASUMS256.txt \
+      | grep "linux-${NODE_ARCH}\.tar\.xz$" \
+      | head -1 \
+      | awk '{print $2}' \
+      | sed 's/node-v//;s/-linux-'"${NODE_ARCH}"'\.tar\.xz//') && \
+    curl -fsSL https://nodejs.org/dist/v${NODE_VERSION}/node-v${NODE_VERSION}-linux-${NODE_ARCH}.tar.xz \
+      | tar -xJ -C /usr/local --strip-components=1 && \
+    npm install -g npm@11 yarn typescript pnpm playwright && \
     npx playwright install --with-deps chromium
-
