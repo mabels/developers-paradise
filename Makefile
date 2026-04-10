@@ -39,7 +39,7 @@ prepare.tar: .rev
 	   done \
 	done)
 	touch .pushed.DUMMY .built.DUMMY
-	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules $(shell find . -name "*.worker" -print)
+	tar cf prepare.tar .build_versions .rev .versioner .pushed.* .built.* .npm_install.done node_modules .goproxy.env $(shell find . -name "*.worker" -print)
 
 .rev: .versioner
 	$(TOUCHSLEEP) /dev/null
