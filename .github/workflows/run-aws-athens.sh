@@ -80,21 +80,30 @@ else
   echo "Bucket \$BUCKET already exists"
 fi
 
-docker run -d \
-  --restart=always \
-  --name athens \
-  --network host \
-  -e ATHENS_STORAGE_TYPE=s3 \
-  -e AWS_REGION=\$REGION \
-  -e ATHENS_S3_BUCKET_NAME=\$BUCKET \
-  -e ATHENS_S3_USE_DEFAULT_CONFIGURATION=true \
-  gomods/athens:latest
-
 # IMDSv2 token for instance metadata
 IMDS_TOKEN=\$(curl -sf -X PUT "http://169.254.169.254/latest/api/token" \
   -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
 INSTANCE_ID=\$(curl -sf -H "X-aws-ec2-metadata-token: \$IMDS_TOKEN" \
   http://169.254.169.254/latest/meta-data/instance-id)
+
+# Fetch instance role credentials from IMDS and pass explicitly to container
+# (avoids Docker credential chain issues — instance lives < credential TTL)
+ROLE_NAME=\$(curl -sf -H "X-aws-ec2-metadata-token: \$IMDS_TOKEN" \
+  http://169.254.169.254/latest/meta-data/iam/security-credentials/)
+CREDS=\$(curl -sf -H "X-aws-ec2-metadata-token: \$IMDS_TOKEN" \
+  "http://169.254.169.254/latest/meta-data/iam/security-credentials/\$ROLE_NAME")
+
+docker run -d \
+  --restart=always \
+  --name athens \
+  -e ATHENS_STORAGE_TYPE=s3 \
+  -e AWS_REGION=\$REGION \
+  -e ATHENS_S3_BUCKET_NAME=\$BUCKET \
+  -e AWS_ACCESS_KEY_ID=\$(echo \$CREDS | jq -r .AccessKeyId) \
+  -e AWS_SECRET_ACCESS_KEY=\$(echo \$CREDS | jq -r .SecretAccessKey) \
+  -e AWS_SESSION_TOKEN=\$(echo \$CREDS | jq -r .Token) \
+  -p 3000:3000 \
+  gomods/athens:latest
 
 for i in \$(seq 1 60); do
   if curl -sf http://localhost:3000/healthz; then
