@@ -94,7 +94,7 @@ then
 elif [ $ARCH = "x86_64" ]
 then
    INSTANCE_TYPE=m5ad.large
-   INSTANCE_TYPE=c5ad.2xlarge
+   INSTANCE_TYPE=c8id.2xlarge
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
    [ -z "$AMI" ] && AMI=$(getAmi x86_64 | jq -r .ImageId)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
