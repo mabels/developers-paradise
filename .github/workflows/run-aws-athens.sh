@@ -8,14 +8,10 @@ ATHENS_S3_BUCKET=${1:-developers-paradise-athens-cache}
 EC2_WORKER=ec2.athens.worker
 
 function getAmi {
-  aws ec2 describe-images --region $REGION --filters \
-    "Name=architecture,Values=arm64" \
-    'Name=is-public,Values=true' \
-    'Name=owner-alias,Values=amazon' \
-    'Name=root-device-type,Values=ebs' \
-    'Name=virtualization-type,Values=hvm' \
-    'Name=name,Values=al2023-ami-2023.*-kernel-*-arm64' \
-    --query 'sort_by(Images,&CreationDate)[-1].ImageId' \
+  aws ssm get-parameter \
+    --region $REGION \
+    --name '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64' \
+    --query 'Parameter.Value' \
     --output text
 }
 

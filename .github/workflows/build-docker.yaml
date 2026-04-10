@@ -12,7 +12,6 @@ permissions:
 
 env:
   CLOUD: aws
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 jobs:
   prepare:
     name: Prepare Versions
@@ -20,7 +19,7 @@ jobs:
     # runs-on: ['self-hosted', 'Linux', 'X64']
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: mabels/neckless@main
         with:
@@ -139,7 +138,7 @@ jobs:
           make prepare.tar APIUSER=${APIUSER} DOCKER=docker
 
       - name: Upload prepare.tar
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: prepare-tar
           path: ./prepare.tar
@@ -151,7 +150,7 @@ jobs:
     name: Update-Manifest
     needs: docker-build
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: mabels/neckless@main
         with:
@@ -198,7 +197,7 @@ jobs:
 
     name: Build Docker ${{ matrix.arch }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - uses: mabels/neckless@main
         with:
@@ -238,7 +237,7 @@ jobs:
     if: always()
     needs: [prepare, update-manifest, docker-build]
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: extract prepare.tar
         uses: actions/download-artifact@v6
