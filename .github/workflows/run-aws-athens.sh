@@ -14,7 +14,7 @@ function getAmi {
     'Name=owner-alias,Values=amazon' \
     'Name=root-device-type,Values=ebs' \
     'Name=virtualization-type,Values=hvm' \
-    'Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-*-server*' \
+    'Name=name,Values=al2023-ami-2023.*-kernel-*-arm64' \
     --query 'sort_by(Images,&CreationDate)[-1].ImageId' \
     --output text
 }
@@ -57,21 +57,9 @@ export HOME=/root
 BUCKET=${ATHENS_S3_BUCKET}
 REGION=${REGION}
 
-apt-get update -y
-apt-get upgrade -y
-apt-get install -y ca-certificates curl jq awscli
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-tee /etc/apt/sources.list.d/docker.sources <<DOCKEREOF
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: \$(. /etc/os-release && echo "\${UBUNTU_CODENAME:-\$VERSION_CODENAME}")
-Components: stable
-Signed-By: /etc/apt/keyrings/docker.asc
-DOCKEREOF
-apt-get update -y
-apt-get install -y docker-ce docker-ce-cli containerd.io
+# Amazon Linux 2023 — aws cli v2 and docker are pre-available
+dnf update -y
+dnf install -y docker jq
 systemctl enable docker
 systemctl start docker
 
@@ -106,10 +94,14 @@ docker run -d \
   -p 3000:3000 \
   gomods/athens:latest
 
-# Tag the instance once Athens is healthy so callers can poll readiness
+# IMDSv2 token for instance metadata
+IMDS_TOKEN=\$(curl -sf -X PUT "http://169.254.169.254/latest/api/token" \
+  -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
+INSTANCE_ID=\$(curl -sf -H "X-aws-ec2-metadata-token: \$IMDS_TOKEN" \
+  http://169.254.169.254/latest/meta-data/instance-id)
+
 for i in \$(seq 1 60); do
   if curl -sf http://localhost:3000/healthz; then
-    INSTANCE_ID=\$(curl -sf http://169.254.169.254/latest/meta-data/instance-id)
     aws ec2 create-tags --region \$REGION --resources \$INSTANCE_ID \
       --tags Key=AthensReady,Value=true
     echo "Athens is ready"
@@ -123,7 +115,7 @@ aws ec2 run-instances \
   --region $REGION \
   --image-id $AMI \
   --instance-type t4g.small \
-  --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":20,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
+  --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":20,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
   --user-data file://./athens-user-data \
   --security-group-ids $SG_ID \
   --key-name openpgp \
