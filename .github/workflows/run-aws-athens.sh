@@ -83,11 +83,11 @@ fi
 docker run -d \
   --restart=always \
   --name athens \
+  --network host \
   -e ATHENS_STORAGE_TYPE=s3 \
   -e AWS_REGION=\$REGION \
   -e ATHENS_S3_BUCKET_NAME=\$BUCKET \
   -e ATHENS_S3_USE_DEFAULT_CONFIGURATION=true \
-  -p 3000:3000 \
   gomods/athens:latest
 
 # IMDSv2 token for instance metadata
