@@ -102,6 +102,7 @@ docker run -d \
   -e AWS_ACCESS_KEY_ID=\$(echo \$CREDS | jq -r .AccessKeyId) \
   -e AWS_SECRET_ACCESS_KEY=\$(echo \$CREDS | jq -r .SecretAccessKey) \
   -e AWS_SESSION_TOKEN=\$(echo \$CREDS | jq -r .Token) \
+  -e GONOSUMDB="github.com/goreleaser/*,github.com/anchore/*,github.com/charmbracelet/*" \
   -p 3000:3000 \
   gomods/athens:latest
 
