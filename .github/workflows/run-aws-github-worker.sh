@@ -86,6 +86,7 @@ INSTANCE_TYPE=$3
 AMI=$4
 DOCKER_TAG=$5
 NECKLESS_URL=$6
+ATHENS_IP=$7
 EC2_WORKER=ec2.$ARCH.$REV.worker
 if [ ! -z "$INSTANCE_TYPE" ]
 then
@@ -189,6 +190,7 @@ REV=$REV
 USER=$USER
 PROJECT=$PROJECT
 DOCKER_TAG=$DOCKER_TAG
+ATHENS_IP=$ATHENS_IP
 
 $(cat ./.github/workflows/start-github-worker.sh.template)
 EOF

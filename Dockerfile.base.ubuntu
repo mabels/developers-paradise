@@ -1,6 +1,9 @@
 #FROM ubuntu:impish
 FROM ubuntu:noble
 
+ARG GOPROXY
+ENV GOPROXY=${GOPROXY}
+
 ENV UBUNTU=eu-central-1.ec2.archive.ubuntu.com
 
 #   sed -i.orig "s|archive.ubuntu.com|${UBUNTU}|g" /etc/apt/sources.list &&

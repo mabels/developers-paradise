@@ -5,6 +5,9 @@ TOUCHSLEEP ?= sleep 1; touch
 APIUSER ?= "api rate limiting applies"
 MANIFEST_TOOL ?= manifest-tool
 DOCKER_BUILD_ARGS ?= --progress plain --build-arg DOCKER_HOST=$(DOCKER_HOST)
+ifdef GOPROXY
+DOCKER_BUILD_ARGS += --build-arg GOPROXY=$(GOPROXY)
+endif
 
 REV=$(shell test -f .rev && cat .rev)
 ARCHS = aarch64 armv7l x86_64

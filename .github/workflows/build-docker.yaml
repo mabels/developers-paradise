@@ -67,9 +67,12 @@ jobs:
           NECKLESS_PRIVKEY: ${{ secrets.NECKLESS_PRIVKEY }}
         run: |
           eval $(neckless kv ls --ghAddMask  --shKeyValue GITHUB_ACCESS_TOKEN)
-          # AWS
-          bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" x86_64
-          bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" aarch64
+          # AWS - spawn Athens cache first so its private IP is known before workers boot
+          bash .github/workflows/run-aws-athens.sh
+          ATHENS_IP=$(cat athens.ip)
+          echo "Athens IP: $ATHENS_IP"
+          bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" x86_64 "" "" "" "" "$ATHENS_IP"
+          bash .github/workflows/run-aws-github-worker.sh "${{github.sha}}" aarch64 "" "" "" "" "$ATHENS_IP"
           for i in $(find . -name "ec2.*.worker")
           do
             echo "Special EC2-Worker instances: $i"

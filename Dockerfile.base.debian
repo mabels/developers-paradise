@@ -1,5 +1,8 @@
 FROM debian:bookworm
 
+ARG GOPROXY
+ENV GOPROXY=${GOPROXY}
+
 RUN apt update && \
   DEBIAN_FRONTEND=noninteractive apt upgrade -y && \
   DEBIAN_FRONTEND=noninteractive apt install -y wget curl jq openssh-server mariadb-client \

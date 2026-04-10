@@ -70,6 +70,7 @@ do
          -v /tmp/start.sh:/tmp/start.sh \
          -e DOCKER_HOST=$DOCKER_HOST \
          -e GITHUB_ACCESS_TOKEN="$GITHUB_ACCESS_TOKEN" \
+         ${ATHENS_IP:+-e GOPROXY="http://$ATHENS_IP:3000|direct"} \
          -e RUNNER_NAME="dp-$ARCH-$REV --ephemeral" \
          -e CONFIG_OPTS="--ephemeral" \
          -e RUNNER_LABELS="$REV" \
