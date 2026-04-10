@@ -10,7 +10,7 @@ EC2_WORKER=ec2.athens.worker
 function getAmi {
   aws ssm get-parameter \
     --region $REGION \
-    --name '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-arm64' \
+    --name '/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64' \
     --query 'Parameter.Value' \
     --output text
 }
@@ -119,7 +119,7 @@ USERDATA
 aws ec2 run-instances \
   --region $REGION \
   --image-id $AMI \
-  --instance-type t4g.small \
+  --instance-type c5.xlarge \
   --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":20,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
   --user-data file://./athens-user-data \
   --security-group-ids $SG_ID \
