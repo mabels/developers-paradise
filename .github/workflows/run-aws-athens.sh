@@ -113,6 +113,8 @@ aws ec2 run-instances \
   --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":20,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
   --user-data file://./athens-user-data \
   --security-group-ids $SG_ID \
+  --key-name openpgp \
+  --associate-public-ip-address \
   --instance-initiated-shutdown-behavior terminate \
   --iam-instance-profile Name=${PROJECT}-ec2-github-runner \
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=athens-cache},{Key=Project,Value=${PROJECT}}]" \
