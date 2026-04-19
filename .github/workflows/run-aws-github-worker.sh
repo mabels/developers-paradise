@@ -1,14 +1,14 @@
 #!/bin/bash
 
 function getAmi {
-  aws ec2 describe-images --region eu-central-1 --filters \
-  "Name=architecture,Values=$1" \
-  'Name=is-public,Values=true' \
-  'Name=owner-alias,Values=amazon' \
-  'Name=root-device-type,Values=ebs' \
-  'Name=virtualization-type,Values=hvm' \
-  'Name=name,Values=ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-*-server*' \
-  --query 'sort_by(Images,&CreationDate)[-1]'
+  local ssm_arch=$1
+  # x86_64 -> x86_64, aarch64 -> arm64
+  [ "$ssm_arch" = "aarch64" ] && ssm_arch="arm64"
+  aws ssm get-parameter \
+    --region eu-central-1 \
+    --name "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-${ssm_arch}" \
+    --query 'Parameter.Value' \
+    --output text
 }
 
 function ensureSecurityGroup {
@@ -96,7 +96,7 @@ then
    INSTANCE_TYPE=m5ad.large
    INSTANCE_TYPE=c8id.2xlarge
    #[ -z "$AMI" ] && AMI=ami-0d527b8c289b4af7f
-   [ -z "$AMI" ] && AMI=$(getAmi x86_64 | jq -r .ImageId)
+   [ -z "$AMI" ] && AMI=$(getAmi x86_64)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_x86_64.tar.gz
 elif [ $ARCH = "aarch64" ]
@@ -104,7 +104,7 @@ then
    INSTANCE_TYPE=m6gd.large
    INSTANCE_TYPE=c7gd.2xlarge
    #[ -z "$AMI" ] && AMI=ami-0b168c89474ef4301
-   [ -z "$AMI" ] && AMI=$(getAmi arm64 | jq -r .ImageId)
+   [ -z "$AMI" ] && AMI=$(getAmi aarch64)
    [ -z "$DOCKER_TAG" ] && DOCKER_TAG=ghrunner-latest
    [ -z "$NECKLESS_URL" ] && NECKLESS_URL=https://github.com/mabels/neckless/releases/download/v0.1.12/neckless_0.1.12_Linux_arm64.tar.gz
 else
@@ -132,52 +132,29 @@ cat > user-data <<EOF
 #!/bin/bash -x
 export HOME=/root
 
+# Format and mount ephemeral NVMe instance storage
 mkfs.ext4 /dev/nvme1n1
 mount /dev/nvme1n1 /mnt
 
-mkdir -p /mnt/snap /var/snap
-mkdir -p /mnt/docker /var/lib/docker
-mkdir -p /mnt/containerd /var/lib/containerd
+# Relocate Docker/containerd data dirs to NVMe before Docker starts
+# so it never writes to the root EBS volume
+mkdir -p /mnt/docker /mnt/containerd
 
-mv /var/snap /var/snap-off
-mkdir -p /var/snap
-mount --bind /mnt/snap /var/snap
-rsync -vaxH /var/snap-off/ /var/snap/
-
-
-mv /var/lib/containerd /var/lib/containerd-off
-mkdir -p /var/lib/containerd
-mount --bind /mnt/containerd /var/lib/containerd
-rsync -vaxH /var/lib/containerd-off/ /var/containerd/
-
-
-mv /var/lib/docker /var/lib/docker-off
+mv /var/lib/docker /var/lib/docker-off 2>/dev/null || true
 mkdir -p /var/lib/docker
 mount --bind /mnt/docker /var/lib/docker
-rsync -vaxH /var/lib/docker-off/ /var/lib/docker/
+rsync -vaxH /var/lib/docker-off/ /var/lib/docker/ 2>/dev/null || true
 
-systemctl daemon-reload
-systemctl stop docker.service
+mv /var/lib/containerd /var/lib/containerd-off 2>/dev/null || true
+mkdir -p /var/lib/containerd
+mount --bind /mnt/containerd /var/lib/containerd
+rsync -vaxH /var/lib/containerd-off/ /var/lib/containerd/ 2>/dev/null || true
 
-apt update -y
-apt upgrade -y
+# Amazon Linux 2023: aws cli v2 pre-installed, docker available via dnf
+dnf update -y
+dnf install -y docker jq
 
-
-apt install -y ca-certificates curl jq awscli
-install -m 0755 -d /etc/apt/keyrings
-curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
-chmod a+r /etc/apt/keyrings/docker.asc
-tee /etc/apt/sources.list.d/docker.sources <<MYEOF
-Types: deb
-URIs: https://download.docker.com/linux/ubuntu
-Suites: $(. /etc/os-release && echo "${UBUNTU_CODENAME:-$VERSION_CODENAME}")
-Components: stable
-Signed-By: /etc/apt/keyrings/docker.asc
-MYEOF
-
-apt update -y
-
-apt install -y docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+systemctl enable docker
 
 aws sts get-caller-identity
 curl -L -o /tmp/neckless.tar.gz $NECKLESS_URL
@@ -281,7 +258,7 @@ aws ec2 run-instances \
   --image-id $AMI \
   --ipv6-address-count 1 \
   --instance-type $INSTANCE_TYPE \
-  --block-device-mappings '[{"DeviceName":"/dev/sda1","Ebs":{"VolumeSize":100,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
+  --block-device-mappings '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":100,"VolumeType":"gp3","DeleteOnTermination":true}}]' \
   --user-data file://./user-data \
   --security-group-ids $SG_ID \
   --key-name openpgp \
